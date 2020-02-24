@@ -8,14 +8,15 @@
 namespace Mama {
 
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::##type;}\
-																virtual Eventtype GetEventType() const override { return GetStaticType() }\
+																virtual EventType GetEventType() const override { return GetStaticType(); }\
 																virtual const char* GetName() const override { return #type; }
 
-#define EVENT_CLASS_CATETORY(category) virtual int GetCategoryFlags() const override { return category; }
+#define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
+
 	enum class EventType
 	{
 		None,
-		WindowClose, WindowResize, WindowMoved,
+		WindowClose, WindowResize,
 		KeyPressed, KeyReleased,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
@@ -32,13 +33,14 @@ namespace Mama {
 		EventCategoryMouseButton	= BIT_FIELD(4)
 	};
 
+
 	class MAMA_API Event
 	{
 		friend class EventDispatcher;
 
 	public:
 		virtual EventType GetEventType() const = 0;
-		virtual const char* GetName() const = 0;
+		virtual const char* GetName() const = 0; //ToDo only use for Debug
 		virtual int GetCategoryFlags() const = 0;
 		virtual std::string ToString() const { return GetName(); }
 
@@ -62,7 +64,7 @@ namespace Mama {
 		{
 
 		}
-
+		//ToDo: make sure to add typesafety that what comes in is an actual event!
 		template<typename T>
 		bool Dispatch(EventFn<T> func)
 		{
