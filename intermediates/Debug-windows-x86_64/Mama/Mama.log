@@ -1,0 +1,4 @@
+﻿  Mama.vcxproj -> D:\Meine Daten\Dokumente\Uni\Computergrafik\Mama\Mama\..\bin\Debug-windows-x86_64\Mama\Mama.dll
+  Datei Sandbox nicht gefunden
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppCommon.targets(138,5): error MSB3073: Der Befehl "IF EXIST ..\bin\Debug-windows-x86_64\Sandbox\ (xcopy /Q /E /Y /I ..\bin\Debug-windows-x86_64\Sandbox > nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-windows-x86_64\Sandbox > nul)
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppCommon.targets(138,5): error MSB3073: :VCEnd" wurde mit dem Code 4 beendet.

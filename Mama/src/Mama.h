@@ -1,6 +1,6 @@
 #pragma once
 
 #include "MamaCore/Application.h"
-#include "MamaCore/Core.h"
+#include "MamaCore/Log.h"
 
 #include "MamaCore/EntryPoint.h"

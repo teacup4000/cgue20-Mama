@@ -9,3 +9,5 @@
 #else
 	#error Mama only supports Windows
 #endif
+
+#define BIT_FIELD(x) (1 << x) // one shifted by x places
