@@ -2,9 +2,6 @@
 
 #include "MamaCore/Core.h"
 
-#include <string>
-#include <functional>
-
 namespace Mama {
 
 

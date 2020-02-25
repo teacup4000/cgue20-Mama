@@ -34,6 +34,7 @@
     <ClInclude Include="src\MamaCore\Log.h">
       <Filter>MamaCore</Filter>
     </ClInclude>
+    <ClInclude Include="src\mamapch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\MamaCore\Application.cpp">
@@ -42,5 +43,6 @@
     <ClCompile Include="src\MamaCore\Log.cpp">
       <Filter>MamaCore</Filter>
     </ClCompile>
+    <ClCompile Include="src\mamapch.cpp" />
   </ItemGroup>
 </Project>

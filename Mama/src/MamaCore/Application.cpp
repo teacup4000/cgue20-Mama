@@ -1,7 +1,7 @@
+#include "mamapch.h"
 #include "Application.h"
 
 #include "Events/WindowEvent.h"
-#include "MamaCore/Log.h"
 
 namespace Mama {
 

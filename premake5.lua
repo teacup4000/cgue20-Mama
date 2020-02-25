@@ -16,6 +16,9 @@ project "Mama"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("intermediates/" ..outputdir .. "/%{prj.name}")
 
+	pchheader "mamapch.h"
+	pchsource "Mama/src/mamapch.cpp"
+
 	files
 	{
 		"%{prj.name}/src/**.h",
