@@ -18,6 +18,7 @@ namespace Mama
 			{
 				std::stringstream ss;
 				ss << "WindowResizeEvent: " << m_Width << ", " << m_Height;
+				return ss.str();
 			}
 
 			EVENT_CLASS_TYPE(WindowResize)

@@ -24,6 +24,7 @@ project "Mama"
 
 	includedirs
 	{
+		"%{prj.name}/src",
 		"%{prj.name}/dependencies/spdlog/include"
 	}
 

@@ -3,6 +3,7 @@
 
 #include "Core.h"
 #include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h"
 
 namespace Mama {
 
@@ -21,3 +22,17 @@ namespace Mama {
 	};
 
 }
+
+// Core log macros
+#define MAMA_CORE_TRACE(...)    ::Mama::Log::GetCoreLogger()->trace(__VA_ARGS__)
+#define MAMA_CORE_INFO(...)     ::Mama::Log::GetCoreLogger()->info(__VA_ARGS__)
+#define MAMA_CORE_WARN(...)     ::Mama::Log::GetCoreLogger()->warn(__VA_ARGS__)
+#define MAMA_CORE_ERROR(...)    ::Mama::Log::GetCoreLogger()->error(__VA_ARGS__)
+#define MAMA_CORE_FATAL(...)    ::Mama::Log::GetCoreLogger()->fatal(__VA_ARGS__)
+
+// Client log macros
+#define MAMA_TRACE(...)	      ::Mama::Log::GetClientLogger()->trace(__VA_ARGS__)
+#define MAMA_INFO(...)	      ::Mama::Log::GetClientLogger()->info(__VA_ARGS__)
+#define MAMA_WARN(...)	      ::Mama::Log::GetClientLogger()->warn(__VA_ARGS__)
+#define MAMA_ERROR(...)	      ::Mama::Log::GetClientLogger()->error(__VA_ARGS__)
+#define MAMA_FATAL(...)	      ::Mama::Log::GetClientLogger()->fatal(__VA_ARGS__)

@@ -59,7 +59,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MAMA_PLATFORM_WINDOWS;MAMA_BUILD_DLL;MAMA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MAMA_PLATFORM_WINDOWS;MAMA_BUILD_DLL;MAMA_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -96,7 +96,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Events\Event.h" />
+    <ClInclude Include="src\Events\KeyEvent.h" />
     <ClInclude Include="src\Events\MouseEvent.h" />
+    <ClInclude Include="src\Events\WindowEvent.h" />
     <ClInclude Include="src\Mama.h" />
     <ClInclude Include="src\MamaCore\Application.h" />
     <ClInclude Include="src\MamaCore\Core.h" />
@@ -104,8 +106,6 @@
     <ClInclude Include="src\MamaCore\Log.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Events\WindowEvent.h" />
-    <ClCompile Include="src\Events\KeyEvent.h" />
     <ClCompile Include="src\MamaCore\Application.cpp" />
     <ClCompile Include="src\MamaCore\Log.cpp" />
   </ItemGroup>
