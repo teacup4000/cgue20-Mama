@@ -28,7 +28,7 @@ namespace Mama {
 		None						= 0,
 		EventCategoryApplication	= BIT_FIELD(0),
 		EventCategoryInput			= BIT_FIELD(1),
-		EventCategroyKeyboard		= BIT_FIELD(2),
+		EventCategoryKeyboard		= BIT_FIELD(2),
 		EventCategoryMouse			= BIT_FIELD(3),
 		EventCategoryMouseButton	= BIT_FIELD(4)
 	};
