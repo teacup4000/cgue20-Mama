@@ -1,9 +1,3 @@
-﻿  mamapch.cpp
-d:\meine daten\dokumente\uni\computergrafik\mama\mama\src\mamacore\log.h(17): warning C4251: "Mama::Log::s_CoreLogger": class "std::shared_ptr<spdlog::logger>" erfordert eine DLL-Schnittstelle, die von Clients von class "Mama::Log" verwendet wird
-  d:\meine daten\dokumente\uni\computergrafik\mama\mama\dependencies\spdlog\include\spdlog\details\registry.h(33): note: Siehe Deklaration von "std::shared_ptr<spdlog::logger>"
-d:\meine daten\dokumente\uni\computergrafik\mama\mama\src\mamacore\log.h(18): warning C4251: "Mama::Log::s_ClientLogger": class "std::shared_ptr<spdlog::logger>" erfordert eine DLL-Schnittstelle, die von Clients von class "Mama::Log" verwendet wird
-  d:\meine daten\dokumente\uni\computergrafik\mama\mama\dependencies\spdlog\include\spdlog\details\registry.h(33): note: Siehe Deklaration von "std::shared_ptr<spdlog::logger>"
-  Application.cpp
-  Log.cpp
-  Code wird generiert...
+﻿  WindowsWindow.cpp
+     Bibliothek "..\bin\Debug-x86_64\Mama\Mama.lib" und Objekt "..\bin\Debug-x86_64\Mama\Mama.exp" werden erstellt.
   Mama.vcxproj -> D:\Meine Daten\Dokumente\Uni\Computergrafik\Mama\Mama\..\bin\Debug-x86_64\Mama\Mama.dll

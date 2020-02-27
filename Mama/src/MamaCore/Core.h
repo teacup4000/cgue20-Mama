@@ -10,4 +10,13 @@
 	#error Mama only supports Windows
 #endif
 
+//Don't know if needed
+#ifdef MAMA_ENABLE_ASSERTS
+	#define MAMA_ASSERT(x, ...) { if(!(x)) { MAMA_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+	#define MAMA_CORE_ASSERT(x, ...) { if(!(x)) { MAMA_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+#else
+	#define MAMA_ASSERT(x, ...)
+	#define MAMA_CORE_ASSERT(x, ...)
+#endif
+
 #define BIT_FIELD(x) (1 << x) // one shifted by x places

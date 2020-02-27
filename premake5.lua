@@ -8,6 +8,11 @@ workspace "Mama"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.architecture}" --will generate something like 'Debug-x64'
 
+IncludeDir = {}
+IncludeDir["GLFW"] = "Mama/dependencies/GLFW/include"
+
+include "Mama/dependencies/GLFW"
+
 project "Mama"
 	location "Mama" --Mama/Mama/
 	kind "SharedLib" -- specify dll file
@@ -28,7 +33,14 @@ project "Mama"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{prj.name}/dependencies/spdlog/include"
+		"%{prj.name}/dependencies/spdlog/include",
+		"%{IncludeDir.GLFW}"
+	}
+
+	links
+	{
+		"GLFW",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"

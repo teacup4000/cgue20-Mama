@@ -1,10 +1,9 @@
 #pragma once
 
+#include "mamapch.h"
 #include "MamaCore/Core.h"
 
 namespace Mama {
-
-
 
 	enum class EventType
 	{

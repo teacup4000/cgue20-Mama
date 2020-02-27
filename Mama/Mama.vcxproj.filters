@@ -7,6 +7,12 @@
     <Filter Include="MamaCore">
       <UniqueIdentifier>{EA9095BB-D65D-F0C6-FF76-DE6EEBA22555}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Plattform">
+      <UniqueIdentifier>{5E089A46-CA72-4EBD-13B1-FF627F5A2C12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plattform\Windows">
+      <UniqueIdentifier>{9830E16F-0447-DF05-4DBE-6A27B913B08D}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Events\Event.h">
@@ -34,6 +40,12 @@
     <ClInclude Include="src\MamaCore\Log.h">
       <Filter>MamaCore</Filter>
     </ClInclude>
+    <ClInclude Include="src\MamaCore\Window.h">
+      <Filter>MamaCore</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Plattform\Windows\WindowsWindow.h">
+      <Filter>Plattform\Windows</Filter>
+    </ClInclude>
     <ClInclude Include="src\mamapch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +54,9 @@
     </ClCompile>
     <ClCompile Include="src\MamaCore\Log.cpp">
       <Filter>MamaCore</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp">
+      <Filter>Plattform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\mamapch.cpp" />
   </ItemGroup>

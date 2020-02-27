@@ -60,7 +60,7 @@
       <PrecompiledHeaderFile>mamapch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MAMA_PLATFORM_WINDOWS;MAMA_BUILD_DLL;MAMA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;dependencies\spdlog\include;dependencies\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -69,6 +69,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\bin\Debug-x86_64\Mama\Mama.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
@@ -81,7 +82,7 @@
       <PrecompiledHeaderFile>mamapch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MAMA_PLATFORM_WINDOWS;MAMA_BUILD_DLL;MAMA_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;dependencies\spdlog\include;dependencies\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -90,6 +91,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\bin\Release-x86_64\Mama\Mama.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
@@ -106,14 +108,22 @@
     <ClInclude Include="src\MamaCore\Core.h" />
     <ClInclude Include="src\MamaCore\EntryPoint.h" />
     <ClInclude Include="src\MamaCore\Log.h" />
+    <ClInclude Include="src\MamaCore\Window.h" />
+    <ClInclude Include="src\Plattform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\mamapch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\MamaCore\Application.cpp" />
     <ClCompile Include="src\MamaCore\Log.cpp" />
+    <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\mamapch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="dependencies\GLFW\GLFW.vcxproj">
+      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
