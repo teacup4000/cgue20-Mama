@@ -1,3 +1,6 @@
 [submodule "Mama/dependencies/spdlog"]
 	path = Mama/dependencies/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "Mama/dependencies/GLFW"]
+	path = Mama/dependencies/GLFW
+	url = https://github.com/glfw/glfw.git
