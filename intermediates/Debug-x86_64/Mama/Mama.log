@@ -1,3 +1,15 @@
-﻿  WindowsWindow.cpp
+﻿  Application.cpp
+d:\meine daten\dokumente\uni\computergrafik\mama\mama\src\mamacore\application.h(17): warning C4251: "Mama::Application::m_Window": class "std::unique_ptr<Mama::Window,std::default_delete<_Ty>>" erfordert eine DLL-Schnittstelle, die von Clients von class "Mama::Application" verwendet wird
+          with
+          [
+              _Ty=Mama::Window
+          ]
+  d:\meine daten\dokumente\uni\computergrafik\mama\mama\src\mamacore\application.h(17): note: Siehe Deklaration von "std::unique_ptr<Mama::Window,std::default_delete<_Ty>>"
+          with
+          [
+              _Ty=Mama::Window
+          ]
+  WindowsWindow.cpp
+  Code wird generiert...
      Bibliothek "..\bin\Debug-x86_64\Mama\Mama.lib" und Objekt "..\bin\Debug-x86_64\Mama\Mama.exp" werden erstellt.
   Mama.vcxproj -> D:\Meine Daten\Dokumente\Uni\Computergrafik\Mama\Mama\..\bin\Debug-x86_64\Mama\Mama.dll
