@@ -13,7 +13,7 @@ namespace Mama
 		unsigned int Width;
 		unsigned int Height;
 
-		WindowProps(const std::string& title = "Mama TestEngine",
+		WindowProps(	const std::string& title = "Mama TestEngine",
 						unsigned int width = 1280,
 						unsigned int height = 720)
 			: Title(title), Width(width), Height(height)
@@ -39,6 +39,7 @@ namespace Mama
 		virtual void SetVSync(bool enabled) = 0;
 		virtual bool IsVSync() const = 0;
 
+		//this function guarantees patform independency with default props from windows
 		static Window* Create(const WindowProps& props = WindowProps());
 	};
 

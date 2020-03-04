@@ -9,7 +9,7 @@ namespace Mama
 		public:
 			inline int GetKeyCode() const { return m_KeyCode; }
 
-			EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
+			EVENT_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 		
 		protected:
 			KeyEvent(int keycode)
@@ -33,7 +33,7 @@ namespace Mama
 				return ss.str();
 			}
 
-			EVENT_CLASS_TYPE(KeyPressed)
+			EVENT_TYPE(KeyPressed)
 
 		private:
 			int m_RepeatCount; //Maybe no need for counting how long a key has been pressed
@@ -53,6 +53,6 @@ namespace Mama
 				return ss.str();
 			}
 
-			EVENT_CLASS_TYPE(KeyReleased)
+			EVENT_TYPE(KeyReleased)
 	};
 }

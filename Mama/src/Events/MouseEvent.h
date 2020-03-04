@@ -20,8 +20,8 @@ namespace Mama
 				return ss.str();
 			}
 
-			EVENT_CLASS_TYPE(MouseMoved)
-			EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+			EVENT_TYPE(MouseMoved)
+			EVENT_CATEGORY(EventCategoryMouse | EventCategoryInput)
 		
 		private:
 			float m_MouseX, m_MouseY;
@@ -43,8 +43,8 @@ namespace Mama
 				return ss.str();
 			}
 
-			EVENT_CLASS_TYPE(MouseScrolled)
-			EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+			EVENT_TYPE(MouseScrolled)
+			EVENT_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
 		private:
 			float m_XOffset, m_YOffset;
@@ -55,7 +55,7 @@ namespace Mama
 		public:
 			inline int GetMouseButton() const { return m_Button; }
 
-			EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+			EVENT_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
 		protected:
 			MouseButtonEvent(int button)
@@ -77,7 +77,7 @@ namespace Mama
 				return ss.str();
 			}
 
-			EVENT_CLASS_TYPE(MouseButtonPressed)
+			EVENT_TYPE(MouseButtonPressed)
 	};
 
 	class MAMA_API MouseButtonReleasedEvent : public MouseButtonEvent
@@ -93,6 +93,6 @@ namespace Mama
 				return ss.str();
 			}
 
-			EVENT_CLASS_TYPE(MouseButtonReleased)
+			EVENT_TYPE(MouseButtonReleased)
 	};
 }
