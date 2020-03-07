@@ -4,3 +4,9 @@
 [submodule "Mama/dependencies/GLFW"]
 	path = Mama/dependencies/GLFW
 	url = https://github.com/glfw/glfw.git
+[submodule "Mama/dependencies/Mama/dependencies/imgui"]
+	path = Mama/dependencies/Mama/dependencies/imgui
+	url = https://github.com/TheCherno/imgui.git
+[submodule "Mama/dependencies/imgui"]
+	path = Mama/dependencies/imgui
+	url = https://github.com/TheCherno/imgui.git
