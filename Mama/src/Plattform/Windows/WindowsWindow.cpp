@@ -5,6 +5,8 @@
 #include "Events/MouseEvent.h"
 #include "Events/WindowEvent.h"
 
+#include "glad/glad.h"
+
 namespace Mama
 {
 	static bool s_GLFWInitialized = false;
@@ -49,6 +51,8 @@ namespace Mama
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		MAMA_CORE_ASSERT(status, "failed to initialize glad");
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 
@@ -96,6 +100,15 @@ namespace Mama
 				}
 			}
 		});
+
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int character)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			KeyTypedEvent event(character);
+			data.EventCallback(event);
+		});
+
 
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 		{

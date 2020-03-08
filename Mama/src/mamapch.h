@@ -9,7 +9,7 @@
 #include <array>
 #include <vector>
 
-#include "MamaCore/Log.h"
+#include "Core/Logger/Log.h"
 
 #ifdef MAMA_PLATFORM_WINDOWS
 	#include <Windows.h>

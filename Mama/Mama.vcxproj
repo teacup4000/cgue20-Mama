@@ -26,7 +26,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
@@ -59,11 +59,11 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>mamapch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>MAMA_PLATFORM_WINDOWS;MAMA_BUILD_DLL;MAMA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;dependencies\spdlog\include;dependencies\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MAMA_PLATFORM_WINDOWS;MAMA_BUILD_DLL;GLFW_INCLUDE_NONE;MAMA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;dependencies\spdlog\include;dependencies\GLFW\include;dependencies\Glad\include;dependencies\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -73,7 +73,7 @@
       <ImportLibrary>..\bin\Debug-x86_64\Mama\Mama.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Debug-x86_64\Mama\Mama.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-x86_64\Mama\Mama.dll ..\bin\Debug-x86_64\Sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-x86_64\Mama\Mama.dll ..\bin\Debug-x86_64\Sandbox &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Debug-x86_64\Mama\Mama.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-x86_64\Mama\Mama.dll "..\bin\Debug-x86_64\Sandbox\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-x86_64\Mama\Mama.dll "..\bin\Debug-x86_64\Sandbox\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -81,11 +81,11 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>mamapch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>MAMA_PLATFORM_WINDOWS;MAMA_BUILD_DLL;MAMA_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;dependencies\spdlog\include;dependencies\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MAMA_PLATFORM_WINDOWS;MAMA_BUILD_DLL;GLFW_INCLUDE_NONE;MAMA_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;dependencies\spdlog\include;dependencies\GLFW\include;dependencies\Glad\include;dependencies\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -95,7 +95,7 @@
       <ImportLibrary>..\bin\Release-x86_64\Mama\Mama.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Release-x86_64\Mama\Mama.dll\ (xcopy /Q /E /Y /I ..\bin\Release-x86_64\Mama\Mama.dll ..\bin\Release-x86_64\Sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-x86_64\Mama\Mama.dll ..\bin\Release-x86_64\Sandbox &gt; nul)</Command>
+      <Command>IF EXIST ..\bin\Release-x86_64\Mama\Mama.dll\ (xcopy /Q /E /Y /I ..\bin\Release-x86_64\Mama\Mama.dll "..\bin\Release-x86_64\Sandbox\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-x86_64\Mama\Mama.dll "..\bin\Release-x86_64\Sandbox\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -103,26 +103,43 @@
     <ClInclude Include="src\Events\KeyEvent.h" />
     <ClInclude Include="src\Events\MouseEvent.h" />
     <ClInclude Include="src\Events\WindowEvent.h" />
+    <ClInclude Include="src\ImGui\ImguiLayer.h" />
+    <ClInclude Include="src\Core\Input\input.h" />
     <ClInclude Include="src\Mama.h" />
-    <ClInclude Include="src\MamaCore\Application.h" />
-    <ClInclude Include="src\MamaCore\Core.h" />
-    <ClInclude Include="src\MamaCore\EntryPoint.h" />
-    <ClInclude Include="src\MamaCore\Log.h" />
-    <ClInclude Include="src\MamaCore\Window.h" />
+    <ClInclude Include="src\Core\Application.h" />
+    <ClInclude Include="src\Core\Core.h" />
+    <ClInclude Include="src\Core\EntryPoint.h" />
+    <ClInclude Include="src\Core\Layer\Layer.h" />
+    <ClInclude Include="src\Core\Layer\LayerStack.h" />
+    <ClInclude Include="src\Core\Logger\Log.h" />
+    <ClInclude Include="src\Core\Window\Window.h" />
+    <ClInclude Include="src\Plattform\OpenGL\Imgui_openGL_Renderer.h" />
     <ClInclude Include="src\Plattform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\mamapch.h" />
+    <ClInclude Include="src\Plattform\Windows\WindowsInput.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\MamaCore\Application.cpp" />
-    <ClCompile Include="src\MamaCore\Log.cpp" />
+    <ClCompile Include="src\ImGui\ImguiLayer.cpp" />
+    <ClCompile Include="src\Core\Application.cpp" />
+    <ClCompile Include="src\Core\Layer\Layer.cpp" />
+    <ClCompile Include="src\Core\Layer\LayerStack.cpp" />
+    <ClCompile Include="src\Core\Logger\Log.cpp" />
+    <ClCompile Include="src\Plattform\OpenGL\Imgui_openGL_Renderer.cpp" />
     <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\mamapch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Plattform\Windows\WindowsInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="dependencies\GLFW\GLFW.vcxproj">
       <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="dependencies\Glad\Glad.vcxproj">
+      <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="dependencies\imgui\ImGui.vcxproj">
+      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

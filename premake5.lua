@@ -1,5 +1,6 @@
 workspace "Mama"
 	architecture "x64"
+	startproject "Sandbox"
 
 	configurations{
 		"Debug",
@@ -10,13 +11,18 @@ outputdir = "%{cfg.buildcfg}-%{cfg.architecture}" --will generate something like
 
 IncludeDir = {}
 IncludeDir["GLFW"] = "Mama/dependencies/GLFW/include"
+IncludeDir["Glad"] = "Mama/dependencies/Glad/include"
+IncludeDir["imgui"] = "Mama/dependencies/imgui"
 
 include "Mama/dependencies/GLFW"
+include "Mama/dependencies/Glad"
+include "Mama/dependencies/imgui"
 
 project "Mama"
 	location "Mama" --Mama/Mama/
 	kind "SharedLib" -- specify dll file
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("intermediates/" ..outputdir .. "/%{prj.name}")
@@ -34,43 +40,50 @@ project "Mama"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/dependencies/spdlog/include",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.imgui}"
 	}
 
 	links
 	{
 		"GLFW",
+		"Glad",
+		"imgui",
 		"opengl32.lib"
 	}
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
 		{
 			"MAMA_PLATFORM_WINDOWS",
-			"MAMA_BUILD_DLL"
+			"MAMA_BUILD_DLL",
+			"GLFW_INCLUDE_NONE"
 		}
 
 		postbuildcommands
 		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox") --copy mama.dll into Sandbox
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"") --copy mama.dll into Sandbox
 		}
 
 	filter "configurations:Debug"
 		defines "MAMA_DEBUG"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "MAMA_RELEASE"
+		runtime "Release"
 		symbols "On"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"	
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("intermediates/" ..outputdir .. "/%{prj.name}")
@@ -94,7 +107,6 @@ project "Sandbox"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 	defines
@@ -104,8 +116,10 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "MAMA_DEBUG"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "MAMA_RELEASE"
+		runtime "Release"
 		symbols "On"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "mamapch.h"
-#include "MamaCore/Core.h"
+#include "Core/Core.h"
 
 namespace Mama {
 
@@ -9,7 +9,7 @@ namespace Mama {
 	{
 		None,
 		WindowClose, WindowResize,
-		KeyPressed, KeyReleased,
+		KeyPressed, KeyReleased, KeyTyped,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 
@@ -31,11 +31,10 @@ namespace Mama {
 
 #define EVENT_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
-	class MAMA_API Event
+	struct MAMA_API Event
 	{
-		friend class EventDispatcher;
+		bool m_Handled = false;
 
-	public:
 		virtual EventType GetEventType() const = 0;
 		virtual const char* GetName() const = 0;
 		virtual int GetCategoryFlags() const = 0;
@@ -45,9 +44,6 @@ namespace Mama {
 		{
 			return GetCategoryFlags() & category;
 		}
-
-	protected:
-		bool m_Handled = false;
 	};
 
 	class EventDispatcher

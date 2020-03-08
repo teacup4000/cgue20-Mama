@@ -2,7 +2,7 @@
 
 #include "mamapch.h"
 
-#include "Core.h"
+#include "Core/Core.h"
 #include "Events/Event.h"
 
 namespace Mama
@@ -38,6 +38,8 @@ namespace Mama
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 		virtual void SetVSync(bool enabled) = 0;
 		virtual bool IsVSync() const = 0;
+
+		virtual void* GetNativeWindow() const = 0; //could also be a friend from window
 
 		//this function guarantees patform independency with default props from windows
 		static Window* Create(const WindowProps& props = WindowProps());

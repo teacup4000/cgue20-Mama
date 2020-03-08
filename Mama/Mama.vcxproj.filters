@@ -4,11 +4,17 @@
     <Filter Include="Events">
       <UniqueIdentifier>{3A8963B1-262B-8E87-0FE6-A1DBFB2615D8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{C0FF640D-2C14-8DBE-F595-301E616989EF}</UniqueIdentifier>
+    </Filter>
     <Filter Include="MamaCore">
       <UniqueIdentifier>{EA9095BB-D65D-F0C6-FF76-DE6EEBA22555}</UniqueIdentifier>
     </Filter>
     <Filter Include="Plattform">
       <UniqueIdentifier>{5E089A46-CA72-4EBD-13B1-FF627F5A2C12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plattform\OpenGL">
+      <UniqueIdentifier>{D2DB8946-BED4-A898-E706-8E1DD35E88A4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Plattform\Windows">
       <UniqueIdentifier>{9830E16F-0447-DF05-4DBE-6A27B913B08D}</UniqueIdentifier>
@@ -27,37 +33,64 @@
     <ClInclude Include="src\Events\WindowEvent.h">
       <Filter>Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\ImGui\ImguiLayer.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
     <ClInclude Include="src\Mama.h" />
-    <ClInclude Include="src\MamaCore\Application.h">
-      <Filter>MamaCore</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MamaCore\Core.h">
-      <Filter>MamaCore</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MamaCore\EntryPoint.h">
-      <Filter>MamaCore</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MamaCore\Log.h">
-      <Filter>MamaCore</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MamaCore\Window.h">
-      <Filter>MamaCore</Filter>
+    <ClInclude Include="src\Plattform\OpenGL\Imgui_openGL_Renderer.h">
+      <Filter>Plattform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Plattform\Windows\WindowsWindow.h">
       <Filter>Plattform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\mamapch.h" />
+    <ClInclude Include="src\Plattform\Windows\WindowsInput.h" />
+    <ClInclude Include="src\Core\Application.h">
+      <Filter>MamaCore</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Core.h">
+      <Filter>MamaCore</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Input\input.h" />
+    <ClInclude Include="src\Core\Layer\Layer.h">
+      <Filter>MamaCore</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Logger\Log.h">
+      <Filter>MamaCore</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Layer\LayerStack.h">
+      <Filter>MamaCore</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Window\Window.h">
+      <Filter>MamaCore</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\EntryPoint.h">
+      <Filter>MamaCore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\MamaCore\Application.cpp">
-      <Filter>MamaCore</Filter>
+    <ClCompile Include="src\ImGui\ImguiLayer.cpp">
+      <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\MamaCore\Log.cpp">
-      <Filter>MamaCore</Filter>
+    <ClCompile Include="src\Plattform\OpenGL\Imgui_openGL_Renderer.cpp">
+      <Filter>Plattform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp">
       <Filter>Plattform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\mamapch.cpp" />
+    <ClCompile Include="src\Plattform\Windows\WindowsInput.cpp" />
+    <ClCompile Include="src\Core\Application.cpp">
+      <Filter>MamaCore</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Layer\Layer.cpp">
+      <Filter>MamaCore</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Logger\Log.cpp">
+      <Filter>MamaCore</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Layer\LayerStack.cpp">
+      <Filter>MamaCore</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

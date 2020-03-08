@@ -1,15 +1,37 @@
-﻿  Application.cpp
-d:\meine daten\dokumente\uni\computergrafik\mama\mama\src\mamacore\application.h(23): warning C4251: "Mama::Application::m_Window": class "std::unique_ptr<Mama::Window,std::default_delete<_Ty>>" erfordert eine DLL-Schnittstelle, die von Clients von class "Mama::Application" verwendet wird
+﻿  WindowsInput.cpp
+d:\meine daten\dokumente\uni\computergrafik\mama\mama\src\core\layer\layer.h(21): warning C4251: "Mama::Layer::m_DebugName": class "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" erfordert eine DLL-Schnittstelle, die von Clients von class "Mama::Layer" verwendet wird
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\xstring(4373): note: Siehe Deklaration von "std::basic_string<char,std::char_traits<char>,std::allocator<char>>"
+d:\meine daten\dokumente\uni\computergrafik\mama\mama\src\core\layer\layerstack.h(25): warning C4251: "Mama::LayerStack::m_Layers": class "std::vector<Mama::Layer *,std::allocator<_Ty>>" erfordert eine DLL-Schnittstelle, die von Clients von class "Mama::LayerStack" verwendet wird
+          with
+          [
+              _Ty=Mama::Layer *
+          ]
+  d:\meine daten\dokumente\uni\computergrafik\mama\mama\src\core\layer\layerstack.h(21): note: Siehe Deklaration von "std::vector<Mama::Layer *,std::allocator<_Ty>>"
+          with
+          [
+              _Ty=Mama::Layer *
+          ]
+d:\meine daten\dokumente\uni\computergrafik\mama\mama\src\core\layer\layerstack.h(26): warning C4251: "Mama::LayerStack::m_LayerInsert": class "std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>" erfordert eine DLL-Schnittstelle, die von Clients von class "Mama::LayerStack" verwendet wird
+          with
+          [
+              _Ty=Mama::Layer *
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\vector(416): note: Siehe Deklaration von "std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>"
+          with
+          [
+              _Ty=Mama::Layer *
+          ]
+d:\meine daten\dokumente\uni\computergrafik\mama\mama\src\core\application.h(30): warning C4251: "Mama::Application::m_Window": class "std::unique_ptr<Mama::Window,std::default_delete<_Ty>>" erfordert eine DLL-Schnittstelle, die von Clients von class "Mama::Application" verwendet wird
           with
           [
               _Ty=Mama::Window
           ]
-  d:\meine daten\dokumente\uni\computergrafik\mama\mama\src\mamacore\application.h(23): note: Siehe Deklaration von "std::unique_ptr<Mama::Window,std::default_delete<_Ty>>"
+  d:\meine daten\dokumente\uni\computergrafik\mama\mama\src\core\application.h(30): note: Siehe Deklaration von "std::unique_ptr<Mama::Window,std::default_delete<_Ty>>"
           with
           [
               _Ty=Mama::Window
           ]
-  WindowsWindow.cpp
-  Code wird generiert...
      Bibliothek "..\bin\Debug-x86_64\Mama\Mama.lib" und Objekt "..\bin\Debug-x86_64\Mama\Mama.exp" werden erstellt.
+LINK : warning LNK4098: Standardbibliothek "LIBCMTD" steht in Konflikt mit anderen Bibliotheken; /NODEFAULTLIB:Bibliothek verwenden.
+LINK : warning LNK4098: Standardbibliothek "LIBCMT" steht in Konflikt mit anderen Bibliotheken; /NODEFAULTLIB:Bibliothek verwenden.
   Mama.vcxproj -> D:\Meine Daten\Dokumente\Uni\Computergrafik\Mama\Mama\..\bin\Debug-x86_64\Mama\Mama.dll
