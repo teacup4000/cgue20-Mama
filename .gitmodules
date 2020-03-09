@@ -10,3 +10,6 @@
 [submodule "Mama/dependencies/imgui"]
 	path = Mama/dependencies/imgui
 	url = https://github.com/TheCherno/imgui.git
+[submodule "Mama/dependencies/glm"]
+	path = Mama/dependencies/glm
+	url = https://github.com/g-truc/glm.git
