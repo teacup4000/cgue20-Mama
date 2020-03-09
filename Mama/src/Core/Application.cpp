@@ -2,7 +2,7 @@
 #include "Application.h"
 
 #include "Logger/Log.h"
-#include "Input/input.h"
+#include "Input/Input.h"
 
 #include <glad/glad.h>
 
@@ -23,7 +23,6 @@ namespace Mama {
 
 	Application::~Application()
 	{
-
 	}
 
 	void Application::Run() {
@@ -38,8 +37,6 @@ namespace Mama {
 				layer->OnUpdate();
 			}
 
-			auto[x, y] = Input::GetMousePos();
-			MAMA_CORE_TRACE("{0}, {1}", x, y);
 			m_Window->OnUpdate();
 		}
 	}

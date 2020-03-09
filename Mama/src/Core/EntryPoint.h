@@ -7,8 +7,7 @@ extern Mama::Application* Mama::CreateApplication();
 int main(int argc, char** argv)
 {
 	Mama::Log::Init();
-	Mama::Log::GetCoreLogger()->warn("initialized log");
-	Mama::Log::GetClientLogger()->info("hello");
+	MAMA_CORE_WARN("inizialized Logger");
 
 	auto app = Mama::CreateApplication();
 	app->Run();

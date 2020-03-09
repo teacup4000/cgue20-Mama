@@ -13,6 +13,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Mama/dependencies/GLFW/include"
 IncludeDir["Glad"] = "Mama/dependencies/Glad/include"
 IncludeDir["imgui"] = "Mama/dependencies/imgui"
+IncludeDir["glm"] = "Mama/dependencies/glm"
 
 include "Mama/dependencies/GLFW"
 include "Mama/dependencies/Glad"
@@ -33,7 +34,10 @@ project "Mama"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/dependencies/glm/glm/**.hpp",
+		"%{prj.name}/dependencies/glm/glm/**.inl"
+
 	}
 
 	includedirs
@@ -42,7 +46,8 @@ project "Mama"
 		"%{prj.name}/dependencies/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.imgui}"
+		"%{IncludeDir.imgui}";
+		"%{IncludeDir.glm}"
 	}
 
 	links
@@ -97,7 +102,9 @@ project "Sandbox"
 	includedirs
 	{
 		"Mama/dependencies/spdlog/include",
-		"Mama/src"
+		"Mama/src",
+		"%{IncludeDir.glm}"
+
 	}
 
 	links

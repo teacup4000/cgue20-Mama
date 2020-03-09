@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/Input/input.h"
+#include "Core/Input/Input.h"
 
 namespace Mama
 {

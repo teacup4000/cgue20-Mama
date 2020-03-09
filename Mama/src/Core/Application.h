@@ -7,6 +7,7 @@
 #include "Layer/LayerStack.h"
 
 #include "Window/Window.h"
+#include "glm/glm.hpp"
 
 namespace Mama {
 

@@ -25,7 +25,7 @@ namespace Mama {
 		EventCategoryMouseButton	= BIT_FIELD(4)
 	};
 
-#define EVENT_TYPE(type) static EventType GetStaticType() {		return EventType::##type;}\
+#define EVENT_TYPE(type) static EventType GetStaticType() {		return EventType::type;}\
 																virtual EventType GetEventType() const override { return GetStaticType(); }\
 																virtual const char* GetName() const override { return #type; }
 
@@ -61,7 +61,6 @@ namespace Mama {
 		template<typename T>
 		bool Dispatch(EventFn<T> func)
 		{			
-
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{
 				m_Event.m_Handled = func(*(T*)&m_Event);
