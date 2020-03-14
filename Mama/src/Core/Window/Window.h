@@ -22,7 +22,7 @@ namespace Mama
 	};
 
 	//Create WindowInterface
-	class MAMA_API	Window
+	class Window
 	{
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;

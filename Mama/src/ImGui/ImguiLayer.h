@@ -7,7 +7,7 @@
 #include "Events/WindowEvent.h"
 
 namespace Mama {
-	class MAMA_API ImguiLayer : public Layer
+	class ImguiLayer : public Layer
 	{
 	public:
 		ImguiLayer();

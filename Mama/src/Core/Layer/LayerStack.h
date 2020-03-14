@@ -7,7 +7,7 @@
 
 namespace Mama 
 {
-	class MAMA_API LayerStack
+	class LayerStack
 	{
 	public:
 		LayerStack();

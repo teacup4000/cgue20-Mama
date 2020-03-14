@@ -473,6 +473,7 @@
     <ClInclude Include="dependencies\glm\glm\vec3.hpp" />
     <ClInclude Include="dependencies\glm\glm\vec4.hpp" />
     <ClInclude Include="dependencies\glm\glm\vector_relational.hpp" />
+    <ClInclude Include="src\Plattform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\Core.h" />
     <ClInclude Include="src\Core\EntryPoint.h" />
@@ -486,14 +487,17 @@
     <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\Events\KeyEvent.h" />
     <ClInclude Include="src\Events\MouseEvent.h" />
+    <ClInclude Include="src\Events\PhysicsEvent.h" />
     <ClInclude Include="src\Events\WindowEvent.h" />
     <ClInclude Include="src\ImGui\ImguiLayer.h" />
     <ClInclude Include="src\Mama.h" />
     <ClInclude Include="src\Plattform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Plattform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\mamapch.h" />
+    <ClInclude Include="src\Renderer\RenderingContext.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Plattform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Core\Layer\Layer.cpp" />
     <ClCompile Include="src\Core\Layer\LayerStack.cpp" />

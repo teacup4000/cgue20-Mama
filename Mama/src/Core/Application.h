@@ -12,7 +12,7 @@
 
 namespace Mama {
 
-	class MAMA_API Application
+	class Application
 	{
 	public:
 		Application();

@@ -5,7 +5,7 @@
 
 namespace Mama {
 
-	class MAMA_API Log
+	class Log
 	{
 	public:
 		static void Init();

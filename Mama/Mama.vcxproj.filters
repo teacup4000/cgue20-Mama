@@ -1251,6 +1251,9 @@
     <ClInclude Include="src\Core\Core.h">
       <Filter>src\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Events\PhysicsEvent.h" />
+    <ClInclude Include="src\Renderer\RenderingContext.h" />
+    <ClInclude Include="src\Plattform\OpenGL\OpenGLContext.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\Application.cpp">
@@ -1280,5 +1283,6 @@
     <ClCompile Include="src\mamapch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Plattform\OpenGL\OpenGLContext.cpp" />
   </ItemGroup>
 </Project>

@@ -4,9 +4,7 @@ This is a precompiled header file.
 It compiles the following includes before any of our code has been compiled.
 */
 
-
 #pragma once
-
 
 #include <iostream>
 #include <functional>

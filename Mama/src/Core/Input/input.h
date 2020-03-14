@@ -3,7 +3,7 @@
 
 namespace Mama
 {
-	class MAMA_API Input
+	class Input
 	{
 	public:
 		inline static bool isKeyPressed(int keycode) { return s_Instance->IsKeyPressedImpl(keycode); }

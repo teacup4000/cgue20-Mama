@@ -4,7 +4,7 @@
 
 namespace Mama
 {
-	class MAMA_API MouseMovedEvent : public Event
+	class MouseMovedEvent : public Event
 	{
 		public:
 			MouseMovedEvent(float x, float y)
@@ -27,7 +27,7 @@ namespace Mama
 			float m_MouseX, m_MouseY;
 	};
 
-	class MAMA_API MouseButtonEvent : public Event
+	class MouseButtonEvent : public Event
 	{
 		public:
 			inline int GetMouseButton() const { return m_Button; }
@@ -41,7 +41,7 @@ namespace Mama
 			int m_Button;
 	};
 
-	class MAMA_API MouseButtonPressedEvent : public MouseButtonEvent
+	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 		public:
 			MouseButtonPressedEvent(int button)
@@ -57,7 +57,7 @@ namespace Mama
 			EVENT_TYPE(MouseButtonPressed)
 	};
 
-	class MAMA_API MouseButtonReleasedEvent : public MouseButtonEvent
+	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 		public:
 			MouseButtonReleasedEvent(int button)

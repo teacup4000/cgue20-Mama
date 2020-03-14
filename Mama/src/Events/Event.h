@@ -10,7 +10,8 @@ namespace Mama {
 		None,
 		WindowClose, WindowResize,
 		KeyPressed, KeyReleased, KeyTyped,
-		MouseButtonPressed, MouseButtonReleased, MouseMoved
+		MouseButtonPressed, MouseButtonReleased, MouseMoved,
+		Collision
 	};
 
 	// filter events
@@ -22,7 +23,8 @@ namespace Mama {
 		EventCategoryInput			= BIT_FIELD(1),
 		EventCategoryKeyboard		= BIT_FIELD(2),
 		EventCategoryMouse			= BIT_FIELD(3),
-		EventCategoryMouseButton	= BIT_FIELD(4)
+		EventCategoryMouseButton	= BIT_FIELD(4),
+		EventCategoryPhysics		= BIT_FIELD(5)
 	};
 
 #define EVENT_TYPE(type) static EventType GetStaticType() {		return EventType::type;}\
@@ -31,7 +33,7 @@ namespace Mama {
 
 #define EVENT_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
-	struct MAMA_API Event
+	struct Event
 	{
 		bool m_Handled = false;
 

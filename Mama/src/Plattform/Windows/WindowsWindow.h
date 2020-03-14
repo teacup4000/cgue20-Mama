@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Window/Window.h"
+#include "Renderer/RenderingContext.h"
 #include <GLFW/glfw3.h>
 
 namespace Mama
@@ -27,6 +28,7 @@ namespace Mama
 		virtual void Shutdown();
 
 		GLFWwindow* m_Window;
+		RenderingContext* m_Context;
 
 		struct WindowData
 		{

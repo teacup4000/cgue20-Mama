@@ -6,7 +6,6 @@ this file contains definitions that are used in other classes
 
 //this BUILD_DLL means that the MAMA_API is a nonstatic library (*.dll file)
 #ifdef MAMA_PLATFORM_WINDOWS
-	#define MAMA_API					//same as define zero (not needed, will be deletet in future build)
 	//-----------ERROR SUPRESSING--------------
 		#if (_MSC_VER >= 1915)
 		#pragma warning(disable:4845)   // __declspec(no_init_all) used but d1initall not set

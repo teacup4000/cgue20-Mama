@@ -1,6 +1,10 @@
-﻿  Application.cpp
+﻿  mamapch.cpp
+  OpenGLContext.cpp
+  Application.cpp
   Layer.cpp
   LayerStack.cpp
+  Log.cpp
+  ImguiBuild.cpp
   ImguiLayer.cpp
   WindowsInput.cpp
   WindowsWindow.cpp
