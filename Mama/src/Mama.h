@@ -1,4 +1,5 @@
 #pragma once
+//This class provides all the includes that is needed for the sandbox application.
 
 //-------------APP---------------
 #include "Core/Application.h"

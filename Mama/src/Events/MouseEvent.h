@@ -27,29 +27,6 @@ namespace Mama
 			float m_MouseX, m_MouseY;
 	};
 
-	class MAMA_API MouseScrolledEvent : public Event
-	{
-		public:
-			MouseScrolledEvent(float xOffset, float yOffset)
-				: m_XOffset(xOffset), m_YOffset(yOffset) {}
-
-			inline float GetXOffset() const { return m_XOffset; }
-			inline float GetYOffset() const { return m_YOffset; }
-
-			std::string ToString() const override
-			{
-				std::stringstream ss;
-				ss << "MouseScrolledEvent: " << GetXOffset() << ", " << GetYOffset();
-				return ss.str();
-			}
-
-			EVENT_TYPE(MouseScrolled)
-			EVENT_CATEGORY(EventCategoryMouse | EventCategoryInput)
-
-		private:
-			float m_XOffset, m_YOffset;
-	};
-
 	class MAMA_API MouseButtonEvent : public Event
 	{
 		public:

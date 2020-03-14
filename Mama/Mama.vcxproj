@@ -19,13 +19,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
@@ -41,62 +41,56 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>..\bin\Debug-x86_64\Mama\</OutDir>
     <IntDir>..\intermediates\Debug-x86_64\Mama\</IntDir>
     <TargetName>Mama</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>..\bin\Release-x86_64\Mama\</OutDir>
     <IntDir>..\intermediates\Release-x86_64\Mama\</IntDir>
     <TargetName>Mama</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>mamapch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>MAMA_PLATFORM_WINDOWS;MAMA_BUILD_DLL;GLFW_INCLUDE_NONE;MAMA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MAMA_PLATFORM_WINDOWS;MAMA_BUILD_DLL;GLFW_INCLUDE_NONE;MAMA_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;dependencies\spdlog\include;dependencies\GLFW\include;dependencies\Glad\include;dependencies\imgui;dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\bin\Debug-x86_64\Mama\Mama.lib</ImportLibrary>
     </Link>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Debug-x86_64\Mama\Mama.dll\ (xcopy /Q /E /Y /I ..\bin\Debug-x86_64\Mama\Mama.dll "..\bin\Debug-x86_64\Sandbox\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Debug-x86_64\Mama\Mama.dll "..\bin\Debug-x86_64\Sandbox\" &gt; nul)</Command>
-    </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>mamapch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>MAMA_PLATFORM_WINDOWS;MAMA_BUILD_DLL;GLFW_INCLUDE_NONE;MAMA_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MAMA_PLATFORM_WINDOWS;MAMA_BUILD_DLL;GLFW_INCLUDE_NONE;MAMA_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;dependencies\spdlog\include;dependencies\GLFW\include;dependencies\Glad\include;dependencies\imgui;dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\bin\Release-x86_64\Mama\Mama.lib</ImportLibrary>
     </Link>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\bin\Release-x86_64\Mama\Mama.dll\ (xcopy /Q /E /Y /I ..\bin\Release-x86_64\Mama\Mama.dll "..\bin\Release-x86_64\Sandbox\" &gt; nul) ELSE (xcopy /Q /Y /I ..\bin\Release-x86_64\Mama\Mama.dll "..\bin\Release-x86_64\Sandbox\" &gt; nul)</Command>
-    </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="dependencies\glm\glm\common.hpp" />
@@ -495,7 +489,6 @@
     <ClInclude Include="src\Events\WindowEvent.h" />
     <ClInclude Include="src\ImGui\ImguiLayer.h" />
     <ClInclude Include="src\Mama.h" />
-    <ClInclude Include="src\Plattform\OpenGL\Imgui_openGL_Renderer.h" />
     <ClInclude Include="src\Plattform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Plattform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\mamapch.h" />
@@ -507,7 +500,6 @@
     <ClCompile Include="src\Core\Logger\Log.cpp" />
     <ClCompile Include="src\ImGui\ImguiBuild.cpp" />
     <ClCompile Include="src\ImGui\ImguiLayer.cpp" />
-    <ClCompile Include="src\Plattform\OpenGL\Imgui_openGL_Renderer.cpp" />
     <ClCompile Include="src\Plattform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Plattform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\mamapch.cpp">
@@ -528,4 +520,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project> 
+</Project>

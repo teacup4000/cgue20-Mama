@@ -12,7 +12,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.architecture}" --will generate something like
 IncludeDir = {}
 IncludeDir["GLFW"] = "Mama/dependencies/GLFW/include"
 IncludeDir["Glad"] = "Mama/dependencies/Glad/include"
-IncludeDir["imgui"] = "Mama/dependencies/imgui"
+IncludeDir["ImGui"] = "Mama/dependencies/imgui"
 IncludeDir["glm"] = "Mama/dependencies/glm"
 
 include "Mama/dependencies/GLFW"
@@ -21,9 +21,10 @@ include "Mama/dependencies/imgui"
 
 project "Mama"
 	location "Mama" --Mama/Mama/
-	kind "SharedLib" -- specify dll file
+	kind "StaticLib" -- specify dll file
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("intermediates/" ..outputdir .. "/%{prj.name}")
@@ -40,13 +41,18 @@ project "Mama"
 
 	}
 
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS"
+	}
+
 	includedirs
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/dependencies/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.imgui}";
+		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}"
 	}
 
@@ -54,12 +60,11 @@ project "Mama"
 	{
 		"GLFW",
 		"Glad",
-		"imgui",
+		"ImGui",
 		"opengl32.lib"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		defines
@@ -69,26 +74,22 @@ project "Mama"
 			"GLFW_INCLUDE_NONE"
 		}
 
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"") --copy mama.dll into Sandbox
-		}
-
 	filter "configurations:Debug"
 		defines "MAMA_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "MAMA_RELEASE"
 		runtime "Release"
-		symbols "On"
+		symbols "on"
 
 project "Sandbox"
 	location "Sandbox"
-	kind "ConsoleApp"	
+	kind "ConsoleApp"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("intermediates/" ..outputdir .. "/%{prj.name}")
@@ -103,8 +104,8 @@ project "Sandbox"
 	{
 		"Mama/dependencies/spdlog/include",
 		"Mama/src",
+		"Mama/dependencies",
 		"%{IncludeDir.glm}"
-
 	}
 
 	links
@@ -113,7 +114,6 @@ project "Sandbox"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 	defines
@@ -124,9 +124,9 @@ project "Sandbox"
 	filter "configurations:Debug"
 		defines "MAMA_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "MAMA_RELEASE"
 		runtime "Release"
-		symbols "On"
+		symbols "on"

@@ -5,6 +5,7 @@
 #include "Events/WindowEvent.h"
 
 #include "Layer/LayerStack.h"
+#include "ImGui/ImguiLayer.h"
 
 #include "Window/Window.h"
 #include "glm/glm.hpp"
@@ -29,6 +30,7 @@ namespace Mama {
 	private:
 		//----------------VAR---------------------
 		std::unique_ptr<Window> m_Window;
+		ImguiLayer* m_ImguiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 

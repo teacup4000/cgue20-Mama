@@ -19,6 +19,9 @@ namespace Mama {
 
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
+		
+		m_ImguiLayer = new ImguiLayer();
+		PushOverlay(m_ImguiLayer);
 	}
 
 	Application::~Application()
@@ -36,6 +39,11 @@ namespace Mama {
 			{
 				layer->OnUpdate();
 			}
+
+			m_ImguiLayer->Begin();
+			for (Layer* layer : m_LayerStack)
+				layer->OnImGuiRender();
+			m_ImguiLayer->End();
 
 			m_Window->OnUpdate();
 		}

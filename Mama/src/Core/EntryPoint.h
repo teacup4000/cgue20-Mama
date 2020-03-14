@@ -1,4 +1,5 @@
 #pragma once
+//the entry point is how we enter the MAMA_API application from outside.
 
 #ifdef MAMA_PLATFORM_WINDOWS
 

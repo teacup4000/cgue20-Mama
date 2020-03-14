@@ -49,9 +49,6 @@
     <Filter Include="src\Plattform">
       <UniqueIdentifier>{356A5486-A12A-D0BC-6A65-193AD6E41499}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Plattform\OpenGL">
-      <UniqueIdentifier>{C9E5F6AD-B574-8077-5E93-94724A01911D}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Plattform\Windows">
       <UniqueIdentifier>{6F79EFC4-DBE5-AABF-A4D9-421D1005CD27}</UniqueIdentifier>
     </Filter>
@@ -1200,9 +1197,6 @@
     <ClInclude Include="src\Core\Application.h">
       <Filter>src\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\Core.h">
-      <Filter>src\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\EntryPoint.h">
       <Filter>src\Core</Filter>
     </ClInclude>
@@ -1245,9 +1239,6 @@
     <ClInclude Include="src\Mama.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Plattform\OpenGL\Imgui_openGL_Renderer.h">
-      <Filter>src\Plattform\OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="src\Plattform\Windows\WindowsInput.h">
       <Filter>src\Plattform\Windows</Filter>
     </ClInclude>
@@ -1256,6 +1247,9 @@
     </ClInclude>
     <ClInclude Include="src\mamapch.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Core.h">
+      <Filter>src\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1276,9 +1270,6 @@
     </ClCompile>
     <ClCompile Include="src\ImGui\ImguiLayer.cpp">
       <Filter>src\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Plattform\OpenGL\Imgui_openGL_Renderer.cpp">
-      <Filter>src\Plattform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Plattform\Windows\WindowsInput.cpp">
       <Filter>src\Plattform\Windows</Filter>

@@ -10,7 +10,7 @@ namespace Mama {
 		None,
 		WindowClose, WindowResize,
 		KeyPressed, KeyReleased, KeyTyped,
-		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
+		MouseButtonPressed, MouseButtonReleased, MouseMoved
 	};
 
 	// filter events
