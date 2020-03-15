@@ -11,13 +11,15 @@ class UILayer : public Mama::Layer
 
 		void OnUpdate() override
 		{
-			if (Mama::Input::isKeyPressed(MAMA_KEY_TAB))
-				MAMA_TRACE("Tab key is pressed");
+		
 		}
 
 		virtual void OnImGuiRender() override
 		{
 			ImGui::ShowDemoWindow();
+			ImGui::Begin("Test");
+			ImGui::Text("Hello World");
+			ImGui::End();
 		}
 
 		void OnEvent(Mama::Event& event) override

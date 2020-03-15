@@ -1,12 +1,2 @@
-﻿  mamapch.cpp
-  OpenGLContext.cpp
-  Application.cpp
-  Layer.cpp
-  LayerStack.cpp
-  Log.cpp
-  ImguiBuild.cpp
-  ImguiLayer.cpp
-  WindowsInput.cpp
-  WindowsWindow.cpp
-  Code wird generiert...
+﻿  Application.cpp
   Mama.vcxproj -> D:\Meine Daten\Dokumente\Uni\Computergrafik\Mama\Mama\..\bin\Debug-x86_64\Mama\Mama.lib
