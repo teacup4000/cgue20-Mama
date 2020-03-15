@@ -1,2 +1,8 @@
 ﻿  Application.cpp
+  Layer.cpp
+  LayerStack.cpp
+  Log.cpp
+  ImguiBuild.cpp
+  ImguiLayer.cpp
+  Code wird generiert...
   Mama.vcxproj -> D:\Meine Daten\Dokumente\Uni\Computergrafik\Mama\Mama\..\bin\Debug-x86_64\Mama\Mama.lib
