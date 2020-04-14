@@ -1,0 +1,97 @@
+#include "Camera.h"
+#include "Shader.h"
+#include "Model.h"
+
+#include <glad/glad.h>
+
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
+
+#include <iostream>
+#include <vector>
+
+//---------------------------------------------------------variable declaration--------------------------------------------------------------------------
+const unsigned int shadow_width = 256, shadow_height = 256;
+unsigned int depthMapFBO;
+unsigned int depthMapCube;
+
+float near_plane = 1.0f;
+float far_plane = 25.0f;
+glm::mat4 shadowProjection;
+extern glm::mat4 projectionMatrix;
+extern glm::mat4 view;
+std::vector<glm::mat4> shadowTransform;
+//-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void generateDepthMap()
+{
+	glGenFramebuffers(1, &depthMapFBO);
+	glGenTextures(1, &depthMapCube);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, depthMapCube);
+	for (unsigned int i = 0; i < 6; i++)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, shadow_width, shadow_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	//attach the Texture to the depth buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthMapCube, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void createCubeMapMatrix(Camera& camera, glm::vec3& lightPos)
+{
+	shadowProjection = glm::perspective(glm::radians(90.0f), (float)shadow_width / (float)shadow_height, near_plane, far_plane);
+
+	shadowTransform.push_back(shadowProjection * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+	shadowTransform.push_back(shadowProjection * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+	shadowTransform.push_back(shadowProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+	shadowTransform.push_back(shadowProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+	shadowTransform.push_back(shadowProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+	shadowTransform.push_back(shadowProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+}
+
+void renderDepthMap(Shader& shader, glm::vec3& lightPos)
+{
+	glViewport(0.0f, 0.0f, shadow_width, shadow_height);
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	shader.use();
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		shader.setMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransform[i]);
+	}
+	shader.setFloat("far_plane", far_plane);
+	shader.setVec3("lightPos", lightPos);
+
+}
+
+void renderNormal(Shader& shader, Camera& camera, glm::vec3& lightPos, GLint& width, GLint& height)
+{
+	glViewport(0.0f, 0.0f, width, height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	shader.use();
+	projectionMatrix = glm::perspective(glm::radians(camera.zoom), (float)width / (float)height, 0.1f, 100.0f);
+	view = camera.getViewMatrix();
+
+	shader.setMat4("projection", projectionMatrix);
+	shader.setMat4("view", view);
+	shader.setVec3("lightPos", lightPos);
+	shader.setVec3("viewPos", camera.position);
+	shader.setInt("shadows", true);
+	shader.setFloat("far_plane", far_plane);
+	shader.setVec3("ambient", 0.0f, 0.0f, 0.0f);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, depthMapCube);
+}
+
