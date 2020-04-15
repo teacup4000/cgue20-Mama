@@ -35,6 +35,7 @@ void initGlad()
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -45,7 +46,7 @@ void enableGL()
 	//glEnable(GL_CULL_FACE); //Enable cull face if you don't want the program to render the back side of your objects 
 	//glCullFace(GL_BACK);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //with this no bump mapping/normal mapping/alpha mapping is possible but less memory usage!
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //with this no bump mapping/normal mapping/alpha mapping is possible but less memory usage!
 	glEnable(GL_MULTISAMPLE);
 }
 

@@ -19,14 +19,13 @@ public:
 	glm::vec3 right = glm::vec3(1, 0, 0);
 	glm::vec3 front = glm::vec3(0, 0, 1);
 
-
-
 	float velocity;
 	float run_speed = 10.0f;
 	float turn_speed = 60.0f;
 	float currentSpeed = 0;
 	float currentTurnSpeed = 0;
 	bool showModel;
+	bool isPressed = false;
 
 	Player() {}
 	Player(glm::vec3 startPosition);
@@ -47,7 +46,21 @@ public:
 		showModel = setting;
 	}
 
+	void getDown( float& deltaTime)
+	{
+		velocity = run_speed * deltaTime;
+		moveVector = glm::vec3(0);
+		std::cout << "This is Y : " << position.y << std::endl;
+		if( position.y > 0.0f) {
+			moveVector.y -= velocity;
+			position += moveVector; 
+			this->modelMatrix = glm::translate(modelMatrix, moveVector);
+			
+		}
+	}
+
 private:
+
 	virtual void rotate(float& movementSpeed, float& deltaTime);
 	void processKeyboard(GLFWwindow *window, float& deltaTime)
 	{
@@ -84,14 +97,19 @@ private:
 		{
 			this->currentTurnSpeed = 0;
 		}
+
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
 		{
-			moveVector.y = velocity;
+			if (moveVector.y < 0.5f && position.y <= 0) {
+				moveVector.y = velocity + 1;
+			}
+			
 			std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		
 			moveVector.y = -velocity;
-			std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+			std::cout <<"This is velocity" << position.y  << std::endl;
 		}
 		
 		else
@@ -108,7 +126,7 @@ private:
 			showModel = true;
 			
 		}
-	/*	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_RELEASE)
+		/*	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_RELEASE)
 		{
 			
 			

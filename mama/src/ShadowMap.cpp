@@ -12,15 +12,15 @@
 #include <vector>
 
 //---------------------------------------------------------variable declaration--------------------------------------------------------------------------
-const unsigned int shadow_width = 256, shadow_height = 256;
+const unsigned int shadow_width = 1024, shadow_height = 1024;
 unsigned int depthMapFBO;
 unsigned int depthMapCube;
 
 float near_plane = 1.0f;
 float far_plane = 25.0f;
 glm::mat4 shadowProjection;
-extern glm::mat4 projectionMatrix;
-extern glm::mat4 view;
+glm::mat4 projectionMatrix;
+glm::mat4 view;
 std::vector<glm::mat4> shadowTransform;
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -44,6 +44,8 @@ void generateDepthMap()
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthMapCube, 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "Framebuffer not complete" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -62,6 +64,8 @@ void createCubeMapMatrix(Camera& camera, glm::vec3& lightPos)
 void renderDepthMap(Shader& shader, glm::vec3& lightPos)
 {
 	glViewport(0.0f, 0.0f, shadow_width, shadow_height);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "Framebuffer not complete" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -72,7 +76,6 @@ void renderDepthMap(Shader& shader, glm::vec3& lightPos)
 	}
 	shader.setFloat("far_plane", far_plane);
 	shader.setVec3("lightPos", lightPos);
-
 }
 
 void renderNormal(Shader& shader, Camera& camera, glm::vec3& lightPos, GLint& width, GLint& height)
@@ -90,8 +93,20 @@ void renderNormal(Shader& shader, Camera& camera, glm::vec3& lightPos, GLint& wi
 	shader.setVec3("viewPos", camera.position);
 	shader.setInt("shadows", true);
 	shader.setFloat("far_plane", far_plane);
-	shader.setVec3("ambient", 0.0f, 0.0f, 0.0f);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, depthMapCube);
 }
+
+///** set up the properties for the transparent shader*/
+//void TransparentShaderSetup(Shader& shader, Camera& camera, GLint& width, GLint& height, float& brightness)
+//{
+//	shader.use();
+//
+//	shader.setMat4("projection", projectionMatrix);
+//	shader.setMat4("view", view);
+//	shader.setVec3("viewPos", camera.position);
+//	shader.setVec3("ambient", 0.0f, 0.0f, 0.0f);
+//	shader.setVec3("brightness", brightness, brightness, brightness);
+//	glActiveTexture(GL_TEXTURE1);
+//}
 

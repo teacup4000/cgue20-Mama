@@ -6,12 +6,9 @@ extern float lastX; //mouseOffset since last Frame
 extern float lastY;
 extern Camera camera;
 
-
-
 bool firstMouse = true;
 bool cursor = false;
 extern bool fullscreen = false;
-
 
 void setFullscreen(bool& fullscreen);
 
@@ -37,14 +34,12 @@ void Camera::processMouseScroll(float yOffset)
 
 void Camera::updateCameraVectors()
 {
-	
 	// Calculate the new Front vector
 	glm::vec3 frontNew;
 	frontNew.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	frontNew.y = sin(glm::radians(pitch));
 	frontNew.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front = glm::normalize(frontNew);
-
 
 	// Also re-calculate the Right and Up vector
 	right = glm::normalize(glm::cross(front, worldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.

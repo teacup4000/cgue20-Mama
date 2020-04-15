@@ -3,8 +3,6 @@
 //-------------------------------------------------------------Mesh.h---------------------------------------------------------------------
 void Mesh::setupMesh()
 {
-	/* in case of some fancy Error: */
-	//glewExperimental = GL_TRUE;
 
 	/* Create buffers/arrays */
 	glGenVertexArrays(1, &this->VAO);
