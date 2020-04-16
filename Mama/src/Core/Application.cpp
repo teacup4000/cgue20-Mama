@@ -42,38 +42,36 @@ void Application::Run()
 	Shader depthShader("Shader/depth.shader");
 
 	//Create Test Objects
-	Model test1("Models/testobj/floor.obj");
-	glm::mat4 testFloorObj = glm::mat4(1.0f);
+	//Model test1("Models/testobj/floor.obj");
+	//glm::mat4 testFloorObj = glm::mat4(1.0f);
+	//
+	//Model test2("Models/testobj/wall.obj");
+	//glm::mat4 testWallObj = glm::mat4(1.0f);
 
-	Model test2("Models/testobj/wall.obj");
-	glm::mat4 testWallObj = glm::mat4(1.0f);
-
-	//Other objects are to the right
-																																				/*Model floor("Models/FloorAtlas.obj");
-																																							glm::mat4 floorObj = glm::mat4(1.0f);
-
-																																							Model wall("Models/wallAtlas.obj");
-																																							glm::mat4 wallObj = glm::mat4(1.0f);
-
-																																							Model mountain("Models/MountainAtlas.obj");
-																																							glm::mat4 mountainObj = glm::mat4(1.0f);
-
-																																							Model cube("Models/cube.obj");
-																																							glm::mat4 cubeObj = glm::mat4(1.0f);
-																																							cubeObj = glm::scale(cubeObj, glm::vec3(0.1f, 0.1f, 0.1f));
-																																							cubeObj = glm::translate(cubeObj, glm::vec3(10.0f, 3.0f, -60.3f));
-
-																																							Model cube2("Models/cube2.obj");
-																																							glm::mat4 cubeObj2 = glm::mat4(1.0f);
-																																							cubeObj2 = glm::scale(cubeObj2, glm::vec3(0.1f, 0.1f, 0.1f));
-																																							cubeObj2 = glm::translate(cubeObj2, glm::vec3(-8.0f, 3.0f, -130.3f));*/
+	Model floor("Models/FloorAtlas.obj");
+	glm::mat4 floorObj = glm::mat4(1.0f);
 	
-	/*create the PlayerObjects*/
-																																								/*
-																																								std::vector<Model> playerObjects;
-																																								Model character("Models/bearAtlas.obj");
-																																								playerObjects.push_back(character);
-																																								player.setPlayerModel(playerObjects);*/
+	Model wall("Models/wallAtlas.obj");
+	glm::mat4 wallObj = glm::mat4(1.0f);
+	
+	Model mountain("Models/MountainAtlas.obj");
+	glm::mat4 mountainObj = glm::mat4(1.0f);
+	
+	Model cube("Models/cube.obj");
+	glm::mat4 cubeObj = glm::mat4(1.0f);
+	cubeObj = glm::scale(cubeObj, glm::vec3(0.1f, 0.1f, 0.1f));
+	cubeObj = glm::translate(cubeObj, glm::vec3(10.0f, 3.0f, -60.3f));
+	
+	Model cube2("Models/cube2.obj");
+	glm::mat4 cubeObj2 = glm::mat4(1.0f);
+	cubeObj2 = glm::scale(cubeObj2, glm::vec3(0.1f, 0.1f, 0.1f));
+	cubeObj2 = glm::translate(cubeObj2, glm::vec3(-8.0f, 3.0f, -130.3f));
+
+
+	std::vector<Model> playerObjects;
+	Model character("Models/bearAtlas.obj");
+	playerObjects.push_back(character);
+	m_Player->setPlayerModel(playerObjects);
 	generateDepthMap();
 
 	light.use();
@@ -116,37 +114,35 @@ void Application::Run()
 
 		createCubeMapMatrix(lightPos);
 
-		/*glViewport(0, 0, windowWidth, windowHeight);
+		glViewport(0, 0, m_Width, m_Height);
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete" << std::endl;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		depthShader.use();*/
+		depthShader.use();
 
 		renderDepthMap(depthShader, lightPos);
-		renderModel(test1, depthShader, testFloorObj);
-		renderModel(test2, depthShader, testWallObj);
-		/*renderModel(floor, depthShader, floorObj);
+		//renderModel(test1, depthShader, testFloorObj);
+		//renderModel(test2, depthShader, testWallObj);
+		renderModel(floor, depthShader, floorObj);
 		renderModel(wall, depthShader, wallObj);
 		renderModel(mountain, depthShader, mountainObj);
 
-		for (Model model : player.getPlayerobject()) {
-			renderModel(character, depthShader, player.getModelMatrix());
-		}*/
+		for (Model model : m_Player->getPlayerobject()) {
+			renderModel(character, depthShader, m_Player->getModelMatrix());
+		}
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete" << std::endl;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		
 		//--------------------------------------------------------------------------
 		renderNormal(light, m_Camera, lightPos, m_Width, m_Height);
-		renderModel(test1, light, testFloorObj);
-		renderModel(test2, light, testWallObj);
+		//renderModel(test1, light, testFloorObj);
+		//renderModel(test2, light, testWallObj);
 
-		glfwSwapBuffers(m_Window);
-		glfwPollEvents();
-		/*renderModel(floor, basic, floorObj);
-		renderModel(wall, basic, wallObj);
-		renderModel(mountain, basic, mountainObj);
-		if (player.showModel)
+		renderModel(floor, light, floorObj);
+		renderModel(wall, light, wallObj);
+		renderModel(mountain, light, mountainObj);
+		if (m_Player->showModel)
 		{
 			renderModel(cube, light, cubeObj);
 			renderModel(cube2, light, cubeObj2);
@@ -155,22 +151,24 @@ void Application::Run()
 			cubeObj2 = glm::rotate(cubeObj2, 0.01f, glm::vec3(0, 1, 0));
 		}
 
-		for (Model model : player.getPlayerobject()) {
-			renderModel(character, basic, player.getModelMatrix());
-		}*/
+		for (Model model : m_Player->getPlayerobject()) {
+			renderModel(character, light, m_Player->getModelMatrix());
+		}
 
 		
 
-		/*if (player.position.x >= 1.0f && player.position.x <= 1.3f && player.position.z >= -7.0f && player.position.z <= -5.0f ||
-			player.position.x >= -0.7f && player.position.x <= -0.5f && player.position.z >= -13.2f && player.position.z <= -13.0f)
+		if (m_Player->position.x >= 1.0f && m_Player->position.x <= 1.3f && m_Player->position.z >= -7.0f && m_Player->position.z <= -5.0f ||
+			m_Player->position.x >= -0.7f && m_Player->position.x <= -0.5f && m_Player->position.z >= -13.2f && m_Player->position.z <= -13.0f)
 		{
 			lose();
 		}
 		
-		player.getDown(deltaTime);*/
+		m_Player->getDown(deltaTime);
 		//std::cout << glm::to_string(camera.position) << std::endl;
 		//std::cout << glm::to_string(player.position) << std::endl;
-		//aglDepthFunc(GL_LESS);
+		//glDepthFunc(GL_LESS);
+		glfwSwapBuffers(m_Window);
+		glfwPollEvents();
 	
 	}
 	//clean

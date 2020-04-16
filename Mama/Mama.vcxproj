@@ -153,28 +153,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
-    <ClCompile Include="src\EntryPoint.cpp" />
-    <ClCompile Include="src\Events.h" />
-    <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\Camera.cpp" />
-    <ClCompile Include="src\Mesh.cpp" />
-    <ClCompile Include="src\Model.cpp" />
-    <ClCompile Include="src\Player.cpp" />
-    <ClCompile Include="src\Event.cpp" />
-    <ClCompile Include="src\Renderer.cpp" />
-    <ClCompile Include="src\Shader.cpp" />
-    <ClCompile Include="src\ShaderUtility.cpp" />
-    <ClCompile Include="src\ShadowMap.cpp" />
+    <ClCompile Include="src\Core\EntryPoint.cpp" />
+    <ClCompile Include="src\Event\Events.h" />
+    <ClCompile Include="src\Core\Application.cpp" />
+    <ClCompile Include="src\Render\Display\Camera.cpp" />
+    <ClCompile Include="src\Render\Display\Mesh.cpp" />
+    <ClCompile Include="src\Render\Display\Model.cpp" />
+    <ClCompile Include="src\Render\Display\Player.cpp" />
+    <ClCompile Include="src\Event\Event.cpp" />
+    <ClCompile Include="src\Render\Display\Shader.cpp" />
+    <ClCompile Include="src\Render\Display\ShaderUtility.cpp" />
+    <ClCompile Include="src\Render\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Application.h" />
-    <ClInclude Include="src\Camera.h" />
-    <ClInclude Include="src\INIReader.h" />
-    <ClInclude Include="src\Mesh.h" />
-    <ClInclude Include="src\Model.h" />
-    <ClInclude Include="src\Player.h" />
-    <ClInclude Include="src\Shader.h" />
-    <ClInclude Include="src\stb_image.h" />
+    <ClInclude Include="src\Core\Application.h" />
+    <ClInclude Include="src\Render\Display\Camera.h" />
+    <ClInclude Include="src\Core\INIReader.h" />
+    <ClInclude Include="src\Render\Display\Mesh.h" />
+    <ClInclude Include="src\Render\Display\Model.h" />
+    <ClInclude Include="src\Render\Display\Player.h" />
+    <ClInclude Include="src\Render\Display\Shader.h" />
+    <ClInclude Include="src\Render\Display\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\basic.shader" />

@@ -1,6 +1,6 @@
-#include "Camera.h"
-#include "Shader.h"
-#include "Model.h"
+#include "Display/Camera.h"
+#include "Display/Shader.h"
+#include "Display/Model.h"
 
 #include <glad/glad.h>
 

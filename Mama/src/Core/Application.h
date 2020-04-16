@@ -7,8 +7,8 @@
 #include <iostream>
 
 #include "INIReader.h"
-#include "Events.h"
-#include "Player.h"
+#include "../Event/Events.h"
+#include "../Render/Display/Player.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <gtx/string_cast.hpp>

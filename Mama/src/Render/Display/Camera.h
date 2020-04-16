@@ -8,7 +8,7 @@
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <GLFW\glfw3.h>
-#include "player.h"
+#include "Player.h"
 
 //calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 class Camera
