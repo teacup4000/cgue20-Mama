@@ -49,7 +49,7 @@ void generateDepthMap()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void createCubeMapMatrix(Camera& camera, glm::vec3& lightPos)
+void createCubeMapMatrix(glm::vec3& lightPos)
 {
 	shadowProjection = glm::perspective(glm::radians(90.0f), (float)shadow_width / (float)shadow_height, near_plane, far_plane);
 
@@ -78,19 +78,19 @@ void renderDepthMap(Shader& shader, glm::vec3& lightPos)
 	shader.setVec3("lightPos", lightPos);
 }
 
-void renderNormal(Shader& shader, Camera& camera, glm::vec3& lightPos, GLint& width, GLint& height)
+void renderNormal(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& width, GLint& height)
 {
 	glViewport(0.0f, 0.0f, width, height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	shader.use();
-	projectionMatrix = glm::perspective(glm::radians(camera.zoom), (float)width / (float)height, 0.1f, 100.0f);
-	view = camera.getViewMatrix();
+	projectionMatrix = glm::perspective(glm::radians(camera->m_Zoom), (float)width / (float)height, 0.1f, 100.0f);
+	view = camera->getViewMatrix();
 
 	shader.setMat4("projection", projectionMatrix);
 	shader.setMat4("view", view);
 	shader.setVec3("lightPos", lightPos);
-	shader.setVec3("viewPos", camera.position);
+	shader.setVec3("viewPos", camera->m_Position);
 	shader.setInt("shadows", true);
 	shader.setFloat("far_plane", far_plane);
 	glActiveTexture(GL_TEXTURE1);

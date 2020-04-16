@@ -4,7 +4,7 @@
 #pragma once
 #include "Mesh.h"
 #include "Shader.h"
-#include "stb_image.h"
+
 
 
 unsigned int TextureFromFile(const char* path, std::string& directory, bool gamma = false);
