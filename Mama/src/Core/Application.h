@@ -13,7 +13,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <gtx/string_cast.hpp>
 
-
+//This is the Main Applicatoin Class where everything happens
 class Application
 {
 public:
@@ -23,12 +23,11 @@ public:
 		ReadINIFile();
 	}
 
-	void Construct(Player* player, Camera*& camera) {
+	void SetAndRun(Player* player, Camera*& camera) {
 		m_Player = player;
 		m_Camera = camera;
 		event = Event(m_Camera, m_Width, m_Height);
 
-		std::cout << "Sensitivity: " << m_Camera->getSensitivity() << std::endl;
 		Run();
 	}
 
@@ -36,19 +35,19 @@ public:
 	void Run();
 	void CreateGLFWWindow();
 
-
 private: //MEMBERS
 	GLFWwindow* m_Window;
 	Player*	m_Player;
 	Camera* m_Camera;
+	Event event;
 
 	int		m_Width, m_Height;
 	float	m_Brightness;
 	bool	m_FullScreen;
 
 private: //FUNCTIONS
-	Event event;
 
+	//Read and set data from the settings.ini file
 	void ReadINIFile() {
 		INIReader iniReader("Assets/settings.ini");
 
@@ -57,12 +56,12 @@ private: //FUNCTIONS
 		m_Brightness = iniReader.GetFloat("shader", "brightness", 0.1f);
 		m_FullScreen = false;
 	}
-
+	
 	void InitGLFW()
 	{
 		GLint glfwInitResult = glfwInit();
 
-		//Choosing properties and version
+		//props and version
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);

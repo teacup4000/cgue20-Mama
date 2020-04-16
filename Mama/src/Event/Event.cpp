@@ -1,8 +1,6 @@
 #include "Events.h"
 
 
-//_____________________________________________________
-
 void Event::SetFullScreen()
 {
 	if (m_Fullscreen)
@@ -13,7 +11,6 @@ void Event::SetFullScreen()
 
 void Event::OnKeyPressed(int key, int code, int action, int modifers)
 {
-	/* Layers are dependend to the "doTheLayer" function in UI.cpp. If changing something in this file, make sure you change it there too! */
 	if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
 	{
 		m_Fullscreen = !m_Fullscreen;
@@ -21,7 +18,6 @@ void Event::OnKeyPressed(int key, int code, int action, int modifers)
 	}
 }
 
-/** process input from Mouse buttons */
 void Event::OnButtonClicked(int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
@@ -40,13 +36,13 @@ void Event::OnButtonClicked(int button, int action, int mods)
 	}
 }
 
-/** whenever the window size changes this function is called */
+//If the window size is changed, this function is called
 void Event::OnFramebufferSizeCallback(int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
 
-/** whenever the mouse moves, this function is called */
+//MouseMovedEvent
 void Event::OnCursorPos(double xPos, double yPos)
 {
 	if (m_FirstMouse)
@@ -64,7 +60,6 @@ void Event::OnCursorPos(double xPos, double yPos)
 	m_Camera->processMouseMovement(xOffset, yOffset);
 }
 
-/** whenever the mouse scroll wheel scrolls, this function is called */
 void Event::OnMouseScrolled(double xOffset, double yOffset)
 {
 	std::cout << yOffset << std::endl;

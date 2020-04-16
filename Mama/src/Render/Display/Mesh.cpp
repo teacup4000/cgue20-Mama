@@ -1,6 +1,5 @@
 #include "Mesh.h"
 
-//--------------------------------------------------------------------Mesh.h---------------------------------------------------------------------------------
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures)
 {
 	this->vertices = vertices;
@@ -57,6 +56,7 @@ void Mesh::draw(Shader shader)
 	}
 }
 
+//Render the vertices
 void Mesh::setupMesh()
 {
 

@@ -2,6 +2,7 @@
 #include <gtx/transform.hpp>
 #include <iostream>
 
+//Set all important values for the Camera
 Camera::Camera(Player* player, glm::vec3 currPosition)
 	: m_Player(player), m_Position(currPosition)
 {
@@ -17,12 +18,12 @@ Camera::Camera(Player* player, glm::vec3 currPosition)
 	updateCameraVectors();
 }
 
-//----------------------------------------------------------------------Camera funktions------------------------------------------------------------------------------------------
+//If the mouse is moved the Camera is updated.
 void Camera::processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
 {
 	//this->position = this->player->position;
-	xoffset *= getSensitivity();
-	yoffset *= getSensitivity();
+	xoffset *= m_MouseSensitivity;
+	yoffset *= m_MouseSensitivity;
 
 	m_Yaw += xoffset;
 	m_Pitch += yoffset;
@@ -44,6 +45,7 @@ void Camera::processMouseMovement(float xoffset, float yoffset, GLboolean constr
 	m_Position -= m_Front * m_Distance;
 }
 
+//Return the viewMatrix
 glm::mat4 Camera::getViewMatrix()
 {
 	m_Position = m_Player->position;
@@ -51,6 +53,7 @@ glm::mat4 Camera::getViewMatrix()
 	return glm::lookAt(m_Position, m_Position + m_Front, m_WorldUp);
 }
 
+//If the ScreollWheel is used, the Camera is updated
 void Camera::processMouseScroll(float yOffset)
 {
 	if (m_Zoom >= 1.0f && m_Zoom <= 45.0f)
@@ -61,6 +64,7 @@ void Camera::processMouseScroll(float yOffset)
 		m_Zoom = 45.0f;
 }
 
+//Update the camera vectors if an Event happens
 void Camera::updateCameraVectors()
 {
 	// Calculate the new Front vector
@@ -71,7 +75,7 @@ void Camera::updateCameraVectors()
 	m_Front = glm::normalize(frontNew);
 
 	// Also re-calculate the Right and Up vector
-	m_Right = glm::normalize(glm::cross(m_Front, m_WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	m_Right = glm::normalize(glm::cross(m_Front, m_WorldUp)); 
 	m_Up = glm::normalize(glm::cross(m_Right, m_Front));
 	m_Player->right = m_Right;
 	m_Player->front = -m_Front;

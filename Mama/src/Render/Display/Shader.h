@@ -9,25 +9,21 @@
 #include <glm.hpp>
 #include <gtc\matrix_transform.hpp>
 
-//------------------------------------------------------------------struct definitions-------------------------------------------------------------------
 struct ShaderSource
 {
 	std::string vertexSource;
 	std::string fragmentSource;
 	std::string geometrySource;
 };
-//-------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class Shader
 {
-	/* Varables */
-public:
+public: //MEMBERS
 	ShaderSource source;
 	unsigned int ID;
 	unsigned int program;
 
-	/* Functions */
-public:
+public: //FUNCTIONS
 	Shader(const std::string& filePath);
 	void use() const;
 	void deleteShader() const;
@@ -48,8 +44,7 @@ public:
 	void setMat3(const std::string& name, const glm::mat3& mat) const;
 	void setMat4(const std::string& name, const glm::mat4& mat) const;
 
-	/* Functions */
-private:
+private: //FUNCTIONS
 	/** devides a given filepath into VERTEX and FRAGMENT shader */
 	ShaderSource parseShader(const std::string& filePath);
 	int createShader(const std::string& vertexShader, const std::string& fragmentShader);

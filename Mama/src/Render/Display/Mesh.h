@@ -10,7 +10,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-//----------------------------------------------------------------struct definitions--------------------------------------------------------------------
 struct Vertex {
 	glm::vec3 position;
 	glm::vec3 normal;
@@ -24,31 +23,22 @@ struct Texture {
 	std::string type;
 	aiString path;
 };
-//------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class Mesh {
-	//Variables 
-public:
-
+public: //MEMBERS
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
 	std::vector<Texture> textures;
 
-	//Functions
-public:
+public: //FUNCTIONS
 	Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures);
-	/** Rendering the Mesh */
+
 	void draw(Shader shader);
 
-	//Variables
-private:
+private: //MEMBERS
 	GLuint VAO, VBO, EBO;
 
-	//Functions
-private:
-	/** Initialize all Buffers and Arrays */
-
-	//function defined in Renderer.cpp
+private: //FUNCTIONS
 	void setupMesh();
 };
 

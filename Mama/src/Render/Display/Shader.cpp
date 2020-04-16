@@ -1,4 +1,3 @@
-//Discription of functions in *.h files
 #include "Shader.h"
 
 #include <iostream> 
@@ -6,7 +5,6 @@
 #include <sstream>
 #include <fstream>
 
-//---------------------------------------------------only Shader intern functoins in this cpp------------------------------------------------------------
 Shader::Shader(const std::string& filePath)
 {
 	source = parseShader(filePath);
@@ -19,6 +17,7 @@ Shader::Shader(const std::string& filePath)
 	use();
 }
 
+//Find out what shader is used
 ShaderSource Shader::parseShader(const std::string& filePath)
 {
 	std::ifstream stream(filePath);
@@ -67,6 +66,7 @@ ShaderSource Shader::parseShader(const std::string& filePath)
 	return { shaderStream[0].str(), shaderStream[1].str(), shaderStream[2].str() };
 }
 
+//Create a shader that has vertex and fragmen sources
 int Shader::createShader(const std::string& vertexShader, const std::string& fragmentShader)
 {
 	program = glCreateProgram();
@@ -85,9 +85,7 @@ int Shader::createShader(const std::string& vertexShader, const std::string& fra
 	return program;
 }
 
-/** If ever there needs to be some depth information, then this shader is called. It uses an additional geometry shader, that calculates the depth and it is used for shadow mapping/light mapping
-This code could still be useful for later work! Do not delete it. */
-
+//Create A Shader that has vertex, fragment and geometry sources
 int Shader::createShader(const std::string& vertexShader, const std::string& fragmentShader, const std::string& geometryShader)
 {
 	program = glCreateProgram();

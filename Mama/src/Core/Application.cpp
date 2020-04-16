@@ -1,32 +1,34 @@
 #include "Application.h"
 
-//#define NOMINMAX
-
+#define NOMINMAX
+#include <iostream>
 #include <cstdio>
 #include <ctime>
 
-#include <iostream>
+//Define a light Position
+glm::vec3 LightPos = glm::vec3(0.0, 10.0f, 0.0f);
 
-//------globals------
-int count = 0;
-//-----------------------------
-
-glm::vec3 lightPos = glm::vec3(0.0, 10.0f, 0.0f);
-
-//render Shaders
+//Render a Model
+//function called in Model.cpp
 void renderModel(Model model, Shader shader, glm::mat4 matrix);
 
-//Shadow functions in ShadowMap.cpp
+//Define Shadow Mapping
+//functions in Renderer.cpp
 void generateDepthMap();
 void createCubeMapMatrix(glm::vec3& lightPos);
+
+//Render a Model with the depth.shader
 void renderDepthMap(Shader& shader, glm::vec3& lightPos);
+
+//Render a Model with a normal light.shader 
 void renderNormal(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& width, GLint& height);
 
+//Win/Lose condition
 void lose();
 
 void Application::Run()
 {
-	//--------------locals------------
+	//--------------------------------SET SOME LOCAL VARIABLES------------------------------------------------
 	//Frame Rate independency
 	float deltaTime = 0.0f, lastFrame = 0.0f;
 
@@ -34,44 +36,50 @@ void Application::Run()
 	float counter = 0.0f;
 	float timeDiff = 0.0f;
 
-	/*Read the settings file*/
+	//--------------------------------------------------------------------------------------------------------
 	CreateGLFWWindow();
 
 	//Shader basic("Shader/basic.shader");
 	Shader light("Shader/light.shader");
 	Shader depthShader("Shader/depth.shader");
 
-	//Create Test Objects
-	//Model test1("Models/testobj/floor.obj");
-	//glm::mat4 testFloorObj = glm::mat4(1.0f);
-	//
-	//Model test2("Models/testobj/wall.obj");
-	//glm::mat4 testWallObj = glm::mat4(1.0f);
+	//----------------------------------------SIMPLE OBJECTS FOR TESTING--------------------------------------
+									//Model test1("Models/testobj/floor.obj");
+									//glm::mat4 testFloorObj = glm::mat4(1.0f);
+									//
+									//Model test2("Models/testobj/wall.obj");
+									//glm::mat4 testWallObj = glm::mat4(1.0f);
+	//--------------------------------------------------------------------------------------------------------
 
-	Model floor("Models/FloorAtlas.obj");
-	glm::mat4 floorObj = glm::mat4(1.0f);
+	//--------------------------------------------LOAD MODELS FROM FILE---------------------------------------
+	//ENVIRONMENT
+		Model floor("Models/FloorAtlas.obj");
+		glm::mat4 floorObj = glm::mat4(1.0f);
 	
-	Model wall("Models/wallAtlas.obj");
-	glm::mat4 wallObj = glm::mat4(1.0f);
+		Model wall("Models/wallAtlas.obj");
+		glm::mat4 wallObj = glm::mat4(1.0f);
 	
-	Model mountain("Models/MountainAtlas.obj");
-	glm::mat4 mountainObj = glm::mat4(1.0f);
+		Model mountain("Models/MountainAtlas.obj");
+		glm::mat4 mountainObj = glm::mat4(1.0f);
 	
-	Model cube("Models/cube.obj");
-	glm::mat4 cubeObj = glm::mat4(1.0f);
-	cubeObj = glm::scale(cubeObj, glm::vec3(0.1f, 0.1f, 0.1f));
-	cubeObj = glm::translate(cubeObj, glm::vec3(10.0f, 3.0f, -60.3f));
+	//CUBES YOU SHOULDNT RUN INTO
+		Model cube("Models/cube.obj");
+		glm::mat4 cubeObj = glm::mat4(1.0f);
+		cubeObj = glm::scale(cubeObj, glm::vec3(0.1f, 0.1f, 0.1f));
+		cubeObj = glm::translate(cubeObj, glm::vec3(10.0f, 3.0f, -60.3f));
 	
-	Model cube2("Models/cube2.obj");
-	glm::mat4 cubeObj2 = glm::mat4(1.0f);
-	cubeObj2 = glm::scale(cubeObj2, glm::vec3(0.1f, 0.1f, 0.1f));
-	cubeObj2 = glm::translate(cubeObj2, glm::vec3(-8.0f, 3.0f, -130.3f));
+		Model cube2("Models/cube2.obj");
+		glm::mat4 cubeObj2 = glm::mat4(1.0f);
+		cubeObj2 = glm::scale(cubeObj2, glm::vec3(0.1f, 0.1f, 0.1f));
+		cubeObj2 = glm::translate(cubeObj2, glm::vec3(-8.0f, 3.0f, -130.3f));
 
+	//PLAYER OBJECT
+		std::vector<Model> playerObjects;
+		Model character("Models/bearAtlas.obj");
+		playerObjects.push_back(character);
+		m_Player->setPlayerModel(playerObjects);
 
-	std::vector<Model> playerObjects;
-	Model character("Models/bearAtlas.obj");
-	playerObjects.push_back(character);
-	m_Player->setPlayerModel(playerObjects);
+	
 	generateDepthMap();
 
 	light.use();
@@ -80,102 +88,99 @@ void Application::Run()
 
 	depthShader.use();
 
-	//--------Loop-----------
+	//-----------------------------------------BEGIN GAME LOOP------------------------------------------------
 	while (!glfwWindowShouldClose(m_Window))
 	{
-		float currentTime = glfwGetTime();
-		timeDiff = currentTime - lastFrame;
-		std::cout << timeDiff << std::endl;
-		counter += timeDiff;
-		
+		//CHARACTER JUMP
+			float currentTime = glfwGetTime(); //this should be merged with frame rate independency
+			timeDiff = currentTime - lastFrame;
+			counter += timeDiff;
 
-		if (counter >= 5.0f) {
-			m_Player->setModel(false);
-			counter = 0.0f;
-		}
-		SetFrameRateIndependency(deltaTime, lastFrame); //Frame rate independency
-		//glm::vec3 playerPosition = camera.position;
+			if (counter >= 5.0f) {				//this should be defined inside a private function
+				m_Player->setModel(false);
+				counter = 0.0f;
+			}
+
+		SetFrameRateIndependency(deltaTime, lastFrame); 
 		m_Player->move(m_Window, deltaTime);
-		//processInput(window, deltaTime);
 		SetGLFWEvents();
-	
-		
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			std::cout << "Framebuffer not complete" << std::endl;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, m_Width, m_Height);
 
-		/* Render background */
-		glClearColor(0.5f, 0.5f, 0.5f, 0.0f); //gray
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//BACKGROUND COLOR
+			glClearColor(0.5f, 0.5f, 0.5f, 0.0f); //gray
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//------------------------SHADOWS------------------------------------------
-
-
-		createCubeMapMatrix(lightPos);
+		//--------------------------------------START SHADOW MAPPING----------------------------------------
+		createCubeMapMatrix(LightPos);
 
 		glViewport(0, 0, m_Width, m_Height);
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			std::cout << "Framebuffer not complete" << std::endl;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		depthShader.use();
 
-		renderDepthMap(depthShader, lightPos);
-		//renderModel(test1, depthShader, testFloorObj);
-		//renderModel(test2, depthShader, testWallObj);
-		renderModel(floor, depthShader, floorObj);
-		renderModel(wall, depthShader, wallObj);
-		renderModel(mountain, depthShader, mountainObj);
+		//FIRST: RENDER THE DEPTH MAP
+			renderDepthMap(depthShader, LightPos);
+		//THEN RENDER ALL MODELD THAT SHOULD CONTAIN SHADOWS
+		{
+			//renderModel(test1, depthShader, testFloorObj);
+			//renderModel(test2, depthShader, testWallObj);
+			renderModel(floor, depthShader, floorObj);
+			renderModel(wall, depthShader, wallObj);
+			renderModel(mountain, depthShader, mountainObj);
 
-		for (Model model : m_Player->getPlayerobject()) {
-			renderModel(character, depthShader, m_Player->getModelMatrix());
+			for (Model model : m_Player->getPlayerobject()) {
+				renderModel(character, depthShader, m_Player->getModelMatrix());
+			}
 		}
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete" << std::endl;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		
-		//--------------------------------------------------------------------------
-		renderNormal(light, m_Camera, lightPos, m_Width, m_Height);
-		//renderModel(test1, light, testFloorObj);
-		//renderModel(test2, light, testWallObj);
-
-		renderModel(floor, light, floorObj);
-		renderModel(wall, light, wallObj);
-		renderModel(mountain, light, mountainObj);
-		if (m_Player->showModel)
+		//-----------------------------------------END SHADOW MAPPING----------------------------------------
+		//-------------------------------------------BEGIN RENDERING-----------------------------------------
+		//SECOND: RENDER THE NORMAL MAP
+			renderNormal(light, m_Camera, LightPos, m_Width, m_Height);
+		//THEN RENDER ALL MODELS THAT SHOULD BE SHOWN
 		{
-			renderModel(cube, light, cubeObj);
-			renderModel(cube2, light, cubeObj2);
+			//renderModel(test1, light, testFloorObj);
+			//renderModel(test2, light, testWallObj);
+			renderModel(floor, light, floorObj);
+			renderModel(wall, light, wallObj);
+			renderModel(mountain, light, mountainObj);
+			if (m_Player->showModel)
+			{
+				renderModel(cube, light, cubeObj);
+				renderModel(cube2, light, cubeObj2);
 
-			cubeObj = glm::rotate(cubeObj, 0.01f, glm::vec3(0, 1, 0));
-			cubeObj2 = glm::rotate(cubeObj2, 0.01f, glm::vec3(0, 1, 0));
+				cubeObj = glm::rotate(cubeObj, 0.01f, glm::vec3(0, 1, 0));
+				cubeObj2 = glm::rotate(cubeObj2, 0.01f, glm::vec3(0, 1, 0));
+			}
+
+			for (Model model : m_Player->getPlayerobject()) {
+				renderModel(character, light, m_Player->getModelMatrix());
+			}
 		}
 
-		for (Model model : m_Player->getPlayerobject()) {
-			renderModel(character, light, m_Player->getModelMatrix());
-		}
-
-		
-
+		//------------------------------------------------END RENDERING---------------------------------------
+		//WIN/LOSE CONDITION
 		if (m_Player->position.x >= 1.0f && m_Player->position.x <= 1.3f && m_Player->position.z >= -7.0f && m_Player->position.z <= -5.0f ||
 			m_Player->position.x >= -0.7f && m_Player->position.x <= -0.5f && m_Player->position.z >= -13.2f && m_Player->position.z <= -13.0f)
 		{
 			lose();
 		}
 		
+		//IF THE PLAYER JUMPS HE SHOULD GET DOWN AGAIN
 		m_Player->getDown(deltaTime);
-		//std::cout << glm::to_string(camera.position) << std::endl;
-		//std::cout << glm::to_string(player.position) << std::endl;
-		//glDepthFunc(GL_LESS);
+
+		//SWAP AND POLL
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
 	
 	}
-	//clean
+	//CLEAN
 	light.deleteShader();
+	depthShader.deleteShader();
 	glfwTerminate();
 }
 
+//Create the GLFW Window
 void Application::CreateGLFWWindow()
 {
 	InitGLFW();
@@ -188,9 +193,10 @@ void Application::CreateGLFWWindow()
 	}
 
 	glfwMakeContextCurrent(m_Window);
-	InitGLAD();
-	SetInitialGLFWEvents();
-	EnableGL();
+	//INITIALIZE IMPORTANT GLFW FUNCTIONS AND EVENTS
+		InitGLAD();
+		SetInitialGLFWEvents();
+		EnableGL();
 }
 
 

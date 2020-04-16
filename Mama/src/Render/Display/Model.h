@@ -1,23 +1,18 @@
-#ifndef MODEL_H
-#define MODEL_H
-
 #pragma once
 #include "Mesh.h"
 #include "Shader.h"
-
-
 
 unsigned int TextureFromFile(const char* path, std::string& directory, bool gamma = false);
 
 class Model
 {
-public:
+public://MEMBERS
 	std::vector<Texture> textures_loaded;
 	std::vector<Mesh> meshes;
 	std::string directory;
 	bool gammaCorrection;
-	//Vertex myPosition;
 
+public://FUNCTIONS
 	Model(){
 	}
 
@@ -30,7 +25,7 @@ public:
 	/** Draw the model */
 	void draw(Shader shader);
 
-private:
+private:// FUNCTIONS
 
 	/** load the Model with assimp from obj-file */
 	void loadModel(std::string path);
@@ -42,6 +37,3 @@ private:
 	/** Checks all material textures of a given type and loads the textures */
 	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 };
-
-
-#endif

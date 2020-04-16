@@ -24,6 +24,8 @@ public:
 	void OnKeyPressed(int key, int button, int action, int mods);
 
 	void OnButtonClicked(int button, int action, int mods);
+	
+	//Sets m_Window to the current instance of GLFWwindow
 	void SetNativeWindow(GLFWwindow* window) { m_Window = window; }
 
 	void SetFullScreen();

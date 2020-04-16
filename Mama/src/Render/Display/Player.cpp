@@ -35,3 +35,76 @@ glm::vec3 Player::getPlayerPosition()
 {
 	return this->position;
 }
+
+void Player::processKeyboard(GLFWwindow *window, float& deltaTime)
+{
+	velocity = run_speed * deltaTime;
+	moveVector = glm::vec3(0);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		moveVector.z = -velocity * front.z;
+		moveVector.x = -velocity * front.x;
+		std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		moveVector.z = velocity * front.z;
+		moveVector.x = velocity * front.x;
+		std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		this->currentTurnSpeed = turn_speed;
+		moveVector.x = -velocity * right.x;
+		moveVector.z = -velocity * right.z;
+		std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		this->currentTurnSpeed = -turn_speed;
+		moveVector.x = velocity * right.x;
+		moveVector.z = velocity * right.z;
+
+		std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+	}
+	else
+	{
+		this->currentTurnSpeed = 0;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+	{
+		if (moveVector.y < 0.5f && position.y <= 0) {
+			moveVector.y = velocity + 1;
+		}
+
+		std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+
+		moveVector.y = -velocity;
+		std::cout << "This is velocity" << position.y << std::endl;
+	}
+
+	else
+	{
+		this->currentTurnSpeed = 0;
+		moveVector.y = 0;
+	}
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, true);
+	}
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+	{
+		showModel = true;
+
+	}
+	/*	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_RELEASE)
+	{
+
+
+	}*/
+
+	position += moveVector;
+}

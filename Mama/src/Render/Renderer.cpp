@@ -12,6 +12,7 @@
 #include <vector>
 
 //---------------------------------------------------------variable declaration--------------------------------------------------------------------------
+//this should be done in a Renderer.h file!
 const unsigned int shadow_width = 1024, shadow_height = 1024;
 unsigned int depthMapFBO;
 unsigned int depthMapCube;
@@ -24,6 +25,7 @@ glm::mat4 view;
 std::vector<glm::mat4> shadowTransform;
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
+//Generate a 1024x1024 Depth Map
 void generateDepthMap()
 {
 	glGenFramebuffers(1, &depthMapFBO);
@@ -33,7 +35,7 @@ void generateDepthMap()
 	{
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, shadow_width, shadow_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //can also be GL_NEAREST
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -49,6 +51,7 @@ void generateDepthMap()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+//Generate the Shadow projection for every side of the cube map
 void createCubeMapMatrix(glm::vec3& lightPos)
 {
 	shadowProjection = glm::perspective(glm::radians(90.0f), (float)shadow_width / (float)shadow_height, near_plane, far_plane);
@@ -61,6 +64,7 @@ void createCubeMapMatrix(glm::vec3& lightPos)
 	shadowTransform.push_back(shadowProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 }
 
+//Set the values that are important for the *.shader class
 void renderDepthMap(Shader& shader, glm::vec3& lightPos)
 {
 	glViewport(0.0f, 0.0f, shadow_width, shadow_height);
@@ -78,6 +82,7 @@ void renderDepthMap(Shader& shader, glm::vec3& lightPos)
 	shader.setVec3("lightPos", lightPos);
 }
 
+//Set the values that are important for the *.shader class
 void renderNormal(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& width, GLint& height)
 {
 	glViewport(0.0f, 0.0f, width, height);
@@ -97,7 +102,6 @@ void renderNormal(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& wi
 	glBindTexture(GL_TEXTURE_CUBE_MAP, depthMapCube);
 }
 
-///** set up the properties for the transparent shader*/
 //void TransparentShaderSetup(Shader& shader, Camera& camera, GLint& width, GLint& height, float& brightness)
 //{
 //	shader.use();

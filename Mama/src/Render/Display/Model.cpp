@@ -6,7 +6,6 @@
 
 #include <GLFW/glfw3.h>
 
-//--------------------------------------------------------------------Model.h---------------------------------------------------------------------------------
 void Model::draw(Shader shader)
 {
 	for (GLuint i = 0; i < this->meshes.size(); i++)
@@ -196,12 +195,12 @@ unsigned int TextureFromFile(const char* path, std::string& directory, bool gamm
 
 	return textureID;
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------Call in DCVisMain.cpp--------------------------------------------------------------------------
+
+//This function is declared in Application.cpp
+//it draws a Model with the use of a shader
 void renderModel(Model model, Shader shader, glm::mat4 matrix)
 {
 	shader.use();
 	shader.setMat4("model", matrix);
 	model.draw(shader);
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
