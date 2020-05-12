@@ -106,7 +106,6 @@ void main()
 
 	for (int i = 0; i < NR_POINT_LIGHTS; i++)
 		result += CalcPointLight(pointLights[i], i);
-	// phase 3: spot light
 
 	FragColor = vec4(result, 1.0);
 }
@@ -117,11 +116,9 @@ vec3 CalcPointLight(PointLight light, int i) {
 	// obtain normal from normal map in range [0,1]
 	vec3 normal = texture(material.normalMap, fs_in.TexCoords).rgb;
 	// transform normal vector to range [-1,1]
-	normal = normalize(normal * 2.0 - 1.0);  // this normal is in tangent space
+	normal = normalize(normal * 2.0 - 1.0); 
 	float distance = length(light.position - fs_in.FragPos);
 
-	// get diffuse color
-	//vec3 color = texture(diffuseMap, fs_in.TexCoords).rgb;
 	// ambient
 	vec3 ambient = light.ambient * vec3(texture(material.diffuse, fs_in.TexCoords));
 	// diffuse
@@ -132,8 +129,6 @@ vec3 CalcPointLight(PointLight light, int i) {
 	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 	vec3 viewDir = normalize(fs_in.TangentViewPos[i] - fs_in.TangentFragPos[i]);
 	vec3 reflectDir = reflect(-lightDir, normal);
-	//vec3 halfwayDir = normalize(lightDir + viewDir);
-	//float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
 
 	vec3 specular = light.specular * vec3(texture(material.specular, fs_in.TexCoords));
 
