@@ -43,7 +43,7 @@ void Application::Run()
 	
 	//Shader light("Shader/light.shader");
 	//Shader depthShader("Shader/depth.shader");
-	//Shader normal("Shader/normal.shader");
+	Shader normal("Shader/normal.shader");
 
 	
 	Model floor01("Models/Floor/Path01.obj");
@@ -106,7 +106,8 @@ void Application::Run()
 	test.use();
 	test.setInt("normalMap", 1);
 	//light.setInt("depthMap", 1);
-	//normal.setInt("normalMap", 1);
+	normal.use();
+	normal.setInt("normalMap", 1);
 
 	//depthShader.use();
 
@@ -178,15 +179,15 @@ void Application::Run()
 		}
 
 		renderLight(test, m_Camera, m_Width, m_Height);
-		
 		renderModel(floor01, test, path03);
-		
 		renderModel(wall01, test, wallMat01);
 		//renderModel(wall02, test, wallMat02);
 		//renderModel(wall03, test, wallMat03);
 		//renderModel(wall04, test, wallMat04);
 		//renderModel(wall05, test, wallMat05);
 
+		//renderDefault(normal, m_Camera, lightPos, m_Width, m_Height);
+		//renderModel(wall01, normal, wallMat01);
 
 
 		std::cout << m_Player->position.x << ", " << m_Player->position.y << ", " << m_Player->position.z << std::endl;

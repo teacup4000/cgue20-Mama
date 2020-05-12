@@ -89,16 +89,11 @@ struct PointLight {
 	vec3 specular;
 };
 
-uniform sampler2D diffuseMap;
-uniform sampler2D normalMap;
-
-
 uniform vec3 viewPos;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform Material material;
 
 vec3 CalcPointLight(PointLight light, int i);
-
 
 void main()
 {
@@ -115,22 +110,24 @@ vec3 CalcPointLight(PointLight light, int i) {
 
 	// obtain normal from normal map in range [0,1]
 	vec3 normal = texture(material.normalMap, fs_in.TexCoords).rgb;
+	vec3 color = texture(material.diffuse, fs_in.TexCoords).rgb;
+
 	// transform normal vector to range [-1,1]
 	normal = normalize(normal * 2.0 - 1.0); 
-	float distance = length(light.position - fs_in.FragPos);
 
 	// ambient
-	vec3 ambient = light.ambient * vec3(texture(material.diffuse, fs_in.TexCoords));
+	vec3 ambient = light.ambient * color;
 	// diffuse
+	float distance = length(light.position - fs_in.FragPos);
 	vec3 lightDir = normalize(fs_in.TangentLightPos[i] - fs_in.TangentFragPos[i]);
 	float diff = max(dot(lightDir, normal), 0.0);
-	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, fs_in.TexCoords));
+	vec3 diffuse = light.diffuse * diff * color;
 	// specular
 	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 	vec3 viewDir = normalize(fs_in.TangentViewPos[i] - fs_in.TangentFragPos[i]);
 	vec3 reflectDir = reflect(-lightDir, normal);
 
-	vec3 specular = light.specular * vec3(texture(material.specular, fs_in.TexCoords));
+	vec3 specular = light.specular* vec3(texture(material.specular, fs_in.TexCoords));
 
 	ambient *= attenuation;
 	diffuse *= attenuation;
