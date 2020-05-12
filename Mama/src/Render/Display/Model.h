@@ -18,10 +18,9 @@ public:
 	bool gammaCorrection;
 	//Vertex myPosition;
 
-	Model(){
-	}
+	Model(){}
 
-	Model(std::string const & path, bool gamma = false) : gammaCorrection(gamma)
+	Model(std::string const &path, bool gamma = false) : gammaCorrection(gamma)
 	{
 		this->loadModel(path);
 		std::cout << "obj-File loaded" << std::endl;

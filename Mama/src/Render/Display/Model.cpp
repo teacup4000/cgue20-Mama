@@ -17,7 +17,7 @@ void Model::loadModel(std::string path)
 {
 	/* load and read obj-file */
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_GenNormals);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
@@ -87,7 +87,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		vector.x = mesh->mBitangents[i].x;
 		vector.y = mesh->mBitangents[i].y;
 		vector.z = mesh->mBitangents[i].z;
-		vertex.biTangent = vector;
+		vertex.bitangent = vector;
 		vertices.push_back(vertex);
 	}
 
@@ -141,7 +141,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 			Texture texture;
 			texture.id = TextureFromFile(str.C_Str(), this->directory);
 			texture.type = typeName;
-			texture.path = str;
+			texture.path = str.C_Str();
 			textures.push_back(texture);
 			this->textures_loaded.push_back(texture);
 		}
@@ -183,7 +183,7 @@ unsigned int TextureFromFile(const char* path, std::string& directory, bool gamm
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		stbi_image_free(data);
@@ -200,8 +200,10 @@ unsigned int TextureFromFile(const char* path, std::string& directory, bool gamm
 //-------------------------------------------------------------------------Call in DCVisMain.cpp--------------------------------------------------------------------------
 void renderModel(Model model, Shader shader, glm::mat4 matrix)
 {
-	shader.use();
+	//shader.use();
 	shader.setMat4("model", matrix);
+	//glActiveTexture(GL_TEXTURE0);
 	model.draw(shader);
+	
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

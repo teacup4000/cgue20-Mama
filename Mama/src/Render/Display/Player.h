@@ -28,6 +28,7 @@ public:
 	bool isPressed = false;
 
 	Player() {}
+
 	Player(glm::vec3 startPosition);
 	virtual void setPlayerModel(std::vector<Model> playerObject);
 
@@ -50,8 +51,8 @@ public:
 	{
 		velocity = run_speed * deltaTime;
 		moveVector = glm::vec3(0);
-		std::cout << "This is Y : " << position.y << std::endl;
-		if( position.y > 0.0f) {
+		//std::cout << "This is Y : " << position.y << std::endl;
+		if( position.y > 15.0f) {
 			moveVector.y -= velocity;
 			position += moveVector; 
 			this->modelMatrix = glm::translate(modelMatrix, moveVector);
@@ -100,9 +101,9 @@ private:
 
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
 		{
-			if (moveVector.y < 0.5f && position.y <= 0) {
-				moveVector.y = velocity + 1;
-			}
+			//if (moveVector.y < 0.5f && position.y <= 0) {
+			//	moveVector.y = velocity + 1;
+			//}
 			
 			std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
 		}

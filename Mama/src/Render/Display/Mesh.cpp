@@ -52,7 +52,7 @@ void Mesh::draw(Shader shader)
 	/* setting all to default */
 	for (GLuint i = 0; i < this->textures.size(); i++)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
+		glActiveTexture(GL_TEXTURE + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }
@@ -87,7 +87,7 @@ void Mesh::setupMesh()
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, tangent));
 	//vertex bitangent
 	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, biTangent));
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, bitangent));
 
 	glBindVertexArray(0);
 }

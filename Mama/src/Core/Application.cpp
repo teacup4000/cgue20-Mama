@@ -11,7 +11,7 @@
 int count = 0;
 //-----------------------------
 
-glm::vec3 lightPos = glm::vec3(0.0, 10.0f, 0.0f);
+glm::vec3 lightPos = glm::vec3(-9, 16, -14);
 
 //render Shaders
 void renderModel(Model model, Shader shader, glm::mat4 matrix);
@@ -20,7 +20,8 @@ void renderModel(Model model, Shader shader, glm::mat4 matrix);
 void generateDepthMap();
 void createCubeMapMatrix(glm::vec3& lightPos);
 void renderDepthMap(Shader& shader, glm::vec3& lightPos);
-void renderNormal(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& width, GLint& height);
+void renderDefault(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& width, GLint& height);
+void renderLight(Shader& shader, Camera* camera, GLint& width, GLint& height);
 
 void lose();
 
@@ -37,48 +38,77 @@ void Application::Run()
 	/*Read the settings file*/
 	CreateGLFWWindow();
 
-	//Shader basic("Shader/basic.shader");
-	Shader light("Shader/light.shader");
-	Shader depthShader("Shader/depth.shader");
+	Shader basic("Shader/basic.shader");
+	Shader test("Shader/normalLights.shader");
+	
+	//Shader light("Shader/light.shader");
+	//Shader depthShader("Shader/depth.shader");
+	//Shader normal("Shader/normal.shader");
 
-	//Create Test Objects
-	//Model test1("Models/testobj/floor.obj");
-	//glm::mat4 testFloorObj = glm::mat4(1.0f);
+	
+	Model floor01("Models/Floor/Path01.obj");
+	glm::mat4 path01 = glm::mat4(1.0f);
+
+	Model floor02("Models/Floor/Path02.obj");
+	glm::mat4 path02 = glm::mat4(1.0f);
+
+	Model floor03("Models/Floor/Path03.obj");
+	glm::mat4 path03 = glm::mat4(1.0f);
+	
+
+	Model wall01("Models/Walls/Wall01.obj");
+	glm::mat4 wallMat01 = glm::mat4(1.0f);
+	
+	//Model wall02("Models/Walls/Wall02.obj");
+	//glm::mat4 wallMat02 = glm::mat4(1.0f);
 	//
-	//Model test2("Models/testobj/wall.obj");
-	//glm::mat4 testWallObj = glm::mat4(1.0f);
+	//Model wall03("Models/Walls/Wall03.obj");
+	//glm::mat4 wallMat03 = glm::mat4(1.0f);
+	//
+	//Model wall04("Models/Walls/Wall04.obj");
+	//glm::mat4 wallMat04 = glm::mat4(1.0f);
+	//
+	//Model wall05("Models/Walls/Wall05.obj");
+	//glm::mat4 wallMat05 = glm::mat4(1.0f);
+	
+	Model multipleLights("Models/Lights/MultipleLights.obj");
+	glm::mat4 lights = glm::mat4(1.0f);
 
-	Model floor("Models/FloorAtlas.obj");
-	glm::mat4 floorObj = glm::mat4(1.0f);
-	
-	Model wall("Models/wallAtlas.obj");
-	glm::mat4 wallObj = glm::mat4(1.0f);
-	
-	Model mountain("Models/MountainAtlas.obj");
-	glm::mat4 mountainObj = glm::mat4(1.0f);
-	
-	Model cube("Models/cube.obj");
-	glm::mat4 cubeObj = glm::mat4(1.0f);
-	cubeObj = glm::scale(cubeObj, glm::vec3(0.1f, 0.1f, 0.1f));
-	cubeObj = glm::translate(cubeObj, glm::vec3(10.0f, 3.0f, -60.3f));
-	
-	Model cube2("Models/cube2.obj");
-	glm::mat4 cubeObj2 = glm::mat4(1.0f);
-	cubeObj2 = glm::scale(cubeObj2, glm::vec3(0.1f, 0.1f, 0.1f));
-	cubeObj2 = glm::translate(cubeObj2, glm::vec3(-8.0f, 3.0f, -130.3f));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	std::vector<Model> playerObjects;
-	Model character("Models/bearAtlas.obj");
+	Model character("Models/Player/bearAtlas.obj");
 	playerObjects.push_back(character);
 	m_Player->setPlayerModel(playerObjects);
 	generateDepthMap();
 
-	light.use();
-	light.setInt("diffuseTexture", 0);
-	light.setInt("depthMap", 1);
+	basic.use();
+	basic.setInt("diffuse", 0);
+	basic.setInt("specular", 1);
 
-	depthShader.use();
+	test.use();
+	test.setInt("normalMap", 1);
+	//light.setInt("depthMap", 1);
+	//normal.setInt("normalMap", 1);
+
+	//depthShader.use();
 
 	//--------Loop-----------
 	while (!glfwWindowShouldClose(m_Window))
@@ -111,59 +141,64 @@ void Application::Run()
 
 		//------------------------SHADOWS------------------------------------------
 
+		//createCubeMapMatrix(lightPos);
+		//
+		//glViewport(0, 0, m_Width, m_Height);
+		//if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		//	std::cout << "Framebuffer not complete" << std::endl;
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//depthShader.use();
 
-		createCubeMapMatrix(lightPos);
+		//renderDepthMap(depthShader, lightPos);
 
-		glViewport(0, 0, m_Width, m_Height);
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			std::cout << "Framebuffer not complete" << std::endl;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		depthShader.use();
-
-		renderDepthMap(depthShader, lightPos);
-		//renderModel(test1, depthShader, testFloorObj);
-		//renderModel(test2, depthShader, testWallObj);
-		renderModel(floor, depthShader, floorObj);
-		renderModel(wall, depthShader, wallObj);
-		renderModel(mountain, depthShader, mountainObj);
-
-		for (Model model : m_Player->getPlayerobject()) {
-			renderModel(character, depthShader, m_Player->getModelMatrix());
-		}
+		//for (Model model : m_Player->getPlayerobject()) {
+		//	renderModel(character, depthShader, m_Player->getModelMatrix());
+		//}
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete" << std::endl;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		
 		//--------------------------------------------------------------------------
-		renderNormal(light, m_Camera, lightPos, m_Width, m_Height);
-		//renderModel(test1, light, testFloorObj);
-		//renderModel(test2, light, testWallObj);
 
-		renderModel(floor, light, floorObj);
-		renderModel(wall, light, wallObj);
-		renderModel(mountain, light, mountainObj);
+		renderDefault(basic, m_Camera, lightPos, m_Width, m_Height);
+		renderModel(multipleLights, basic, lights);
+
+
 		if (m_Player->showModel)
 		{
-			renderModel(cube, light, cubeObj);
-			renderModel(cube2, light, cubeObj2);
-
-			cubeObj = glm::rotate(cubeObj, 0.01f, glm::vec3(0, 1, 0));
-			cubeObj2 = glm::rotate(cubeObj2, 0.01f, glm::vec3(0, 1, 0));
+			//renderModel(cube, light, cubeObj);
+			//renderModel(cube2, light, cubeObj2);
+			//
+			//cubeObj = glm::rotate(cubeObj, 0.01f, glm::vec3(0, 1, 0));
+			//cubeObj2 = glm::rotate(cubeObj2, 0.01f, glm::vec3(0, 1, 0));
 		}
 
 		for (Model model : m_Player->getPlayerobject()) {
-			renderModel(character, light, m_Player->getModelMatrix());
+			renderModel(character, basic, m_Player->getModelMatrix());
 		}
 
+		renderLight(test, m_Camera, m_Width, m_Height);
+		
+		renderModel(floor01, test, path03);
+		
+		renderModel(wall01, test, wallMat01);
+		//renderModel(wall02, test, wallMat02);
+		//renderModel(wall03, test, wallMat03);
+		//renderModel(wall04, test, wallMat04);
+		//renderModel(wall05, test, wallMat05);
+
+
+
+		std::cout << m_Player->position.x << ", " << m_Player->position.y << ", " << m_Player->position.z << std::endl;
 		
 
 		if (m_Player->position.x >= 1.0f && m_Player->position.x <= 1.3f && m_Player->position.z >= -7.0f && m_Player->position.z <= -5.0f ||
 			m_Player->position.x >= -0.7f && m_Player->position.x <= -0.5f && m_Player->position.z >= -13.2f && m_Player->position.z <= -13.0f)
 		{
-			lose();
+			//lose();
 		}
 		
-		m_Player->getDown(deltaTime);
+		//m_Player->getDown(deltaTime);
 		//std::cout << glm::to_string(camera.position) << std::endl;
 		//std::cout << glm::to_string(player.position) << std::endl;
 		//glDepthFunc(GL_LESS);
@@ -172,7 +207,7 @@ void Application::Run()
 	
 	}
 	//clean
-	light.deleteShader();
+	basic.deleteShader();
 	glfwTerminate();
 }
 

@@ -167,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\Application.h" />
+    <ClInclude Include="src\Core\Core.h" />
     <ClInclude Include="src\Render\Display\Camera.h" />
     <ClInclude Include="src\Core\INIReader.h" />
     <ClInclude Include="src\Render\Display\Mesh.h" />
@@ -177,6 +178,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\basic.shader" />
+    <None Include="Shader\normal.shader" />
+    <None Include="Shader\multipleLight.shader" />
+    <None Include="Shader\normalLights.shader" />
     <None Include="Shader\test.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

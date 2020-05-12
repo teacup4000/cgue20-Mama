@@ -1,94 +1,151 @@
 #shader vertex
-#version 400 core
+#version 330 core
+#define NR_POINT_LIGHTS 7
+
 layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTexCoords;
+layout(location = 3) in vec3 aTangent;
+layout(location = 4) in vec3 aBitangent;
 
+out vec3 FragPos;
+out vec3 Normal;
 out vec2 TexCoords;
+out vec3 TangentLightPos[NR_POINT_LIGHTS];
+out vec3 TangentViewPos[NR_POINT_LIGHTS];
+out vec3 TangentFragPos[NR_POINT_LIGHTS];
 
-out VS_OUT{
-	vec3 FragPos;
-	vec3 Normal;
-	vec2 TexCoords;
-} vs_out;
-
-uniform mat4 projection;
-uniform mat4 view;
 uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
-uniform bool reverse_normals;
+uniform vec3 viewPos;
+uniform vec3 pointLights[NR_POINT_LIGHTS];
 
 void main()
 {
-	vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
-	if (reverse_normals) // a slight hack to make sure the outer large cube displays lighting from the 'inside' instead of the default 'outside'.
-		vs_out.Normal = transpose(inverse(mat3(model))) * (-1.0 * aNormal);
-	else
-		vs_out.Normal = transpose(inverse(mat3(model))) * aNormal;
-	vs_out.TexCoords = aTexCoords;
+	FragPos = vec3(model * vec4(aPos, 1.0));
+	//Normal = transpose(inverse(mat3(model))) * aNormal;
+	TexCoords = aTexCoords;
+
+	vec3 T = normalize(Normal * aTangent);
+	vec3 N = normalize(Normal * aNormal);
+	T = normalize(T - dot(T, N) * N);
+	vec3 B = cross(N, T);
+
+	mat3 TBN = transpose(mat3(T, B, N));
+	for (int i = 0; i < NR_POINT_LIGHTS; i++) {
+		TangentLightPos[i] = TBN * pointLights[i].position;
+		TangentViewPos[i] = TBN * viewPos;
+		TangentFragPos[i] = TBN * FragPos;
+	}
 	gl_Position = projection * view * model * vec4(aPos, 1.0);
 }
 
 #shader fragment
-#version 400 core
+#version 330 core
 out vec4 FragColor;
 
-in VS_OUT{
-	vec3 FragPos;
-	vec3 Normal;
-	vec2 TexCoords;
-} fs_in;
+#define NR_POINT_LIGHTS 7
 
-uniform sampler2D texture_diffuse;
-uniform samplerCube depthMap;
+struct Material {
+	sampler2D diffuse;
+	sampler2D specular;
+	sampler2D normalMap;
+	float shininess;
+};
 
-uniform vec3 lightPos;
+struct PointLight {
+	vec3 position;
+
+	float constant;
+	float linear;
+	float quadratic;
+
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
+in vec3 FragPos;
+in vec3 Normal;
+in vec2 TexCoords;
+in vec3 TangentLightPos[NR_POINT_LIGHTS];
+in vec3 TangentViewPos[NR_POINT_LIGHTS];
+in vec3 TangentFragPos[NR_POINT_LIGHTS];
+
+
 uniform vec3 viewPos;
+uniform PointLight pointLights[NR_POINT_LIGHTS];
+uniform Material material;
 
-uniform float far_plane;
-uniform bool shadows;
+//uniform vec3 TangentLightPos;
+//uniform vec3 TangentViewPos;
+//uniform vec3 TangentFragPos;
 
-float ShadowCalculation(vec3 fragPos)
-{
-	// get vector between fragment position and light position
-	vec3 fragToLight = fragPos - lightPos;
-	// ise the fragment to light vector to sample from the depth map    
-	float closestDepth = texture(depthMap, fragToLight).r;
-	// it is currently in linear range between [0,1], let's re-transform it back to original depth value
-	closestDepth *= far_plane;
-	// now get current linear depth as the length between the fragment and light position
-	float currentDepth = length(fragToLight);
-	// test for shadows
-	float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
-	float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
-	// display closestDepth as debug (to visualize depth cubemap)
-	// FragColor = vec4(vec3(closestDepth / far_plane), 1.0);    
-
-	return shadow;
-}
+vec3 CalcNormal(vec3 lightPos, vec3 TangentLightPos, vec3 TangentViewPos, vec3 TangentFragPos);
+// function prototypes
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos);
 
 void main()
 {
-	vec3 color = texture(texture_diffuse, fs_in.TexCoords).rgb;
-	vec3 normal = normalize(fs_in.Normal);
-	vec3 lightColor = vec3(0.3);
-	// ambient
-	vec3 ambient = 0.3 * color;
-	// diffuse
-	vec3 lightDir = normalize(lightPos - fs_in.FragPos);
-	float diff = max(dot(lightDir, normal), 0.0);
-	vec3 diffuse = diff * lightColor;
-	// specular
-	vec3 viewDir = normalize(viewPos - fs_in.FragPos);
-	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = 0.0;
-	vec3 halfwayDir = normalize(lightDir + viewDir);
-	spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
-	vec3 specular = spec * lightColor;
-	// calculate shadow
-	float shadow = shadows ? ShadowCalculation(fs_in.FragPos) : 0.0;
-	vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
+	// properties
+	vec3 normal = texture(material.normalMap, TexCoords).rgb;
+	normal = normalize(normal * 2.0 - 1.0);
+	//vec3 viewDir = normalize(viewPos - FragPos);
 
-	FragColor = vec4(lighting, 1.0);
+	vec3 result;
+	for (int i = 0; i < NR_POINT_LIGHTS; i++) {
+		result += CalcNormal(pointLights[i].position, TangentLightPos[i], TangentViewPos[i], TangentFragPos[i]) + CalcPointLight(pointLights[i], normal, FragPos);
+	}
+	FragColor = vec4(result, 1.0);
+}
+
+vec3 CalcNormal(vec3 lightPos, vec3 TangentLightPos, vec3 TangentViewPos, vec3 TangentFragPos)
+{
+	// obtain normal from normal map in range [0,1]
+	vec3 normal = texture(material.normalMap, TexCoords).rgb;
+	// transform normal vector to range [-1,1]
+	normal = normalize(normal * 2.0 - 1.0);  // this normal is in tangent space
+
+	// get diffuse color
+	vec3 color = texture(material.diffuse, TexCoords).rgb;
+	// ambient
+	vec3 ambient = 0.1 * color;
+	// diffuse
+	vec3 lightDir = normalize(TangentLightPos - TangentFragPos);
+	float diff = max(dot(lightDir, normal), 0.0);
+	vec3 diffuse = diff * color;
+	// specular
+	vec3 viewDir = normalize(TangentViewPos - TangentFragPos);
+	vec3 reflectDir = reflect(-lightDir, normal);
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+
+	vec3 specular = vec3(0.2) * spec;
+	return (ambient + diffuse + specular);
+}
+
+
+// calculates the color when using a point light.
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos)
+{
+	vec3 lightDir = normalize(light.position - fragPos);
+	// diffuse shading
+	float diff = max(dot(normal, lightDir), 0.0);
+	// specular shading
+	vec3 reflectDir = reflect(-lightDir, normal);
+	//float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	// attenuation
+	float distance = length(light.position - fragPos);
+	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+	// combine results
+	vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
+	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
+	vec3 specular = light.specular * vec3(texture(material.specular, TexCoords));
+	ambient *= attenuation;
+	diffuse *= attenuation;
+	specular *= attenuation;
+	return (ambient + diffuse + specular);
 }
 

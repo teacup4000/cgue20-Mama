@@ -4,6 +4,7 @@ extern Player player;
 
 Player::Player(glm::vec3 startPosition)
 {
+	std::cout << "Startposition is " << startPosition.x << " " <<startPosition.y << " " << startPosition.z << std::endl;
 	this->position = startPosition;
 	this->modelMatrix = glm::mat4(1.0f);
 	this->modelMatrix = glm::translate(modelMatrix, startPosition);
