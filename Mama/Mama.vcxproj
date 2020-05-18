@@ -178,10 +178,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\basic.shader" />
+    <None Include="Shader\bloom.shader" />
+    <None Include="Shader\blur.shader" />
     <None Include="Shader\normal.shader" />
     <None Include="Shader\multipleLight.shader" />
-    <None Include="Shader\normalLights.shader" />
-    <None Include="Shader\test.shader" />
+    <None Include="Shader\notUsed.shader" />
+    <None Include="Shader\multipleLightsNormalMap.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Shader\bloom_final.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

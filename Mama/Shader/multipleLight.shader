@@ -24,7 +24,8 @@ void main()
 
 #shader fragment
 #version 400 core
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out vec4 BrightColor;
 
 struct Material {
 	sampler2D diffuse;
@@ -75,7 +76,12 @@ void main()
 	for (int i = 0; i < NR_POINT_LIGHTS; i++)
 		result += CalcPointLight(pointLights[i], norm, FragPos);
 	// phase 3: spot light
+	float brightness = dot(result, vec3(0.2126, 0.7152, 0.0722));
 
+	if (brightness > 1.0f)
+		BrightColor = vec4(result, 1.0f);
+	else
+		BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 	FragColor = vec4(result, 1.0);
 }
 

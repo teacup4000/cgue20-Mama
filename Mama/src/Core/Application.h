@@ -45,6 +45,8 @@ private: //MEMBERS
 	int		m_Width, m_Height;
 	float	m_Brightness;
 	bool	m_FullScreen;
+	bool	m_NormalMap;
+	bool	m_Shadow;
 
 private: //FUNCTIONS
 	Event event;
@@ -54,8 +56,10 @@ private: //FUNCTIONS
 
 		m_Width = iniReader.GetInteger("window", "width", 1600);
 		m_Height = iniReader.GetInteger("window", "height", 900);
+
 		m_Brightness = iniReader.GetFloat("shader", "brightness", 0.1f);
-		m_FullScreen = false;
+		m_NormalMap = iniReader.GetBoolean("shader", "normalMap", true);
+		m_Shadow = iniReader.GetBoolean("shader", "shadow", true);
 	}
 
 	void InitGLFW()
