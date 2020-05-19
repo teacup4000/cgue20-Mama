@@ -19,6 +19,8 @@ void renderModel(Model model, Shader shader, glm::mat4 matrix);
 //Shadow functions in ShadowMap.cpp
 void generateDepthMap();
 void createCubeMapMatrix(glm::vec3& lightPos);
+void generateTestFBO(unsigned int width, unsigned int height);
+
 
 void generateBloom(unsigned int width, unsigned int height);
 void renderFloatingPoitBuffer(unsigned int width, unsigned int height);
@@ -29,6 +31,10 @@ void renderDefault(Shader& shader, Camera* camera, GLint& width, GLint& height);
 void renderDepthMap(Shader& shader, glm::vec3& lightPos);
 void renderSimpleLight(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& width, GLint& height, bool shadow);
 void renderLight(Shader& shader, Camera* camera, GLint& width, GLint& height);
+void bindTestFBO(unsigned int width, unsigned int height);
+
+
+void renderQuad();
 
 void lose();
 
@@ -53,6 +59,7 @@ void Application::Run()
 	Shader bloom("Shader/bloom.shader");
 	Shader blur("Shader/blur.shader");
 	Shader bloomFinal("Shader/bloom_final.shader");
+	Shader postprocess("Shader/postprocess.shader");
 	//Shader normal("Shader/normal.shader");
 	
 	Model floor01("Models/Floor/Path01.obj");
@@ -91,7 +98,9 @@ void Application::Run()
 	playerObjects.push_back(character);
 	m_Player->setPlayerModel(playerObjects);
 	generateDepthMap();
+	//generateTestFBO(m_Width, m_Height);
 	generateBloom(m_Width, m_Height);
+	
 
 	basic.use();
 	basic.setInt("diffuse", 0);
@@ -148,7 +157,6 @@ void Application::Run()
 		glViewport(0, 0, m_Width, m_Height);
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete" << std::endl;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		renderDepthMap(shadow, lightPos);
 		renderModel(character, shadow, m_Player->getModelMatrix());
@@ -158,11 +166,13 @@ void Application::Run()
 	
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete" << std::endl;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+ 		
 		//--------------------------------------------------------------------------
-
 		renderFloatingPoitBuffer(m_Width, m_Height);
+
+		
+		//bindTestFBO(m_Width, m_Height);
 
 		renderDefault(basic, m_Camera, m_Width, m_Height);
 		renderModel(multipleLights, basic, lights);
@@ -172,6 +182,7 @@ void Application::Run()
 		renderModel(floor02, simpleLight, path02);
 		renderModel(floor03, simpleLight, path03);
 		renderModel(character, simpleLight, m_Player->getModelMatrix());
+
 
 		if (m_Player->showModel)
 		{
@@ -203,20 +214,27 @@ void Application::Run()
 			renderModel(wall05, pointLights, wallMat05);
 		}		
 
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	
+
+		bool horizontal = true, firstIt = true;
+
+
+		GLuint amount = 50;
+		for (unsigned int i = 0; i < amount; i++) {
+			renderBlur(blur, horizontal, firstIt);
+			renderModel(multipleLights, blur, lights);
+			renderQuad();
+			horizontal = !horizontal;
+			if (firstIt)
+				firstIt = false;
+		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		//----------BLOOM
-		//bool horizontal = true, firstIt = true;
-		//renderBlur(blur, horizontal, firstIt);
-		//renderModel(multipleLights, blur, lights);
-		//if (firstIt)
-		//	firstIt = false;
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		//
-		//renderBloomFinal(bloomFinal, horizontal);
+		renderBloomFinal(bloomFinal, horizontal);
 		//renderModel(multipleLights, bloomFinal, lights);
-		//
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		renderQuad();
 
 		std::cout << m_Player->position.x << ", " << m_Player->position.y << ", " << m_Player->position.z << std::endl;
 		
@@ -266,6 +284,34 @@ void Application::CreateGLFWWindow()
 }
 
 
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+void renderQuad()
+{
+	if (quadVAO == 0)
+	{
+		float quadVertices[] = {
+			// positions        // texture Coords
+			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+			 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+		};
+		// setup plane VAO
+		glGenVertexArrays(1, &quadVAO);
+		glGenBuffers(1, &quadVBO);
+		glBindVertexArray(quadVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	}
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+}
 
 
 

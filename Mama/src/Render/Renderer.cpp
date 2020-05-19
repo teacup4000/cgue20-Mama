@@ -16,6 +16,7 @@ const unsigned int shadow_width = 1024, shadow_height = 1024;
 unsigned int depthMapFBO;
 unsigned int depthMapCube;
 unsigned int bloomFBO;
+unsigned int testFBO;
 unsigned int rboDepth;
 unsigned int pingpongFBO[2];
 unsigned int pingpongColorbuffers[2];
@@ -79,6 +80,52 @@ void createCubeMapMatrix(glm::vec3& lightPos)
 	shadowTransform.push_back(shadowProjection * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 }
 
+void renderDepthMap(Shader& shader, glm::vec3& lightPos)
+{
+	glViewport(0.0f, 0.0f, shadow_width, shadow_height);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "Framebuffer not complete" << std::endl;
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, depthMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	shader.use();
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		shader.setMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransform[i]);
+	}
+	shader.setFloat("far_plane", far_plane);
+	shader.setVec3("lightPos", lightPos);
+}
+
+void bindTestFBO(unsigned int width, unsigned int height)
+{
+	glViewport(0.0f, 0.0f, width, height);
+	glBindFramebuffer(GL_FRAMEBUFFER, testFBO);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void generateTestFBO(unsigned int width, unsigned int height)
+{
+	glGenFramebuffers(1, &testFBO);
+	GLuint textures[2];
+	glGenTextures(2, textures);
+
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, testFBO);	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textures[0], 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, textures[1], 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void generateBloom(unsigned int width, unsigned int height)
 {
 	glGenFramebuffers(1, &bloomFBO);
@@ -87,7 +134,7 @@ void generateBloom(unsigned int width, unsigned int height)
 	for (unsigned int i = 0; i < 2; i++)
 	{
 		glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -118,7 +165,7 @@ void generateBloom(unsigned int width, unsigned int height)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
 		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
@@ -133,27 +180,10 @@ void generateBloom(unsigned int width, unsigned int height)
 void renderFloatingPoitBuffer(unsigned int width, unsigned int height)
 {
 	glViewport(0.0f, 0.0f, width, height);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void renderDepthMap(Shader& shader, glm::vec3& lightPos)
-{
-	glViewport(0.0f, 0.0f, shadow_width, shadow_height);
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "Framebuffer not complete" << std::endl;
-	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-	glClear(GL_DEPTH_BUFFER_BIT);
-
-	shader.use();
-	for (unsigned int i = 0; i < 6; ++i)
-	{
-		shader.setMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransform[i]);
-	}
-	shader.setFloat("far_plane", far_plane);
-	shader.setVec3("lightPos", lightPos);
-}
 
 void renderSimpleLight(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& width, GLint& height, bool shadow)
 {
@@ -180,21 +210,14 @@ void renderDefault(Shader& shader, Camera* camera, GLint& width, GLint& height)
 
 	shader.setMat4("projection", projectionMatrix);
 	shader.setMat4("view", view);
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE0);
 }
 
 void renderBlur(Shader& shader, bool& horizontal, bool& firstIt)
 {
-	GLuint amount = 10;
-	shader.use();
-	for (unsigned int i = 0; i < amount; i++)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
-		shader.setBool("horizontal", horizontal);
-		glBindTexture(GL_TEXTURE_2D, firstIt ? colorBuffers[1] : pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
-		horizontal = !horizontal;
-	}
-	//glActiveTexture(GL_TEXTURE1);
+	glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+	shader.setInt("horizontal", horizontal);
+	glBindTexture(GL_TEXTURE_2D, firstIt ? colorBuffers[1] : pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
 }
 
 void renderBloomFinal(Shader& shader, bool& horizontal)
@@ -206,10 +229,18 @@ void renderBloomFinal(Shader& shader, bool& horizontal)
 	glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]);
-	shader.setBool("bloom", true);
+	shader.setInt("bloom", true);
+	shader.setFloat("exposure", 1.0f);
 	//glActiveTexture(GL_TEXTURE1);
 }
 
+void postprocessTest(Shader& shader)
+{
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+	shader.setInt("u_texture", 0);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+}
 void renderLight(Shader& shader, Camera* camera, GLint &width, GLint &height)
 {
 	Lights lights;
@@ -296,6 +327,6 @@ void TransparentShaderSetup(Shader& shader, Camera* camera, GLint& width, GLint&
 	shader.setVec3("viewPos", camera->m_Position);
 	shader.setVec3("ambient", 0.0f, 0.0f, 0.0f);
 	shader.setVec3("brightness", brightness, brightness, brightness);
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE0);
 }
 

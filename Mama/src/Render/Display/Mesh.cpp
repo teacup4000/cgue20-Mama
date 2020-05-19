@@ -65,9 +65,6 @@ void Mesh::setupMesh()
 	glGenBuffers(1, &this->VBO);
 	glGenBuffers(1, &this->EBO);
 
-	//glGenFramebuffers(1, &VAO);
-	//glGenFramebuffers(1, &EBO);
-
 	glBindVertexArray(this->VAO);
 	/* Load data into vertex buffers */
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);

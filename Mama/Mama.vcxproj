@@ -184,6 +184,7 @@
     <None Include="Shader\multipleLight.shader" />
     <None Include="Shader\notUsed.shader" />
     <None Include="Shader\multipleLightsNormalMap.shader" />
+    <None Include="Shader\postprocess.shader" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Shader\bloom_final.shader" />
