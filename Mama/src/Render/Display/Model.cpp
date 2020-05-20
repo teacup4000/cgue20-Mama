@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //function descriptions in *.h file
 #include "Model.h"
 

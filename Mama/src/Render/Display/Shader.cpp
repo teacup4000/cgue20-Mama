@@ -1,10 +1,8 @@
+#include "stdafx.h"
 //Discription of functions in *.h files
 #include "Shader.h"
 
-#include <iostream> 
-#include <string>
-#include <sstream>
-#include <fstream>
+
 
 //---------------------------------------------------only Shader intern functoins in this cpp------------------------------------------------------------
 Shader::Shader(const std::string& filePath)

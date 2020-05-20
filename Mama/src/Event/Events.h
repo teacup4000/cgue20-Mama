@@ -1,7 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <iostream>
 #include "../Render/Display/Camera.h"
 
 class Event

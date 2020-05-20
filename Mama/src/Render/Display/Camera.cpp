@@ -1,6 +1,6 @@
+#include "stdafx.h"
 #include "Camera.h"
 #include <gtx/transform.hpp>
-#include <iostream>
 
 Camera::Camera(Player* player, glm::vec3 currPosition)
 	: m_Player(player), m_Position(currPosition)

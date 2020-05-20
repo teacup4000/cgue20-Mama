@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Shader.h"
 
 /* These functions can set variables in the *.shader program */

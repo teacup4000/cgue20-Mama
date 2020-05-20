@@ -1,11 +1,8 @@
+#include "stdafx.h"
 #include "Application.h"
 
 //#define NOMINMAX
 
-#include <cstdio>
-#include <ctime>
-
-#include <iostream>
 
 //------globals------
 int count = 0;
@@ -67,6 +64,7 @@ void Application::Run()
 	Shader blur("Shader/blur.shader");
 	Shader bloomFinal("Shader/bloom_final.shader");
 	Shader emission("Shader/emission.shader");
+	Shader postprocess("Shader/postprocess.shader");
 	
 	Model floor01("Models/Floor/Path01.obj");
 	glm::mat4 path01 = glm::mat4(1.0f);
@@ -177,16 +175,9 @@ void Application::Run()
 		renderFloatingPointBuffer(m_Width, m_Height);
 		//bindTestFBO(m_Width, m_Height);
 
-		renderDefault(emission, m_Camera, m_Width, m_Height);
-		renderLight(pointLights, m_Camera, m_Width, m_Height);
-		renderModel(multipleLights, pointLights, lights);
+		renderDefault(basic, m_Camera, m_Width, m_Height);
+		
 		//renderModel(test, emission, testobj);
-
-		renderSimpleLight(simpleLight, m_Camera, lightPos, m_Width, m_Height, m_Shadow);
-		renderModel(floor01, simpleLight, path01);
-		renderModel(floor02, simpleLight, path02);
-		renderModel(floor03, simpleLight, path03);
-		renderModel(character, simpleLight, m_Player->getModelMatrix());
 
 
 		//if (m_Player->showModel)
@@ -215,29 +206,46 @@ void Application::Run()
 			renderModel(wall03, pointLights, wallMat03);
 			renderModel(wall04, pointLights, wallMat04);
 			renderModel(wall05, pointLights, wallMat05);
-		}		
+		}	
+
+		renderLight(pointLights, m_Camera, m_Width, m_Height);
+		renderModel(multipleLights, pointLights, lights);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
 		//----------------------------------BLOOM-------------------------------------------------------
 		bool horizontal = true, firstIt = true;
-		GLuint amount = 100;
-		for (unsigned int i = 0; i < amount; i++) {
-			renderBlur(blur, horizontal, firstIt);
+		GLuint amount = 10;
+		blur.use();
+		for (int j = 1; j <= amount; j++) {
+			//renderBlur(blur, horizontal, firstIt);
+			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+			blur.setInt("horizontal", horizontal);
+			glBindTexture(GL_TEXTURE_2D, firstIt ? colorBuffers[1] : pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
 			renderQuad();
 			horizontal = !horizontal;
 			if (firstIt)
 				firstIt = false;
 		}
-
+		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+		
 		renderBloomFinal(bloomFinal, horizontal);
 		renderQuad();
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
+		bindTestFBO(m_Width, m_Height);
+		renderSimpleLight(simpleLight, m_Camera, lightPos, m_Width, m_Height, m_Shadow);
+		renderModel(floor01, simpleLight, path01);
+		renderModel(floor02, simpleLight, path02);
+		renderModel(floor03, simpleLight, path03);
+		renderModel(character, simpleLight, m_Player->getModelMatrix());
+	
+		postprocess.use();
+		
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		
 		
 		std::cout << m_Player->position.x << ", " << m_Player->position.y << ", " << m_Player->position.z << std::endl;
 		

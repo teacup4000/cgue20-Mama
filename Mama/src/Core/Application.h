@@ -1,10 +1,7 @@
 #pragma once
 #define GLFW_INCLUDE_NONE
-#include <Windows.h>
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-
-#include <iostream>
 
 #include "INIReader.h"
 #include "../Event/Events.h"
@@ -93,7 +90,7 @@ private: //FUNCTIONS
 		glEnable(GL_DEPTH_TEST);
 		//glEnable(GL_CULL_FACE); //Enable cull face if you don't want the program to render the back side of your objects 
 		//glCullFace(GL_BACK);
-		glEnable(GL_BLEND);
+		glEnable(GL_BLEND);;
 		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //with this no bump mapping/normal mapping/alpha mapping is possible but less memory usage!
 		glEnable(GL_MULTISAMPLE);
 	}

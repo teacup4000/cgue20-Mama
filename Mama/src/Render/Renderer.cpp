@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Display/Camera.h"
 #include "Display/Shader.h"
 #include "Display/Model.h"
@@ -7,9 +8,6 @@
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
-
-#include <iostream>
-#include <vector>
 
 //---------------------------------------------------------variable declaration--------------------------------------------------------------------------
 const unsigned int shadow_width = 1024, shadow_height = 1024;
@@ -21,7 +19,6 @@ unsigned int rboDepth;
 unsigned int pingpongFBO[2];
 unsigned int pingpongColorbuffers[2];
 unsigned int colorBuffers[2];
-
 
 float near_plane = 1.0f;
 float far_plane = 100.0f;
@@ -102,29 +99,6 @@ void bindTestFBO(unsigned int width, unsigned int height)
 	glViewport(0.0f, 0.0f, width, height);
 	glBindFramebuffer(GL_FRAMEBUFFER, testFBO);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void generateTestFBO(unsigned int width, unsigned int height)
-{
-	glGenFramebuffers(1, &testFBO);
-	GLuint textures[2];
-	glGenTextures(2, textures);
-
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, testFBO);	
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textures[0], 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, textures[1], 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void generateBloom(unsigned int width, unsigned int height)
