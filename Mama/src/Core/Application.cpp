@@ -23,7 +23,7 @@ void generateTestFBO(unsigned int width, unsigned int height);
 
 
 void generateBloom(unsigned int width, unsigned int height);
-void renderFloatingPoitBuffer(unsigned int width, unsigned int height);
+void renderFloatingPointBuffer(unsigned int width, unsigned int height);
 void renderBlur(Shader& shader, bool& horizontal, bool& firstIt);
 void renderBloomFinal(Shader& shader, bool& horizontal);
 void renderDefault(Shader& shader, Camera* camera, GLint& width, GLint& height);
@@ -35,6 +35,14 @@ void bindTestFBO(unsigned int width, unsigned int height);
 
 
 void renderQuad();
+
+
+
+extern unsigned int bloomFBO;
+extern unsigned int rboDepth;
+extern unsigned int pingpongFBO[2];
+extern unsigned int pingpongColorbuffers[2];
+extern unsigned int colorBuffers[2];
 
 void lose();
 
@@ -56,11 +64,9 @@ void Application::Run()
 	Shader pointLights("Shader/multipleLight.shader");
 	Shader normal("Shader/multipleLightsNormalMap.shader");
 	Shader simpleLight("Shader/light.shader");
-	Shader bloom("Shader/bloom.shader");
 	Shader blur("Shader/blur.shader");
 	Shader bloomFinal("Shader/bloom_final.shader");
-	Shader postprocess("Shader/postprocess.shader");
-	//Shader normal("Shader/normal.shader");
+	Shader emission("Shader/emission.shader");
 	
 	Model floor01("Models/Floor/Path01.obj");
 	glm::mat4 path01 = glm::mat4(1.0f);
@@ -89,8 +95,9 @@ void Application::Run()
 	Model multipleLights("Models/Lights/MultipleLights.obj");
 	glm::mat4 lights = glm::mat4(1.0f);
 
-
-
+	Model test("Models/testobj/test.obj");
+	glm::mat4 testobj = glm::mat4(1.0f);
+	testobj = glm::translate(testobj, glm::vec3(-7.02779, 14.351f, -14.282f));
 
 
 	std::vector<Model> playerObjects;
@@ -108,9 +115,6 @@ void Application::Run()
 
 	normal.use();
 	normal.setInt("normalMap", 1);
-	
-	bloom.use();
-	bloom.setInt("diffuseTexture", 0);
 
 	blur.use();
 	blur.setInt("image", 0);
@@ -166,16 +170,17 @@ void Application::Run()
 	
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete" << std::endl;
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
  		
 		//--------------------------------------------------------------------------
-		renderFloatingPoitBuffer(m_Width, m_Height);
-
-		
+		//enable BloomFBO
+		renderFloatingPointBuffer(m_Width, m_Height);
 		//bindTestFBO(m_Width, m_Height);
 
-		renderDefault(basic, m_Camera, m_Width, m_Height);
-		renderModel(multipleLights, basic, lights);
+		renderDefault(emission, m_Camera, m_Width, m_Height);
+		renderLight(pointLights, m_Camera, m_Width, m_Height);
+		renderModel(multipleLights, pointLights, lights);
+		//renderModel(test, emission, testobj);
 
 		renderSimpleLight(simpleLight, m_Camera, lightPos, m_Width, m_Height, m_Shadow);
 		renderModel(floor01, simpleLight, path01);
@@ -184,16 +189,14 @@ void Application::Run()
 		renderModel(character, simpleLight, m_Player->getModelMatrix());
 
 
-		if (m_Player->showModel)
-		{
-			//renderModel(cube, light, cubeObj);
-			//renderModel(cube2, light, cubeObj2);
-			//
-			//cubeObj = glm::rotate(cubeObj, 0.01f, glm::vec3(0, 1, 0));
-			//cubeObj2 = glm::rotate(cubeObj2, 0.01f, glm::vec3(0, 1, 0));
-		}
-
-		//renderDefault(simpleLight, m_Camera, lightPos, m_Width, m_Height);
+		//if (m_Player->showModel)
+		//{
+		//	//renderModel(cube, light, cubeObj);
+		//	//renderModel(cube2, light, cubeObj2);
+		//	//
+		//	//cubeObj = glm::rotate(cubeObj, 0.01f, glm::vec3(0, 1, 0));
+		//	//cubeObj2 = glm::rotate(cubeObj2, 0.01f, glm::vec3(0, 1, 0));
+		//}
 
 		if(m_NormalMap)
 		{
@@ -214,28 +217,28 @@ void Application::Run()
 			renderModel(wall05, pointLights, wallMat05);
 		}		
 
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
-
+		//----------------------------------BLOOM-------------------------------------------------------
 		bool horizontal = true, firstIt = true;
-
-
-		GLuint amount = 50;
+		GLuint amount = 100;
 		for (unsigned int i = 0; i < amount; i++) {
 			renderBlur(blur, horizontal, firstIt);
-			renderModel(multipleLights, blur, lights);
 			renderQuad();
 			horizontal = !horizontal;
 			if (firstIt)
 				firstIt = false;
 		}
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		renderBloomFinal(bloomFinal, horizontal);
-		//renderModel(multipleLights, bloomFinal, lights);
 		renderQuad();
+		
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
+		
 		std::cout << m_Player->position.x << ", " << m_Player->position.y << ", " << m_Player->position.z << std::endl;
 		
 
@@ -255,7 +258,6 @@ void Application::Run()
 	}
 	//clean
 	basic.deleteShader();
-	bloom.deleteShader();
 	bloomFinal.deleteShader();
 	blur.deleteShader();
 	shadow.deleteShader();

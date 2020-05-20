@@ -62,7 +62,6 @@ void main()
 {
 	// properties
 	vec3 norm = normalize(Normal);
-	//vec3 viewDir = normalize(viewPos - FragPos);
 
 	// == =====================================================
 	// Our lighting is set up in 3 phases: directional, point lights and an optional flashlight
@@ -70,12 +69,11 @@ void main()
 	// per lamp. In the main() function we take all the calculated colors and sum them up for
 	// this fragment's final color.
 	// == =====================================================
-	// phase 1: directional lighting
 	vec3 result;
-	// phase 2: point lights
+	
 	for (int i = 0; i < NR_POINT_LIGHTS; i++)
 		result += CalcPointLight(pointLights[i], norm, FragPos);
-	// phase 3: spot light
+
 	float brightness = dot(result, vec3(0.2126, 0.7152, 0.0722));
 
 	if (brightness > 1.0f)
@@ -92,8 +90,8 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos)
 	// diffuse shading
 	float diff = max(dot(normal, lightDir), 0.0);
 	// specular shading
-	vec3 reflectDir = reflect(-lightDir, normal);
-	//float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	//vec3 reflectDir = reflect(-lightDir, normal);
+	//float spec = pow(max(dot(viewDirw, reflectDir), 0.0), material.shininess);
 	// attenuation
 	float distance = length(light.position - fragPos);
 	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));

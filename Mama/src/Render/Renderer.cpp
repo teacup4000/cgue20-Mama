@@ -32,10 +32,10 @@ std::vector<glm::mat4> shadowTransform;
 
 struct Lights 
 {
-	glm::vec3 position[7] =	{	glm::vec3(-6.9473f, 14.351f, -14.282f),
+	glm::vec3 position[7] =	{	glm::vec3(-7.02779, 14.351f, -14.282f),
 								glm::vec3(2.0601f, 14.351f, -13.435f),
 								glm::vec3(7.9922f, 11.784f, -4.0616f),
-								glm::vec3(25.048f, 11.784f, -4.0616f),
+								glm::vec3(24.048f, 11.784f, -4.0616f),
 								glm::vec3(13.713f, 16.197f, 8.708f),
 								glm::vec3(9.1793f, 17.973f, 20.621f),
 								glm::vec3(-0.040154f, 23.126f, 36.366f)
@@ -85,7 +85,7 @@ void renderDepthMap(Shader& shader, glm::vec3& lightPos)
 	glViewport(0.0f, 0.0f, shadow_width, shadow_height);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "Framebuffer not complete" << std::endl;
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, depthMapFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	shader.use();
@@ -121,7 +121,8 @@ void generateTestFBO(unsigned int width, unsigned int height)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, testFBO);	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textures[0], 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, testFBO);	
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textures[0], 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, textures[1], 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -141,7 +142,7 @@ void generateBloom(unsigned int width, unsigned int height)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		// attach texture to framebuffer
 		glFramebufferTexture2D(
-			GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0
+			GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, colorBuffers[i], 0
 		);
 	}
 
@@ -177,7 +178,7 @@ void generateBloom(unsigned int width, unsigned int height)
 	}
 }
 
-void renderFloatingPoitBuffer(unsigned int width, unsigned int height)
+void renderFloatingPointBuffer(unsigned int width, unsigned int height)
 {
 	glViewport(0.0f, 0.0f, width, height);
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
@@ -210,6 +211,7 @@ void renderDefault(Shader& shader, Camera* camera, GLint& width, GLint& height)
 
 	shader.setMat4("projection", projectionMatrix);
 	shader.setMat4("view", view);
+	shader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 	glActiveTexture(GL_TEXTURE0);
 }
 
@@ -229,9 +231,7 @@ void renderBloomFinal(Shader& shader, bool& horizontal)
 	glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]);
-	shader.setInt("bloom", true);
-	shader.setFloat("exposure", 1.0f);
-	//glActiveTexture(GL_TEXTURE1);
+	shader.setFloat("exposure",1.0f);
 }
 
 void postprocessTest(Shader& shader)
@@ -255,58 +255,58 @@ void renderLight(Shader& shader, Camera* camera, GLint &width, GLint &height)
 	//shader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
 	shader.setVec3("pointLights[0].position", lights.position[0]);
-	shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
-	shader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-	shader.setFloat("pointLights[0].constant", 1.0f);
+	shader.setVec3("pointLights[0].ambient", 0.0f, 0.0f, 0.0f);
+	shader.setVec3("pointLights[0].diffuse", 0.6f, 0.6f, 0.6f);
+	shader.setVec3("pointLights[0].specular", 0, 0, 0);
+	shader.setFloat("pointLights[0].constant", 0.0f);
 	shader.setFloat("pointLights[0].linear", 0.09);
 	shader.setFloat("pointLights[0].quadratic", 0.032);
 
 	shader.setVec3("pointLights[1].position", lights.position[1]);
-	shader.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
-	shader.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
-	shader.setFloat("pointLights[1].constant", 1.0f);
+	shader.setVec3("pointLights[1].ambient", 0.0f, 0.0f, 0.0f);
+	shader.setVec3("pointLights[1].diffuse", 0.6f, 0.6f, 0.6f);
+	shader.setVec3("pointLights[1].specular", 0, 0, 0);
+	shader.setFloat("pointLights[1].constant", 0.1f);
 	shader.setFloat("pointLights[1].linear", 0.09);
 	shader.setFloat("pointLights[1].quadratic", 0.032);
 
 	shader.setVec3("pointLights[2].position", lights.position[2]);
 	shader.setVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
-	shader.setVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
-	shader.setFloat("pointLights[2].constant", 1.0f);
+	shader.setVec3("pointLights[2].diffuse", 1.0f, 1.0f, 1.0f);
+	shader.setVec3("pointLights[1].specular", 0.5, 0.5, 0.5);
+	shader.setFloat("pointLights[2].constant", 0.0f);
 	shader.setFloat("pointLights[2].linear", 0.09);
 	shader.setFloat("pointLights[2].quadratic", 0.032);
 
 	shader.setVec3("pointLights[3].position", lights.position[3]);
 	shader.setVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
-	shader.setVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
-	shader.setFloat("pointLights[3].constant", 1.0f);
+	shader.setVec3("pointLights[3].diffuse", 1.0f, 1.0f, 1.0f);
+	shader.setVec3("pointLights[3].specular", 1, 1, 1);
+	shader.setFloat("pointLights[3].constant", 0.1f);
 	shader.setFloat("pointLights[3].linear", 0.09);
 	shader.setFloat("pointLights[3].quadratic", 0.032);
 
 	shader.setVec3("pointLights[4].position", lights.position[4]);
 	shader.setVec3("pointLights[4].ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("pointLights[4].diffuse", 0.8f, 0.8f, 0.8f);
-	shader.setVec3("pointLights[4].specular", 1.0f, 1.0f, 1.0f);
-	shader.setFloat("pointLights[4].constant", 1.0f);
+	shader.setVec3("pointLights[4].diffuse", 1.0f, 1.0f, 1.0f);
+	shader.setVec3("pointLights[4].specular", 0, 0, 0);
+	shader.setFloat("pointLights[4].constant", 0.0f);
 	shader.setFloat("pointLights[4].linear", 0.09);
 	shader.setFloat("pointLights[4].quadratic", 0.032);
 
 	shader.setVec3("pointLights[5].position", lights.position[5]);
 	shader.setVec3("pointLights[5].ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("pointLights[5].diffuse", 0.8f, 0.8f, 0.8f);
-	shader.setVec3("pointLights[5].specular", 1.0f, 1.0f, 1.0f);
-	shader.setFloat("pointLights[5].constant", 1.0f);
+	shader.setVec3("pointLights[5].diffuse", 1.0f, 1.0f, 1.0f);
+	shader.setVec3("pointLights[5].specular", 0, 0, 0);
+	shader.setFloat("pointLights[5].constant", 0.0f);
 	shader.setFloat("pointLights[5].linear", 0.09);
 	shader.setFloat("pointLights[5].quadratic", 0.032);
 
 	shader.setVec3("pointLights[6].position", lights.position[6]);
 	shader.setVec3("pointLights[6].ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("pointLights[6].diffuse", 0.8f, 0.8f, 0.8f);
-	shader.setVec3("pointLights[6].specular", 1.0f, 1.0f, 1.0f);
-	shader.setFloat("pointLights[6].constant", 1.0f);
+	shader.setVec3("pointLights[6].diffuse", 1.0f, 1.0f, 1.0f);
+	shader.setVec3("pointLights[6].specular", 0, 0, 0);
+	shader.setFloat("pointLights[6].constant", 0.0f);
 	shader.setFloat("pointLights[6].linear", 0.09);
 	shader.setFloat("pointLights[6].quadratic", 0.032);
 
