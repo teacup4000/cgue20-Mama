@@ -202,8 +202,6 @@ unsigned int TextureFromFile(const char* path, std::string& directory, bool gamm
 void renderModel(Model model, Shader shader, glm::mat4 matrix)
 {
 	shader.setMat4("model", matrix);
-	//glActiveTexture(GL_TEXTURE0);
 	model.draw(shader);
-	
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------

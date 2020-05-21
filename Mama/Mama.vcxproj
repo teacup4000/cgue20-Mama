@@ -106,9 +106,10 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\assimp2\include;$(SolutionDir)Dependencies\glad\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\assimp2\include;$(SolutionDir)Dependencies\glad\include;$(SolutionDir)Mama\src</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\GLFW\lib;$(SolutionDir)Dependencies\assimp2\win64</AdditionalLibraryDirectories>
@@ -142,9 +143,10 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\assimp2\include;$(SolutionDir)Dependencies\glad\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\assimp2\include;$(SolutionDir)Dependencies\glad\include;$(SolutionDir)Mama\src</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -167,6 +169,8 @@
     <ClCompile Include="src\Event\Event.cpp" />
     <ClCompile Include="src\Render\Display\Shader.cpp" />
     <ClCompile Include="src\Render\Display\ShaderUtility.cpp" />
+    <ClCompile Include="src\Render\Effects\Bloom.cpp" />
+    <ClCompile Include="src\Render\Effects\ShadowMap.cpp" />
     <ClCompile Include="src\Render\Renderer.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -185,6 +189,8 @@
     <ClInclude Include="src\Render\Display\Player.h" />
     <ClInclude Include="src\Render\Display\Shader.h" />
     <ClInclude Include="src\Render\Display\stb_image.h" />
+    <ClInclude Include="src\Render\Effects\Bloom.h" />
+    <ClInclude Include="src\Render\Effects\ShadowMap.h" />
     <ClInclude Include="src\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -192,6 +198,7 @@
     <None Include="Shader\bloom.shader" />
     <None Include="Shader\blur.shader" />
     <None Include="Shader\emission.shader" />
+    <None Include="Shader\multipleLightShadow.shader" />
     <None Include="Shader\normal.shader" />
     <None Include="Shader\multipleLight.shader" />
     <None Include="Shader\notUsed.shader" />

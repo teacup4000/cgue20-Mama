@@ -32,6 +32,7 @@ void main()
 #shader fragment
 #version 400 core
 out vec4 FragColor;
+out vec4 BrightColor;
 
 in VS_OUT{
 	vec3 FragPos;
@@ -133,5 +134,6 @@ void main()
 	float shadow = shadows ? ShadowCalculation(fs_in.FragPos) : 0.0;
 	vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
 
+	BrightColor = vec4(0,0,0,0);
 	FragColor = vec4(lighting, 1.0);
 }

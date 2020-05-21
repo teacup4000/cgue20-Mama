@@ -10,6 +10,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <gtx/string_cast.hpp>
 
+#include "../Render/Effects/Bloom.h"
+#include "../Render/Effects/ShadowMap.h"
+
 
 class Application
 {
@@ -39,6 +42,7 @@ private: //MEMBERS
 	Player*	m_Player;
 	Camera* m_Camera;
 
+	float	m_Nearplane = 1.0f, m_Farplane = 100.0f;
 	int		m_Width, m_Height;
 	float	m_Brightness;
 	bool	m_FullScreen;

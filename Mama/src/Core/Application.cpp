@@ -14,32 +14,20 @@ glm::vec3 lightPos = glm::vec3(7.9922f, 50.0f, -4.0616f);
 void renderModel(Model model, Shader shader, glm::mat4 matrix);
 
 //Shadow functions in ShadowMap.cpp
-void generateDepthMap();
-void createCubeMapMatrix(glm::vec3& lightPos);
 void generateTestFBO(unsigned int width, unsigned int height);
+void postprocessTest(Shader& shader);
 
-
-void generateBloom(unsigned int width, unsigned int height);
-void renderFloatingPointBuffer(unsigned int width, unsigned int height);
-void renderBlur(Shader& shader, bool& horizontal, bool& firstIt);
-void renderBloomFinal(Shader& shader, bool& horizontal);
 void renderDefault(Shader& shader, Camera* camera, GLint& width, GLint& height);
 
-void renderDepthMap(Shader& shader, glm::vec3& lightPos);
-void renderSimpleLight(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& width, GLint& height, bool shadow);
+void renderSimpleLight(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& width, GLint& height, bool shadow, float far_plane, ShadowMap* map);
 void renderLight(Shader& shader, Camera* camera, GLint& width, GLint& height);
 void bindTestFBO(unsigned int width, unsigned int height);
 
+void RenderQuad();
+void setProjectionViewMatrix(Camera* camera, GLint width, GLint height);
+void renderSimpleShadow(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& width, GLint& height, bool shadow, float far_plane, ShadowMap* map);
 
-void renderQuad();
 
-
-
-extern unsigned int bloomFBO;
-extern unsigned int rboDepth;
-extern unsigned int pingpongFBO[2];
-extern unsigned int pingpongColorbuffers[2];
-extern unsigned int colorBuffers[2];
 
 void lose();
 
@@ -55,6 +43,8 @@ void Application::Run()
 
 	/*Read the settings file*/
 	CreateGLFWWindow();
+	Bloom* bloom = new Bloom();
+	ShadowMap* shadowMap = new ShadowMap();
 
 	Shader basic("Shader/basic.shader");
 	Shader shadow("Shader/depth.shader");
@@ -65,6 +55,7 @@ void Application::Run()
 	Shader bloomFinal("Shader/bloom_final.shader");
 	Shader emission("Shader/emission.shader");
 	Shader postprocess("Shader/postprocess.shader");
+	Shader simpleShadow("Shader/multipleLightShadow.shader");
 	
 	Model floor01("Models/Floor/Path01.obj");
 	glm::mat4 path01 = glm::mat4(1.0f);
@@ -102,10 +93,11 @@ void Application::Run()
 	Model character("Models/Player/bearAtlas.obj");
 	playerObjects.push_back(character);
 	m_Player->setPlayerModel(playerObjects);
-	generateDepthMap();
-	//generateTestFBO(m_Width, m_Height);
-	generateBloom(m_Width, m_Height);
-	
+
+	generateTestFBO(m_Width, m_Height);
+	shadowMap->GenerateDepthMap(m_Nearplane, m_Farplane);
+	bloom->GenerateBloomParams(m_Width, m_Height);
+
 
 	basic.use();
 	basic.setInt("diffuse", 0);
@@ -153,14 +145,13 @@ void Application::Run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//------------------------SHADOWS------------------------------------------
+		shadowMap->GenerateCubeMap(lightPos);
 
-		createCubeMapMatrix(lightPos);
-		
 		glViewport(0, 0, m_Width, m_Height);
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete" << std::endl;
 
-		renderDepthMap(shadow, lightPos);
+		shadowMap->RenderDepthMap(shadow, lightPos);
 		renderModel(character, shadow, m_Player->getModelMatrix());
 		renderModel(floor01, shadow, path01);
 		renderModel(floor02, shadow, path02);
@@ -171,13 +162,13 @@ void Application::Run()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
  		
 		//--------------------------------------------------------------------------
-		//enable BloomFBO
-		renderFloatingPointBuffer(m_Width, m_Height);
-		//bindTestFBO(m_Width, m_Height);
 
-		renderDefault(basic, m_Camera, m_Width, m_Height);
-		
-		//renderModel(test, emission, testobj);
+	
+		setProjectionViewMatrix(m_Camera, m_Width, m_Height);
+
+
+		//-----------------------------------RENDER BLOOM------------------------------------------------
+	
 
 
 		//if (m_Player->showModel)
@@ -188,6 +179,13 @@ void Application::Run()
 		//	//cubeObj = glm::rotate(cubeObj, 0.01f, glm::vec3(0, 1, 0));
 		//	//cubeObj2 = glm::rotate(cubeObj2, 0.01f, glm::vec3(0, 1, 0));
 		//}
+		bloom->Bind();
+
+		renderSimpleShadow(simpleShadow, m_Camera, lightPos, m_Width, m_Height, m_Shadow, m_Farplane, shadowMap);
+		renderModel(floor01, simpleShadow, path01);
+		renderModel(floor02, simpleShadow, path02);
+		renderModel(floor03, simpleShadow, path03);
+		renderModel(character, simpleShadow, m_Player->getModelMatrix());
 
 		if(m_NormalMap)
 		{
@@ -210,41 +208,18 @@ void Application::Run()
 
 		renderLight(pointLights, m_Camera, m_Width, m_Height);
 		renderModel(multipleLights, pointLights, lights);
+		renderModel(floor01, pointLights, path01);
+		renderModel(floor02, pointLights, path02);
+		renderModel(floor03, pointLights, path03);
+		renderModel(character, pointLights, m_Player->getModelMatrix());
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	
-		//----------------------------------BLOOM-------------------------------------------------------
-		bool horizontal = true, firstIt = true;
-		GLuint amount = 10;
-		blur.use();
-		for (int j = 1; j <= amount; j++) {
-			//renderBlur(blur, horizontal, firstIt);
-			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
-			blur.setInt("horizontal", horizontal);
-			glBindTexture(GL_TEXTURE_2D, firstIt ? colorBuffers[1] : pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
-			renderQuad();
-			horizontal = !horizontal;
-			if (firstIt)
-				firstIt = false;
-		}
-		
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		
-		renderBloomFinal(bloomFinal, horizontal);
-		renderQuad();
-		
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		bloom->Unbind();
+		bloom->Postprocess(blur, bloomFinal);
+		bloom->Unbind();
 
-		bindTestFBO(m_Width, m_Height);
-		renderSimpleLight(simpleLight, m_Camera, lightPos, m_Width, m_Height, m_Shadow);
-		renderModel(floor01, simpleLight, path01);
-		renderModel(floor02, simpleLight, path02);
-		renderModel(floor03, simpleLight, path03);
-		renderModel(character, simpleLight, m_Player->getModelMatrix());
+		//-------------------------------------BLOOM END---------------------------------------------------------------
+
 	
-		postprocess.use();
-		
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		
 		
 		std::cout << m_Player->position.x << ", " << m_Player->position.y << ", " << m_Player->position.z << std::endl;
@@ -253,7 +228,7 @@ void Application::Run()
 		if (m_Player->position.x >= 1.0f && m_Player->position.x <= 1.3f && m_Player->position.z >= -7.0f && m_Player->position.z <= -5.0f ||
 			m_Player->position.x >= -0.7f && m_Player->position.x <= -0.5f && m_Player->position.z >= -13.2f && m_Player->position.z <= -13.0f)
 		{
-			//lose();
+			lose();
 		}
 		
 		//m_Player->getDown(deltaTime);
@@ -272,6 +247,8 @@ void Application::Run()
 	simpleLight.deleteShader();
 	pointLights.deleteShader();
 	normal.deleteShader();
+
+	bloom->Destroy();
 
 	glfwTerminate();
 }
@@ -294,9 +271,27 @@ void Application::CreateGLFWWindow()
 }
 
 
-unsigned int quadVAO = 0;
-unsigned int quadVBO;
-void renderQuad()
+void lose()
+{
+	int msgboxID = MessageBox(
+		NULL,
+		(LPCTSTR)"Game Over! Want to try again?",
+		(LPCTSTR)"Player1",
+		MB_ICONQUESTION | MB_CANCELTRYCONTINUE 
+	);
+
+	switch (msgboxID)
+	{
+	case IDCANCEL:
+		glfwTerminate();
+		break;
+	case IDTRYAGAIN:
+		break;
+	}
+}
+
+uint32_t quadVAO, quadVBO;
+void RenderQuad()
 {
 	if (quadVAO == 0)
 	{
@@ -321,37 +316,4 @@ void renderQuad()
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void lose()
-{
-	int msgboxID = MessageBox(
-		NULL,
-		(LPCTSTR)"Game Over! Want to try again?",
-		(LPCTSTR)"Player1",
-		MB_ICONQUESTION | MB_CANCELTRYCONTINUE 
-	);
-
-	switch (msgboxID)
-	{
-	case IDCANCEL:
-		glfwTerminate();
-		break;
-	case IDTRYAGAIN:
-		break;
-
-	}
 }
