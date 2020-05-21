@@ -8,32 +8,21 @@
 int count = 0;
 //-----------------------------
 
-glm::vec3 lightPos = glm::vec3(7.9922f, 50.0f, -4.0616f);
 
 //render Shaders
-void renderModel(Model model, Shader shader, glm::mat4 matrix);
-
-//Shadow functions in ShadowMap.cpp
-void generateTestFBO(unsigned int width, unsigned int height);
-void postprocessTest(Shader& shader);
-
-void renderDefault(Shader& shader, Camera* camera, GLint& width, GLint& height);
-
-void renderSimpleLight(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& width, GLint& height, bool shadow, float far_plane, ShadowMap* map);
-void renderLight(Shader& shader, Camera* camera, GLint& width, GLint& height);
-void bindTestFBO(unsigned int width, unsigned int height);
-
-void RenderQuad();
-void setProjectionViewMatrix(Camera* camera, GLint width, GLint height);
-void renderSimpleShadow(Shader& shader, Camera* camera, glm::vec3& lightPos, GLint& width, GLint& height, bool shadow, float far_plane, ShadowMap* map);
-
-
+void renderModel(Model &model, Shader &shader, glm::mat4 matrix);
 
 void lose();
 
 void Application::Run()
 {
 	//--------------locals------------
+	glm::vec3 lightPos = glm::vec3(7.9922f, 50.0f, -4.0616f);
+
+	Bloom* bloom = new Bloom();
+	ShadowMap* shadowMap = new ShadowMap();
+	Renderer* renderer = new Renderer();
+
 	//Frame Rate independency
 	float deltaTime = 0.0f, lastFrame = 0.0f;
 
@@ -41,21 +30,18 @@ void Application::Run()
 	float counter = 0.0f;
 	float timeDiff = 0.0f;
 
+
 	/*Read the settings file*/
 	CreateGLFWWindow();
-	Bloom* bloom = new Bloom();
-	ShadowMap* shadowMap = new ShadowMap();
+	renderer->Create(m_Width, m_Height, m_Camera);
 
 	Shader basic("Shader/basic.shader");
 	Shader shadow("Shader/depth.shader");
 	Shader pointLights("Shader/multipleLight.shader");
 	Shader normal("Shader/multipleLightsNormalMap.shader");
-	Shader simpleLight("Shader/light.shader");
+	Shader simpleShadow("Shader/multipleLightShadow.shader");
 	Shader blur("Shader/blur.shader");
 	Shader bloomFinal("Shader/bloom_final.shader");
-	Shader emission("Shader/emission.shader");
-	Shader postprocess("Shader/postprocess.shader");
-	Shader simpleShadow("Shader/multipleLightShadow.shader");
 	
 	Model floor01("Models/Floor/Path01.obj");
 	glm::mat4 path01 = glm::mat4(1.0f);
@@ -65,6 +51,9 @@ void Application::Run()
 
 	Model floor03("Models/Floor/Path03.obj");
 	glm::mat4 path03 = glm::mat4(1.0f);
+
+	Model floor04("Models/Floor/FloorRoom.obj");
+	glm::mat4 path04 = glm::mat4(1.0f);
 	
 	Model wall01("Models/Walls/Wall01.obj");
 	glm::mat4 wallMat01 = glm::mat4(1.0f);
@@ -80,24 +69,39 @@ void Application::Run()
 	
 	Model wall05("Models/Walls/Wall05.obj");
 	glm::mat4 wallMat05 = glm::mat4(1.0f);
+
+	Model wall06("Models/Walls/Wall06.obj");
+	glm::mat4 wallMat06 = glm::mat4(1.0f);
+
+	Model woodenElements("Models/Single Elements/woodenElements.obj");
+	glm::mat4 woodMat = glm::mat4(1.0f);
 	
 	Model multipleLights("Models/Lights/MultipleLights.obj");
 	glm::mat4 lights = glm::mat4(1.0f);
 
+	Model container("Models/Single Elements/Container/container.obj");
+	glm::mat4 containerMat = glm::mat4(1.0f);
+
+	Model debris("Models/Single Elements/Debris/debris2.obj");
+	glm::mat4 debMat = glm::mat4(1.0f);
+
+	Model cart("Models/Single Elements/MineCart/mineCart.obj");
+	glm::mat4 cartMat = glm::mat4(1.0f);
+
+	Model rails("Models/Single Elements/MineCart/rails.obj");
+	glm::mat4 railMat = glm::mat4(1.0f);
+
 	Model test("Models/testobj/test.obj");
 	glm::mat4 testobj = glm::mat4(1.0f);
 	testobj = glm::translate(testobj, glm::vec3(-7.02779, 14.351f, -14.282f));
-
 
 	std::vector<Model> playerObjects;
 	Model character("Models/Player/bearAtlas.obj");
 	playerObjects.push_back(character);
 	m_Player->setPlayerModel(playerObjects);
 
-	generateTestFBO(m_Width, m_Height);
 	shadowMap->GenerateDepthMap(m_Nearplane, m_Farplane);
 	bloom->GenerateBloomParams(m_Width, m_Height);
-
 
 	basic.use();
 	basic.setInt("diffuse", 0);
@@ -113,9 +117,6 @@ void Application::Run()
 	bloomFinal.setInt("scene", 0);
 	bloomFinal.setInt("bloomBlur", 1);
 
-	simpleLight.use();
-	simpleLight.setInt("diffuseTexture", 0);
-	simpleLight.setInt("depthMap", 1);
 
 	//--------Loop-----------
 	while (!glfwWindowShouldClose(m_Window))
@@ -156,6 +157,14 @@ void Application::Run()
 		renderModel(floor01, shadow, path01);
 		renderModel(floor02, shadow, path02);
 		renderModel(floor03, shadow, path03);
+		renderModel(floor04, shadow, path04);
+		renderModel(container, shadow, containerMat);
+		renderModel(woodenElements, shadow, woodMat);
+		renderModel(debris, shadow, debMat);
+		renderModel(cart, shadow, cartMat);
+
+
+
 	
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete" << std::endl;
@@ -163,14 +172,10 @@ void Application::Run()
  		
 		//--------------------------------------------------------------------------
 
-	
-		setProjectionViewMatrix(m_Camera, m_Width, m_Height);
-
+		renderer->SetProps();
+		//setProjectionViewMatrix(m_Camera, m_Width, m_Height);
 
 		//-----------------------------------RENDER BLOOM------------------------------------------------
-	
-
-
 		//if (m_Player->showModel)
 		//{
 		//	//renderModel(cube, light, cubeObj);
@@ -181,32 +186,44 @@ void Application::Run()
 		//}
 		bloom->Bind();
 
-		renderSimpleShadow(simpleShadow, m_Camera, lightPos, m_Width, m_Height, m_Shadow, m_Farplane, shadowMap);
+		renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
 		renderModel(floor01, simpleShadow, path01);
 		renderModel(floor02, simpleShadow, path02);
 		renderModel(floor03, simpleShadow, path03);
+		renderModel(floor04, simpleShadow, path04);
+		renderModel(woodenElements, simpleShadow, woodMat);
 		renderModel(character, simpleShadow, m_Player->getModelMatrix());
+		renderModel(container, simpleShadow, containerMat);
+		renderModel(debris, simpleShadow, debMat);
+		renderModel(cart, simpleShadow, cartMat);
+		renderModel(rails, simpleShadow, railMat);
+
+
+
 
 		if(m_NormalMap)
 		{
-			renderLight(normal, m_Camera, m_Width, m_Height);
+			renderer->renderLight(normal);
 			renderModel(wall01, normal, wallMat01);
 			renderModel(wall02, normal, wallMat02);
 			renderModel(wall03, normal, wallMat03);
 			renderModel(wall04, normal, wallMat04);
 			renderModel(wall05, normal, wallMat05);
+			renderModel(wall06, normal, wallMat06);
 		}
 		else
 		{
-			renderLight(pointLights, m_Camera, m_Width, m_Height);
+			renderer->renderLight(pointLights);
 			renderModel(wall01, pointLights, wallMat01);
 			renderModel(wall02, pointLights, wallMat02);
 			renderModel(wall03, pointLights, wallMat03);
 			renderModel(wall04, pointLights, wallMat04);
 			renderModel(wall05, pointLights, wallMat05);
+			renderModel(wall06, pointLights, wallMat06);
+
 		}	
 
-		renderLight(pointLights, m_Camera, m_Width, m_Height);
+		renderer->renderLight(pointLights);
 		renderModel(multipleLights, pointLights, lights);
 		renderModel(floor01, pointLights, path01);
 		renderModel(floor02, pointLights, path02);
@@ -219,9 +236,6 @@ void Application::Run()
 
 		//-------------------------------------BLOOM END---------------------------------------------------------------
 
-	
-		
-		
 		std::cout << m_Player->position.x << ", " << m_Player->position.y << ", " << m_Player->position.z << std::endl;
 		
 
@@ -244,7 +258,6 @@ void Application::Run()
 	bloomFinal.deleteShader();
 	blur.deleteShader();
 	shadow.deleteShader();
-	simpleLight.deleteShader();
 	pointLights.deleteShader();
 	normal.deleteShader();
 

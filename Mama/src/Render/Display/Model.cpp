@@ -199,7 +199,7 @@ unsigned int TextureFromFile(const char* path, std::string& directory, bool gamm
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------Call in DCVisMain.cpp--------------------------------------------------------------------------
-void renderModel(Model model, Shader shader, glm::mat4 matrix)
+void renderModel(Model &model, Shader &shader, glm::mat4 matrix)
 {
 	shader.setMat4("model", matrix);
 	model.draw(shader);

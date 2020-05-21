@@ -12,6 +12,7 @@
 
 #include "../Render/Effects/Bloom.h"
 #include "../Render/Effects/ShadowMap.h"
+#include "../Render/Renderer.h"
 
 
 class Application
@@ -151,7 +152,6 @@ private: //FUNCTIONS
 			Event* event = static_cast<Event*>(glfwGetWindowUserPointer(window));
 			event->OnMouseScrolled(offsetX, offsetY);
 		});
-	
 	}
 
 };

@@ -191,6 +191,7 @@
     <ClInclude Include="src\Render\Display\stb_image.h" />
     <ClInclude Include="src\Render\Effects\Bloom.h" />
     <ClInclude Include="src\Render\Effects\ShadowMap.h" />
+    <ClInclude Include="src\Render\Renderer.h" />
     <ClInclude Include="src\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
