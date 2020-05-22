@@ -1,6 +1,6 @@
 #shader vertex
 #version 330 core
-#define NR_PT_LT 7
+#define NR_PT_LT 8
 
 layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec3 aNormal;
@@ -59,7 +59,7 @@ void main()
 
 #shader fragment
 #version 330 core
-#define NR_PT_LT 7
+#define NR_PT_LT 8
 
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 BrightColor;

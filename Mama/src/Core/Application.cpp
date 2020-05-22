@@ -14,6 +14,24 @@ void renderModel(Model &model, Shader &shader, glm::mat4 matrix);
 
 void lose();
 
+struct Cube
+{
+	glm::vec3 position[12] = { glm::vec3(-7.02779, 14.351f, -14.282f),
+								glm::vec3(0.80503f, 11.556f, -13.148f),
+								glm::vec3(4.28787f, 10.535f, -11.942f),
+								glm::vec3(5.101f, 10.297f, -12.332f),
+								glm::vec3(9.8748f, 9.2001f, -8.9282f),
+								glm::vec3(13.1428f, 8.92818f, -10.166f),
+								glm::vec3(16.609f, 8.9282f, -12.944f),
+								glm::vec3(19.5601f, 8.92818, -13.144f),
+								glm::vec3(19.902f, 8.9282f, -9.9726f),
+								glm::vec3(9.87476f, 8.92818f, -5.80611f),
+								glm::vec3(12.9748f, 8.92818f, -2.43073f),
+								glm::vec3(13.3258f, 8.92818f, 0.582654f)
+	};
+};
+
+
 void Application::Run()
 {
 	//--------------locals------------
@@ -22,6 +40,7 @@ void Application::Run()
 	Bloom* bloom = new Bloom();
 	ShadowMap* shadowMap = new ShadowMap();
 	Renderer* renderer = new Renderer();
+	Cube cube;
 
 	//Frame Rate independency
 	float deltaTime = 0.0f, lastFrame = 0.0f;
@@ -73,6 +92,9 @@ void Application::Run()
 	Model wall06("Models/Walls/Wall06.obj");
 	glm::mat4 wallMat06 = glm::mat4(1.0f);
 
+	Model rocks("Models/Single Elements/Rock/Rocks.obj");
+	glm::mat4 rockMat = glm::mat4(1.0f);
+
 	Model woodenElements("Models/Single Elements/woodenElements.obj");
 	glm::mat4 woodMat = glm::mat4(1.0f);
 	
@@ -90,6 +112,20 @@ void Application::Run()
 
 	Model rails("Models/Single Elements/MineCart/rails.obj");
 	glm::mat4 railMat = glm::mat4(1.0f);
+
+	Model fence("Models/Single Elements/Fence/fence.obj");
+	glm::mat4 fenceMat = glm::mat4(1.0f);
+
+	Model boxes("Models/Single Elements/Box/boxes.obj");
+	glm::mat4 boxMat = glm::mat4(1.0f);
+	
+	Model cubes("Models/Single Elements/Cubes/cube.obj");
+	glm::mat4 cubeMat[12] = { glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f) ,glm::mat4(1.0f) ,glm::mat4(1.0f)};
+	for (int i = 0; i < sizeof(cube.position)/sizeof(cube.position[0]); i++)
+	{
+		cubeMat[i] = glm::translate(cubeMat[i], cube.position[i]);
+	}
+
 
 	Model test("Models/testobj/test.obj");
 	glm::mat4 testobj = glm::mat4(1.0f);
@@ -162,8 +198,8 @@ void Application::Run()
 		renderModel(woodenElements, shadow, woodMat);
 		renderModel(debris, shadow, debMat);
 		renderModel(cart, shadow, cartMat);
-
-
+		renderModel(fence, shadow, fenceMat);
+		renderModel(boxes, shadow, boxMat);
 
 	
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -176,14 +212,7 @@ void Application::Run()
 		//setProjectionViewMatrix(m_Camera, m_Width, m_Height);
 
 		//-----------------------------------RENDER BLOOM------------------------------------------------
-		//if (m_Player->showModel)
-		//{
-		//	//renderModel(cube, light, cubeObj);
-		//	//renderModel(cube2, light, cubeObj2);
-		//	//
-		//	//cubeObj = glm::rotate(cubeObj, 0.01f, glm::vec3(0, 1, 0));
-		//	//cubeObj2 = glm::rotate(cubeObj2, 0.01f, glm::vec3(0, 1, 0));
-		//}
+	
 		bloom->Bind();
 
 		renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
@@ -197,9 +226,21 @@ void Application::Run()
 		renderModel(debris, simpleShadow, debMat);
 		renderModel(cart, simpleShadow, cartMat);
 		renderModel(rails, simpleShadow, railMat);
+		renderModel(fence, simpleShadow, fenceMat);
+		renderModel(boxes, simpleShadow, boxMat);
+
+		if (m_Player->showModel)
+		{
+			renderer->renderDefault(basic);
+			for (int i = 0; i < sizeof(cube.position) / sizeof(cube.position[0]); i++)
+			{
+				renderModel(cubes, basic, cubeMat[i]);
+				cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 0));
+			}
 
 
 
+		}
 
 		if(m_NormalMap)
 		{
@@ -210,6 +251,7 @@ void Application::Run()
 			renderModel(wall04, normal, wallMat04);
 			renderModel(wall05, normal, wallMat05);
 			renderModel(wall06, normal, wallMat06);
+			renderModel(rocks, normal, rockMat);
 		}
 		else
 		{
@@ -220,7 +262,7 @@ void Application::Run()
 			renderModel(wall04, pointLights, wallMat04);
 			renderModel(wall05, pointLights, wallMat05);
 			renderModel(wall06, pointLights, wallMat06);
-
+			renderModel(rocks, pointLights, rockMat);
 		}	
 
 		renderer->renderLight(pointLights);
@@ -301,32 +343,4 @@ void lose()
 	case IDTRYAGAIN:
 		break;
 	}
-}
-
-uint32_t quadVAO, quadVBO;
-void RenderQuad()
-{
-	if (quadVAO == 0)
-	{
-		float quadVertices[] = {
-			// positions        // texture Coords
-			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-			 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-			 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-		};
-		// setup plane VAO
-		glGenVertexArrays(1, &quadVAO);
-		glGenBuffers(1, &quadVBO);
-		glBindVertexArray(quadVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	}
-	glBindVertexArray(quadVAO);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	glBindVertexArray(0);
 }

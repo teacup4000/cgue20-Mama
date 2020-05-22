@@ -94,6 +94,13 @@ void Renderer::renderSimpleShadow(Shader& shader, glm::vec3& lightPos,bool shado
 	shader.setFloat("pointLights[6].linear", 0.09);
 	shader.setFloat("pointLights[6].quadratic", 0.032);
 
+	shader.setVec3("pointLights[7].position", m_Lights.position[7]);
+	shader.setVec3("pointLights[7].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[7].diffuse", 1.0f, 1.0f, 1.0f);
+	shader.setVec3("pointLights[7].specular", 0, 0, 0);
+	shader.setFloat("pointLights[7].constant", 0.0f);
+	shader.setFloat("pointLights[7].linear", 0.09);
+	shader.setFloat("pointLights[7].quadratic", 0.032);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, map->GetMap());
@@ -200,6 +207,14 @@ void Renderer::renderLight(Shader& shader)
 	shader.setFloat("pointLights[6].constant", 0.0f);
 	shader.setFloat("pointLights[6].linear", 0.09);
 	shader.setFloat("pointLights[6].quadratic", 0.032);
+
+	shader.setVec3("pointLights[7].position", m_Lights.position[7]);
+	shader.setVec3("pointLights[7].ambient", 0.05f, 0.05f, 0.05f);
+	shader.setVec3("pointLights[7].diffuse", 1.0f, 1.0f, 1.0f);
+	shader.setVec3("pointLights[7].specular", 0, 0, 0);
+	shader.setFloat("pointLights[7].constant", 0.0f);
+	shader.setFloat("pointLights[7].linear", 0.09);
+	shader.setFloat("pointLights[7].quadratic", 0.032);
 
 	shader.setMat4("projection", m_ProjectionMatrix);
 	shader.setMat4("view", m_View);
