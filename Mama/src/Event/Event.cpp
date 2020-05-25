@@ -12,6 +12,11 @@ void Event::SetFullScreen()
 		glfwSetWindowMonitor(m_Window, NULL, 0, 0, m_Width, m_Height, 0);
 }
 
+void Event::SetRestart()
+{
+	m_Restart = false;
+}
+
 void Event::OnKeyPressed(int key, int code, int action, int modifers)
 {
 	/* Layers are dependend to the "doTheLayer" function in UI.cpp. If changing something in this file, make sure you change it there too! */
@@ -20,6 +25,26 @@ void Event::OnKeyPressed(int key, int code, int action, int modifers)
 		m_Fullscreen = !m_Fullscreen;
 		SetFullScreen();
 	}
+
+	if (key == GLFW_KEY_F2 && action == GLFW_PRESS)
+	{
+		m_Restart = true;
+	}
+
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(m_Window, true);
+	}
+
+	if (glfwGetKey(m_Window, GLFW_KEY_1) == GLFW_PRESS)
+	{
+		m_Player->m_ShowModel = true;
+	}
+}
+
+void Event::ProcessPlayerMovements(float &deltatime)
+{
+
 }
 
 /** process input from Mouse buttons */

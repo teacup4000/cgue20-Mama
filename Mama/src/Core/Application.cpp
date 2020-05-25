@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Application.h"
 
-//#define NOMINMAX
+
 
 
 //------globals------
@@ -12,7 +12,7 @@ int count = 0;
 //render Shaders
 void renderModel(Model &model, Shader &shader, glm::mat4 matrix);
 
-void lose();
+//void lose();
 
 struct Cube
 {
@@ -40,7 +40,9 @@ void Application::Run()
 	Bloom* bloom = new Bloom();
 	ShadowMap* shadowMap = new ShadowMap();
 	Renderer* renderer = new Renderer();
+	Game* game = new Game();
 	Cube cube;
+	event.SetRestart();
 
 	//Frame Rate independency
 	float deltaTime = 0.0f, lastFrame = 0.0f;
@@ -171,6 +173,7 @@ void Application::Run()
 		m_Player->move(m_Window, deltaTime);
 		//processInput(window, deltaTime);
 		SetGLFWEvents();
+		
 	
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete" << std::endl;
@@ -229,7 +232,7 @@ void Application::Run()
 		renderModel(fence, simpleShadow, fenceMat);
 		renderModel(boxes, simpleShadow, boxMat);
 
-		if (m_Player->showModel)
+		if (m_Player->m_ShowModel)
 		{
 			renderer->renderDefault(basic);
 			for (int i = 0; i < sizeof(cube.position) / sizeof(cube.position[0]); i++)
@@ -278,14 +281,21 @@ void Application::Run()
 
 		//-------------------------------------BLOOM END---------------------------------------------------------------
 
-		std::cout << m_Player->position.x << ", " << m_Player->position.y << ", " << m_Player->position.z << std::endl;
+		std::cout << m_Player->getPlayerPosition().x << ", " << m_Player->getPlayerPosition().y << ", " << m_Player->getPlayerPosition().z << std::endl;
 		
-
-		if (m_Player->position.x >= 1.0f && m_Player->position.x <= 1.3f && m_Player->position.z >= -7.0f && m_Player->position.z <= -5.0f ||
-			m_Player->position.x >= -0.7f && m_Player->position.x <= -0.5f && m_Player->position.z >= -13.2f && m_Player->position.z <= -13.0f)
-		{
-			lose();
+		for (int i = 0; i < sizeof(cube.position) / sizeof(cube.position[0]); i++) {
+			//ToDo: If Player collides with cube objects
+			if (m_Player->getPlayerPosition() == cube.position[i]) {
+				//lose
+			}
 		}
+
+		//
+		//if (m_Player->getPlayerPosition().x >= 1.0f && m_Player->getPlayerPosition().x <= 1.3f && m_Player->getPlayerPosition().z >= -7.0f && m_Player->getPlayerPosition().z <= -5.0f ||
+		//	m_Player->getPlayerPosition().x >= -0.7f && m_Player->getPlayerPosition().x <= -0.5f && m_Player->getPlayerPosition().z >= -13.2f && m_Player->getPlayerPosition().z <= -13.0f)
+		//{
+		//	//lose();
+		//}
 		
 		//m_Player->getDown(deltaTime);
 		//std::cout << glm::to_string(camera.position) << std::endl;
@@ -326,21 +336,24 @@ void Application::CreateGLFWWindow()
 }
 
 
-void lose()
-{
-	int msgboxID = MessageBox(
-		NULL,
-		(LPCTSTR)"Game Over! Want to try again?",
-		(LPCTSTR)"Player1",
-		MB_ICONQUESTION | MB_CANCELTRYCONTINUE 
-	);
 
-	switch (msgboxID)
-	{
-	case IDCANCEL:
-		glfwTerminate();
-		break;
-	case IDTRYAGAIN:
-		break;
-	}
-}
+
+
+//void lose()
+//{
+//	int msgboxID = MessageBox(
+//		NULL,
+//		(LPCTSTR)"Game Over! Want to try again?",
+//		(LPCTSTR)"Player1",
+//		MB_ICONQUESTION | MB_CANCELTRYCONTINUE 
+//	);
+//
+//	switch (msgboxID)
+//	{
+//	case IDCANCEL:
+//		glfwTerminate();
+//		break;
+//	case IDTRYAGAIN:
+//		break;
+//	}
+//}

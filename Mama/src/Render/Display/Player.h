@@ -1,5 +1,4 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
 #define GLM_ENABLE_EXPERIMENTAL
 #include <gtx/string_cast.hpp>
 #pragma once
@@ -11,92 +10,81 @@
 class Player
 {
 public:
-	std::vector<Model> playerObject;
-	glm::vec3 position;
-	glm::mat4 modelMatrix;
-	glm::mat4 rotation;
-	glm::vec3 moveVector;
-	glm::vec3 right = glm::vec3(1, 0, 0);
-	glm::vec3 front = glm::vec3(0, 0, 1);
-
-	float velocity;
-	float run_speed = 10.0f;
-	float turn_speed = 60.0f;
-	float currentSpeed = 0;
-	float currentTurnSpeed = 0;
-	bool showModel;
-	bool isPressed = false;
+	std::vector<Model> m_PlayerModel;
+	bool m_ShowModel;
 
 	Player() {}
 
 	Player(glm::vec3 startPosition);
-	virtual void setPlayerModel(std::vector<Model> playerObject);
+	void setPlayerModel(std::vector<Model> playerObject);
 
-	virtual glm::mat4 getModelMatrix();
-	virtual std::vector<Model> getPlayerobject();
-	virtual glm::vec3 getPlayerPosition();
+	glm::mat4 getModelMatrix();
+	std::vector<Model> getPlayerobject();
+	glm::vec3 getPlayerPosition();
+	glm::vec3 getPlayerFront();
+	glm::vec3 getPlayerRight();
 
-	void move(GLFWwindow *window, float& deltaTime)
-	{
-		processKeyboard(window, deltaTime);
-		rotate(currentTurnSpeed, deltaTime);
+	void setFrontX(float x) { m_Front.x = x; }
+	void setFrontY(float y) { m_Front.y = y; }
+	void setFrontZ(float z) { m_Front.z = z; }
 
-		this->modelMatrix = glm::translate(modelMatrix, moveVector);
-	}
-	void setModel(bool setting) {
-		showModel = setting;
-	}
-
-	void getDown( float& deltaTime)
-	{
-		velocity = run_speed * deltaTime;
-		moveVector = glm::vec3(0);
-		//std::cout << "This is Y : " << position.y << std::endl;
-		if( position.y > 15.0f) {
-			moveVector.y -= velocity;
-			position += moveVector; 
-			this->modelMatrix = glm::translate(modelMatrix, moveVector);
-			
-		}
-	}
+	void setRight(glm::vec3 right) { m_Right = right; }
+	void setFront(glm::vec3 front) { m_Front = front; }
+	void setModel(bool setting) { m_ShowModel = setting; }
+	void move(GLFWwindow *window, float& deltaTime);
+	void getDown(float& deltaTime);
 
 private:
+	glm::vec3 m_Position;
+	glm::mat4 m_ModelMatrix;
+	glm::mat4 m_Rotation;
+	glm::vec3 m_MoveVector;
+	glm::vec3 m_Right = glm::vec3(1, 0, 0);
+	glm::vec3 m_Front = glm::vec3(0, 0, 1);
+
+	float m_PlayerVelocity;
+	float m_PlayerRunSpeed = 10.0f;
+	float m_PlayerTurnSpeed = 60.0f;
+	float m_PlayerCurrentSpeed = 0;
+	float m_PlayerCurrentTurnSpeed = 0;
+	bool m_IsPressed = false;
+
 
 	virtual void rotate(float& movementSpeed, float& deltaTime);
 	void processKeyboard(GLFWwindow *window, float& deltaTime)
 	{
-		velocity = run_speed * deltaTime;
-		moveVector = glm::vec3(0);
+		m_PlayerVelocity = m_PlayerRunSpeed * deltaTime;
+		m_MoveVector = glm::vec3(0);
 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
-			moveVector.z = -velocity * front.z;
-			moveVector.x = -velocity * front.x;
-			std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+			m_MoveVector.z = -m_PlayerVelocity * m_Front.z;
+			m_MoveVector.x = -m_PlayerVelocity * m_Front.x;
+			std::cout << m_Position.x << ", " << m_Position.y << ", " << m_Position.z << std::endl;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-			moveVector.z = velocity * front.z;
-			moveVector.x = velocity * front.x;
-			std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+			m_MoveVector.z = m_PlayerVelocity * m_Front.z;
+			m_MoveVector.x = m_PlayerVelocity * m_Front.x;
+			std::cout << m_Position.x << ", " << m_Position.y << ", " << m_Position.z << std::endl;
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
-			this->currentTurnSpeed = turn_speed;
-			moveVector.x = -velocity * right.x;
-			moveVector.z = -velocity * right.z;
-			std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+			this->m_PlayerCurrentTurnSpeed = m_PlayerTurnSpeed;
+			m_MoveVector.x = -m_PlayerVelocity * m_Right.x;
+			m_MoveVector.z = -m_PlayerVelocity * m_Right.z;
+			std::cout << m_Position.x << ", " << m_Position.y << ", " << m_Position.z << std::endl;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
-			this->currentTurnSpeed = -turn_speed;
-			moveVector.x = velocity * right.x;
-			moveVector.z = velocity * right.z;
+			this->m_PlayerCurrentTurnSpeed = -m_PlayerTurnSpeed;
+			m_MoveVector.x = m_PlayerVelocity * m_Right.x;
+			m_MoveVector.z = m_PlayerVelocity * m_Right.z;
 
-			std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+			std::cout << m_Position.x << ", " << m_Position.y << ", " << m_Position.z << std::endl;
 		}
 		else
 		{
-			this->currentTurnSpeed = 0;
+			this->m_PlayerCurrentTurnSpeed = 0;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
@@ -105,38 +93,22 @@ private:
 			//	moveVector.y = velocity + 1;
 			//}
 			
-			std::cout << position.x << ", " << position.y << ", " << position.z << std::endl;
+			std::cout << m_Position.x << ", " << m_Position.y << ", " << m_Position.z << std::endl;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		
-			moveVector.y = -velocity;
-			std::cout <<"This is velocity" << position.y  << std::endl;
+			m_MoveVector.y = -m_PlayerVelocity;
+			std::cout <<"This is velocity" << m_Position.y  << std::endl;
 		}
 		
 		else
 		{
-			this->currentTurnSpeed = 0;
-			moveVector.y = 0;
+			this->m_PlayerCurrentTurnSpeed = 0;
+			m_MoveVector.y = 0;
 		}
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		{
-			glfwSetWindowShouldClose(window, true);
-		}
-		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-		{
-			showModel = true;
-			
-		}
-		/*	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_RELEASE)
-		{
-			
-			
-		}*/
 
-		position += moveVector;
+		m_Position += m_MoveVector;
 	}
 	
 	
 };
-
-#endif

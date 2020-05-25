@@ -3,6 +3,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
+#include "Game.h"
+
 #include "INIReader.h"
 #include "../Event/Events.h"
 #include "../Render/Display/Player.h"
@@ -134,6 +136,8 @@ private: //FUNCTIONS
 
 	void SetGLFWEvents()
 	{
+		event.SetNativeWindow(m_Window);
+		event.setNativePlayer(m_Player);
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int code, int action, int mods)
 		{
 		Event* event = static_cast<Event*>(glfwGetWindowUserPointer(window));

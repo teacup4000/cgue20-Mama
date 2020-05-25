@@ -162,6 +162,7 @@
     </ClCompile>
     <ClCompile Include="src\Core\EntryPoint.cpp" />
     <ClCompile Include="src\Core\Application.cpp" />
+    <ClCompile Include="src\Core\Game.cpp" />
     <ClCompile Include="src\Render\Display\Camera.cpp" />
     <ClCompile Include="src\Render\Display\Mesh.cpp" />
     <ClCompile Include="src\Render\Display\Model.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\Core.h" />
     <ClInclude Include="src\Core\Framebuffer.h" />
+    <ClInclude Include="src\Core\Game.h" />
     <ClInclude Include="src\Event\Events.h" />
     <ClInclude Include="src\Render\Display\Camera.h" />
     <ClInclude Include="src\Core\INIReader.h" />
