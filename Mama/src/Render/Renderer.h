@@ -2,6 +2,8 @@
 #include "Display/Shader.h"
 #include "Display/Camera.h"
 #include "Effects/ShadowMap.h"
+#include "Effects/FrustumCulling.h"
+
 
 struct Lights
 {
@@ -26,10 +28,12 @@ public:
 	void renderSimpleLight(Shader& shader, glm::vec3& lightPos, bool shadow, float far_plane, ShadowMap* map);
 	void renderLight(Shader& shader);
 	void renderTransparent(Shader &shader, float &brightness);
+	bool isFrustum(Model &model, glm::mat4 matrix);
 
 private:
 	uint32_t m_Width, m_Height;
 	Camera* m_Camera;
+	FrustumCulling* m_Frustum;
 
 	Lights m_Lights;
 	glm::mat4 m_ProjectionMatrix;

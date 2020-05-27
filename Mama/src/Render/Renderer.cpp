@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "Renderer.h"
-#include "Display/Camera.h"
-#include "Display/Shader.h"
 #include "Display/Model.h"
-#include "Effects/ShadowMap.h"
 
 #include <glad/glad.h>
 
@@ -24,6 +21,8 @@ void Renderer::Create(uint32_t width, uint32_t height, Camera* camera)
 	m_Width = width;
 	m_Height = height;
 	m_Camera = camera;
+
+	m_Frustum = new FrustumCulling();
 }
 
 void Renderer::renderSimpleShadow(Shader& shader, glm::vec3& lightPos,bool shadow, float far_plane, ShadowMap* map)
@@ -236,3 +235,8 @@ void Renderer::renderTransparent(Shader& shader, float& brightness)
 	glActiveTexture(GL_TEXTURE0);
 }
 
+bool Renderer::isFrustum(Model &model, glm::mat4 matrix)
+{
+	glm::mat4 mvp = m_ProjectionMatrix * m_View * matrix;
+	return m_Frustum->isFrustum(model, matrix, mvp);
+}

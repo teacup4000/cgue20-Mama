@@ -33,6 +33,12 @@ public:
 		return m_MouseSensitivity;
 	}
 
+	glm::vec3 getUp() { return m_Up; }
+	glm::vec3 getFront() { return m_Front; }
+	float getYaw() { return m_Yaw; }
+	float getPitch() { return m_Yaw; }
+
+
 private:
 
 	//Camera Attributes

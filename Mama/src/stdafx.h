@@ -1,5 +1,6 @@
 //this is a precompiled header file
 #include <iostream>
+#include <numeric> 
 #include <string>
 #include <sstream>
 #include <fstream>
