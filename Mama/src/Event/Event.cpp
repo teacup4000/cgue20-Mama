@@ -40,6 +40,11 @@ void Event::OnKeyPressed(int key, int code, int action, int modifers)
 	{
 		m_Player->m_ShowModel = true;
 	}
+
+	if (glfwGetKey(m_Window, GLFW_KEY_F8) == GLFW_PRESS)
+	{
+		f->Toggle();
+	}
 }
 
 void Event::ProcessPlayerMovements(float &deltatime)

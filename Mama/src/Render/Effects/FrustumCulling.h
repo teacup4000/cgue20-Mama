@@ -28,8 +28,16 @@ public:
 		D		= 3
 	};
 
+	FrustumCulling()
+	{
+		m_Off = false;
+	}
+
 	bool isFrustum(Model &model, glm::mat4 matrix, glm::mat4 proj)
 	{
+		if (m_Off)
+			return true;
+
 		CalculateFrustum(matrix, proj);
 		float size = model.GetDistance() / 4;
 		return FrustumBox(model.GetPosition(), size);
@@ -111,47 +119,36 @@ public:
 		}
 	}
 
-	bool GetFrustum(glm::vec3 vec)
+	bool FrustumBox(glm::vec3 center, float radius)
 	{
 		for (int i = 0; i < 6; i++)
 		{
-			if (m_Frustum[i][A] * vec.x + m_Frustum[i][B] * vec.y + m_Frustum[i][C] * vec.z + m_Frustum[i][D] <= 0)
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	bool FrustumBox(glm::vec3 vec, float size)
-	{
-		for (int i = 0; i < 6; i++)
-		{
-			if (m_Frustum[i][A] * (vec.x - size) + m_Frustum[i][B] * (vec.y - size) + m_Frustum[i][C] * (vec.z - size) + m_Frustum[i][D] > 0)
+			if (m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D] > 0)
 				continue;
-			if (m_Frustum[i][A] * (vec.x + size) + m_Frustum[i][B] * (vec.y - size) + m_Frustum[i][C] * (vec.z - size) + m_Frustum[i][D] > 0)
+			if (m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D] > 0)
 				continue;
-			if (m_Frustum[i][A] * (vec.x - size) + m_Frustum[i][B] * (vec.y + size) + m_Frustum[i][C] * (vec.z - size) + m_Frustum[i][D] > 0)
+			if (m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D] > 0)
 				continue;
-			if (m_Frustum[i][A] * (vec.x + size) + m_Frustum[i][B] * (vec.y + size) + m_Frustum[i][C] * (vec.z - size) + m_Frustum[i][D] > 0)
+			if (m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D] > 0)
 				continue;
-			if (m_Frustum[i][A] * (vec.x - size) + m_Frustum[i][B] * (vec.y - size) + m_Frustum[i][C] * (vec.z + size) + m_Frustum[i][D] > 0)
+			if (m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D] > 0)
 				continue;
-			if (m_Frustum[i][A] * (vec.x + size) + m_Frustum[i][B] * (vec.y - size) + m_Frustum[i][C] * (vec.z + size) + m_Frustum[i][D] > 0)
+			if (m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D] > 0)
 				continue;
-			if (m_Frustum[i][A] * (vec.x - size) + m_Frustum[i][B] * (vec.y + size) + m_Frustum[i][C] * (vec.z + size) + m_Frustum[i][D] > 0)
+			if (m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D] > 0)
 				continue;
-			if (m_Frustum[i][A] * (vec.x + size) + m_Frustum[i][B] * (vec.y + size) + m_Frustum[i][C] * (vec.z + size) + m_Frustum[i][D] > 0)
+			if (m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D] > 0)
 				continue;
 
-			// If we get here, it isn't in the frustum
 			return false;
 		}
 
 		return true;
 	}
 
+	void Toggle() { m_Off = !m_Off; }
+
 private:
 	float m_Frustum[6][4];
+	bool m_Off;
 };

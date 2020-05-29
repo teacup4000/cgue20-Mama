@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include "../Render/Display/Camera.h"
+#include "../Render/Effects/FrustumCulling.h"
 
 class Event
 {
@@ -13,6 +14,7 @@ public:
 		: m_Camera(camera), m_Width(width), m_Height(height)
 	{
 		m_Fullscreen = false;
+		m_Frustum = false;
 		m_Cursor = false;
 		m_LastX = (float)(m_Width / 2.0f);
 		m_LastY = (float)(m_Height / 2.0f);
@@ -36,8 +38,9 @@ private:
 	GLFWwindow* m_Window;
 	Camera* m_Camera;
 	Player* m_Player;
+	FrustumCulling* f;
 
-	bool m_Fullscreen, m_FirstMouse, m_Cursor;
+	bool m_Fullscreen, m_FirstMouse, m_Cursor, m_Frustum;
 	float m_LastX, m_LastY;
 	int m_Width, m_Height;
 };

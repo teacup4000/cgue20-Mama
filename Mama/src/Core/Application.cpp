@@ -67,100 +67,60 @@ void Application::Run()
 	
 	Model floor01("Models/Floor/Path01.obj");
 	glm::mat4 path01 = glm::mat4(1.0f);
-	float posX = floor01.GetPosition().x, poxY = floor01.GetPosition().y, posZ = floor01.GetPosition().z;
-	std::cout << "floor radius = " << floor01.GetDistance()/4 << std::endl;
-	std::cout << "floor position = x: " << posX << ", y: " << poxY << ", z. " << posZ << std::endl;
-	std::cout << "floor min = " << floor01.GetMin().x <<", " << floor01.GetMin().y << ", " << floor01.GetMin().z << ", max = " << floor01.GetMax().x << ", "<< floor01.GetMax().y << ", " << floor01.GetMax().z  << std::endl;
 
 	Model floor02("Models/Floor/Path02.obj");
 	glm::mat4 path02 = glm::mat4(1.0f);
-	std::cout << "floor radius = " << floor02.GetDistance() / 2 << std::endl;
-	//std::cout << "floor position = x: " << floor02.GetPosition().x << ", y: " << floor02.GetPosition.directory << ", z. " << floor02.GetPosition().z << std::endl;
 
 	Model floor03("Models/Floor/Path03.obj");
 	glm::mat4 path03 = glm::mat4(1.0f);
-	std::cout << "floor radius = " << floor03.GetDistance() / 2 << std::endl;
-	//std::cout << "floor position = x: " << floor03.GetPosition().x << ", y: " << floor03.GetPosition.directory << ", z. " << floor03.GetPosition().z << std::endl;
 
 	Model floor04("Models/Floor/FloorRoom.obj");
 	glm::mat4 path04 = glm::mat4(1.0f);
-	std::cout << "floor radius = " << floor04.GetDistance() / 2 << std::endl;
-	//std::cout << "floor position = x: " << floor04.GetPosition().x << ", y: " << floor04.GetPosition.directory << ", z. " << floor04.GetPosition().z << std::endl;
 
 	Model wall01("Models/Walls/Wall01.obj");
 	glm::mat4 wallMat01 = glm::mat4(1.0f);
-	std::cout << "wall radius = " << wall01.GetDistance() / 2 << std::endl;
-	//std::cout << "wall position = x: " << wall01.GetPosition().x << ", y: " << wall01.GetPosition.directory << ", z. " << wall01.GetPosition().z << std::endl;
 
 	Model wall02("Models/Walls/Wall02.obj");
 	glm::mat4 wallMat02 = glm::mat4(1.0f);
-	std::cout << "wall radius = " << wall02.GetDistance() / 2 << std::endl;
-	//std::cout << "wall position = x: " << wall02.GetPosition().x << ", y: " << wall02.GetPosition.directory << ", z. " << wall02.GetPosition().z << std::endl;
 
 	Model wall03("Models/Walls/Wall03.obj");
 	glm::mat4 wallMat03 = glm::mat4(1.0f);
-	std::cout << "wall radius = " << wall03.GetDistance() / 2 << std::endl;
-	//std::cout << "wall position = x: " << wall03.GetPosition().x << ", y: " << wall03.GetPosition.directory << ", z. " << wall03.GetPosition().z << std::endl;
 
 	Model wall04("Models/Walls/Wall04.obj");
 	glm::mat4 wallMat04 = glm::mat4(1.0f);
-	std::cout << "wall radius = " << wall04.GetDistance() / 2 << std::endl;
-	//std::cout << "wall position = x: " << wall04.GetPosition().x << ", y: " << wall04.GetPosition.directory << ", z. " << wall04.GetPosition().z << std::endl;
 
 	Model wall05("Models/Walls/Wall05.obj");
 	glm::mat4 wallMat05 = glm::mat4(1.0f);
-	std::cout << "wall radius = " << wall05.GetDistance() / 2 << std::endl;
-	//std::cout << "wall position = x: " << wall05.GetPosition().x << ", y: " << wall05.GetPosition.directory << ", z. " << wall05.GetPosition().z << std::endl;
 
 	Model wall06("Models/Walls/Wall06.obj");
 	glm::mat4 wallMat06 = glm::mat4(1.0f);
-	std::cout << "wall radius = " << wall06.GetDistance() / 2 << std::endl;
-	//std::cout << "wall position = x: " << wall06.GetPosition().x << ", y: " << wall06.GetPosition.directory << ", z. " << wall06.GetPosition().z << std::endl;
 
 	Model rocks("Models/Single Elements/Rock/Rocks.obj");
 	glm::mat4 rockMat = glm::mat4(1.0f);
-	std::cout << "rock radius = " << rocks.GetDistance() / 2 << std::endl;
-	//std::cout << "rock position = x: " << rocks.GetPosition().x << ", y: " << rocks.GetPosition.directory << ", z. " << rocks.GetPosition().z << std::endl;
 
 	Model woodenElements("Models/Single Elements/woodenElements.obj");
 	glm::mat4 woodMat = glm::mat4(1.0f);
-	std::cout << "wood radius = " << woodenElements.GetDistance() / 2 << std::endl;
-	//std::cout << "wood position =  x: " << woodenElements.GetPosition().x << ", y: " << woodenElements.GetPosition.directory << ", z. " << woodenElements.GetPosition().z << std::endl;
 
 	Model multipleLights("Models/Lights/MultipleLights.obj");
 	glm::mat4 lights = glm::mat4(1.0f);
-	std::cout << "lights radius = " << multipleLights.GetDistance() / 2 << std::endl;
-	//std::cout << "lights position = x: " << multipleLights.GetPosition().x << ", y: " << multipleLights.GetPosition.directory << ", z. " << multipleLights.GetPosition().z << std::endl;
 
 	Model container("Models/Single Elements/Container/container.obj");
 	glm::mat4 containerMat = glm::mat4(1.0f);
-	std::cout << "container radius = " << container.GetDistance() / 2 << std::endl;
-	//std::cout << "container position = x: " << container.GetPosition().x << ", y: " << floor01.GetPosition.directory << ", z. " << floor01.GetPosition().z << std::endl;
 
 	Model debris("Models/Single Elements/Debris/debris2.obj");
 	glm::mat4 debMat = glm::mat4(1.0f);
-	std::cout << "debris radius = " << debris.GetDistance() / 2 << std::endl;
-	//std::cout << "debris position = x: " << debris.GetPosition().x << ", y: " << debris.GetPosition.directory << ", z. " << debris.GetPosition().z << std::endl;
 
 	Model cart("Models/Single Elements/MineCart/mineCart.obj");
 	glm::mat4 cartMat = glm::mat4(1.0f);
-	std::cout << "cart radius = " << cart.GetDistance() / 2 << std::endl;
-	//std::cout << "cart position = x: " << cart.GetPosition().x << ", y: " << cart.GetPosition.directory << ", z. " << cart.GetPosition().z << std::endl;
 
 	Model rails("Models/Single Elements/MineCart/rails.obj");
 	glm::mat4 railMat = glm::mat4(1.0f);
-	std::cout << "rails radius = " << rails.GetDistance() / 2 << std::endl;
-	//std::cout << "rails position = x: " << rails.GetPosition().x << ", y: " << rails.GetPosition.directory << ", z. " << rails.GetPosition().z << std::endl;
 
 	Model fence("Models/Single Elements/Fence/fence.obj");
 	glm::mat4 fenceMat = glm::mat4(1.0f);
-	std::cout << "fence radius = " << fence.GetDistance() / 2 << std::endl;
-	//std::cout << "fence position = x: " << fence.GetPosition().x << ", y: " << fence.GetPosition.directory << ", z. " << fence.GetPosition().z << std::endl;
 
 	Model boxes("Models/Single Elements/Box/boxes.obj");
 	glm::mat4 boxMat = glm::mat4(1.0f);
-	std::cout << "boxes radius = " << boxes.GetDistance() / 2 << std::endl;
-	//std::cout << "boxes position = x: " << boxes.GetPosition().x << ", y: " << boxes.GetPosition.directory << ", z. " << boxes.GetPosition().z << std::endl;
 
 	Model cubes("Models/Single Elements/Cubes/cube.obj");
 	glm::mat4 cubeMat[12] = { glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f) ,glm::mat4(1.0f) ,glm::mat4(1.0f)};
@@ -247,9 +207,7 @@ void Application::Run()
 			renderModel(floor04, shadow, path04);
 
 		if (renderer->isFrustum(container, containerMat))
-		{
 			renderModel(container, shadow, containerMat);
-		}
 
 		if (renderer->isFrustum(woodenElements, woodMat))
 			renderModel(woodenElements, shadow, woodMat);
