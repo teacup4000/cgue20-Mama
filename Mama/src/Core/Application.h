@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 
 #include "Game.h"
+#include "Physx.h"
 
 #include "INIReader.h"
 #include "../Event/Events.h"
@@ -44,6 +45,7 @@ private: //MEMBERS
 	GLFWwindow* m_Window;
 	Player*	m_Player;
 	Camera* m_Camera;
+	Physx* physx = new Physx();
 
 	float	m_Nearplane = 1.0f, m_Farplane = 100.0f;
 	int		m_Width, m_Height;

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Application.h"
-
+#include "PxPhysicsAPI.h"
+using namespace physx;
 
 
 
@@ -155,6 +156,27 @@ void Application::Run()
 	bloomFinal.setInt("scene", 0);
 	bloomFinal.setInt("bloomBlur", 1);
 
+	//--------setup Physx-------
+	physx->initPhysx();
+
+	m_Player->controller = physx->getController();
+	
+	std::vector<Model> models;
+
+	models.push_back(floor01);
+	models.push_back(floor02);
+	models.push_back(floor03);
+	models.push_back(floor04);
+
+	// TODO den convex bs mit triangle meshes fixen
+	/*models.push_back(wall01);
+	models.push_back(wall02);
+	models.push_back(wall03);
+	models.push_back(wall04);
+	models.push_back(wall05);
+	models.push_back(wall06);*/
+
+	physx->createModels(models);
 
 	//--------Loop-----------
 	while (!glfwWindowShouldClose(m_Window))
@@ -174,6 +196,8 @@ void Application::Run()
 		//processInput(window, deltaTime);
 		SetGLFWEvents();
 		
+		//simulate Physx
+		physx->simulate();
 	
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete" << std::endl;
@@ -386,6 +410,8 @@ void Application::Run()
 	bloom->Destroy();
 
 	glfwTerminate();
+
+	physx->releasePhysx();
 }
 
 void Application::CreateGLFWWindow()
