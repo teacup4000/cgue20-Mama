@@ -7,11 +7,15 @@ Player::Player(glm::vec3 startPosition)
 {
 	std::cout << "Startposition is " << startPosition.x << " " <<startPosition.y << " " << startPosition.z << std::endl;
 	m_Position = startPosition;
-	m_ModelMatrix = glm::mat4(1.0f);
-	m_ModelMatrix = glm::translate(m_ModelMatrix, startPosition);
-	//m_ModelMatrix = glm::rotate(m_ModelMatrix, 90.0f, glm::vec3(0, 1, 0));
-	//m_ModelMatrix = glm::scale(m_ModelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
+	updatePosition();
 	
+}
+
+void Player::updatePosition() {
+	m_ModelMatrix = glm::mat4(1.0f);
+	m_ModelMatrix = glm::translate(m_ModelMatrix, m_Position);
+	m_ModelMatrix = glm::rotate(m_ModelMatrix, 90.0f, glm::vec3(0, 1, 0));
+	m_ModelMatrix = glm::scale(m_ModelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
 }
 
 void Player::setPlayerModel(std::vector<Model> playerObject)
@@ -55,18 +59,5 @@ void Player::move(GLFWwindow *window, float& deltaTime)
 	processKeyboard(window, deltaTime);
 	rotate(m_PlayerCurrentTurnSpeed, deltaTime);
 
-	m_ModelMatrix = glm::translate(m_ModelMatrix, m_MoveVector);
-}
-
-void Player::getDown(float& deltaTime)
-{
-	m_PlayerVelocity = m_PlayerRunSpeed * deltaTime;
-	m_MoveVector = glm::vec3(0);
-	//std::cout << "This is Y : " << position.y << std::endl;
-	if (m_Position.y > 15.0f) {
-		m_MoveVector.y -= m_PlayerVelocity;
-		m_Position += m_MoveVector;
-		this->m_ModelMatrix = glm::translate(m_ModelMatrix, m_MoveVector);
-
-	}
+	updatePosition();
 }

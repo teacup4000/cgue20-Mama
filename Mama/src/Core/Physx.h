@@ -4,6 +4,8 @@
 #include "PxPhysicsAPI.h"
 using namespace physx;
 
+const float GRAVITY = 0.05f;
+
 class Physx
 {
 public:

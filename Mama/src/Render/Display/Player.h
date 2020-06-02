@@ -3,6 +3,7 @@
 #include <gtx/string_cast.hpp>
 #pragma once
 #include "Model.h"
+#include "../../Core/Physx.h"
 #include "PxPhysics.h"
 #include "PxPhysicsAPI.h"
 #include <vector>
@@ -37,7 +38,7 @@ public:
 	void setFront(glm::vec3 front) { m_Front = front; }
 	void setModel(bool setting) { m_ShowModel = setting; }
 	void move(GLFWwindow *window, float& deltaTime);
-	void getDown(float& deltaTime);
+	void updatePosition();
 
 private:
 	glm::vec3 m_Position;
@@ -53,6 +54,8 @@ private:
 	float m_PlayerCurrentSpeed = 0;
 	float m_PlayerCurrentTurnSpeed = 0;
 	bool m_IsPressed = false;
+	float jumpHeight = m_Position.y;
+	float lastJump = 0;
 
 	float lastMoveTime = -1.0f;
 
@@ -67,19 +70,16 @@ private:
 		{
 			m_MoveVector.z = -m_PlayerVelocity * m_Front.z;
 			m_MoveVector.x = -m_PlayerVelocity * m_Front.x;
-			std::cout << m_Position.x << ", " << m_Position.y << ", " << m_Position.z << std::endl;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 			m_MoveVector.z = m_PlayerVelocity * m_Front.z;
 			m_MoveVector.x = m_PlayerVelocity * m_Front.x;
-			std::cout << m_Position.x << ", " << m_Position.y << ", " << m_Position.z << std::endl;
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
 			this->m_PlayerCurrentTurnSpeed = m_PlayerTurnSpeed;
 			m_MoveVector.x = -m_PlayerVelocity * m_Right.x;
 			m_MoveVector.z = -m_PlayerVelocity * m_Right.z;
-			std::cout << m_Position.x << ", " << m_Position.y << ", " << m_Position.z << std::endl;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
@@ -87,48 +87,49 @@ private:
 			m_MoveVector.x = m_PlayerVelocity * m_Right.x;
 			m_MoveVector.z = m_PlayerVelocity * m_Right.z;
 
-			std::cout << m_Position.x << ", " << m_Position.y << ", " << m_Position.z << std::endl;
 		}
 		else
 		{
 			this->m_PlayerCurrentTurnSpeed = 0;
 		}
 
-		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		{
-			//if (moveVector.y < 0.5f && position.y <= 0) {
-			//	moveVector.y = velocity + 1;
-			//}
-			m_MoveVector.y = 0.2;
-			std::cout << m_Position.x << ", " << m_Position.y << ", " << m_Position.z << std::endl;
-		}
-		else if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		
-			m_MoveVector.y = -m_PlayerVelocity;
-			std::cout <<"This is velocity" << m_Position.y  << std::endl;
+			std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch() / 1000;
+			if (m_Position.y - jumpHeight <= 1 && m_MoveVector.y >= 0.0f && (lastJump == 0 || now.count() - lastJump > 1))
+			{
+				m_MoveVector.y = 0.1f;
+			}
+			else if (m_Position.y - jumpHeight >= 1) {
+				std::chrono::duration<float, std::milli> last = std::chrono::high_resolution_clock::now().time_since_epoch();
+				lastJump = last.count() / 1000;
+			}
 		}
 		
 		else
 		{
 			this->m_PlayerCurrentTurnSpeed = 0;
-			m_MoveVector.y = 0;
+			//m_MoveVector.y = 0;
+			jumpHeight = m_Position.y;
 		}
 
 		//m_Position += m_MoveVector;
 
 		//TODO move fkn player model
 		//-----Physx chatacter controller movement------
-		//char buf[4096], *p = buf;
-		std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch(); //TODO Maybe don't use chrono?
+		std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch();
 		float duration = lastMoveTime < 0 ? 0 : now.count() - lastMoveTime; // if first move then lastMove=-1 and no time passed, else calculate time passed
 		lastMoveTime = now.count();
-		//sprintf(buf, "dura: %f\n", duration);
-		//OutputDebugString(buf);
-		physx::PxVec3 disp = physx::PxVec3(m_MoveVector.x, m_MoveVector.y, m_MoveVector.z); //TODO global variable for gravity
-		controller->move(disp, 0.01f, duration / 1000, NULL); //TODO seconds or milliseconds?
+		
+		physx::PxVec3 disp = physx::PxVec3(m_MoveVector.x, m_MoveVector.y - GRAVITY, m_MoveVector.z);
+		controller->move(disp, 0.01f, duration / 1000, NULL);
 		m_Position.x = controller->getPosition().x;
 		m_Position.y = controller->getPosition().y;
 		m_Position.z = controller->getPosition().z;
+		
+		char buf[4096], *p = buf;
+		sprintf(buf, "%f\n", m_MoveVector.y);
+		OutputDebugString(buf);
 	}
 	
 	

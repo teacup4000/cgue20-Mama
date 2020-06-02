@@ -139,6 +139,8 @@ void Application::Run()
 	playerObjects.push_back(character);
 	m_Player->setPlayerModel(playerObjects);
 
+
+
 	shadowMap->GenerateDepthMap(m_Nearplane, m_Farplane);
 	//bloom->GenerateBloomParams(m_Width, m_Height);
 
@@ -165,10 +167,93 @@ void Application::Run()
 
 	models.push_back(floor01);
 	models.push_back(floor02);
-	models.push_back(floor03);
+	//models.push_back(floor03);
 	models.push_back(floor04);
+	//Collision Walls
+	models.push_back(Model("Models/CollisionCubes/cube01.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube02.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube03.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube04.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube05.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube06.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube07.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube08.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube09.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube10.obj")); 
+	models.push_back(Model("Models/CollisionCubes/cube11.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube12.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube13.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube14.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube15.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube16.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube17.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube18.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube19.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube20.obj")); 
+	models.push_back(Model("Models/CollisionCubes/cube21.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube22.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube23.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube24.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube25.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube26.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube27.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube28.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube29.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube30.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube31.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube32.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube33.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube34.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube35.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube36.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube37.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube38.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube39.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube40.obj")); 
+	models.push_back(Model("Models/CollisionCubes/cube41.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube42.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube43.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube44.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube45.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube46.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube47.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube48.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube49.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube50.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube51.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube52.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube53.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube54.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube55.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube56.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube57.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube58.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube59.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube60.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube61.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube62.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube63.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube64.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube65.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube66.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube67.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube68.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube69.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube70.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube71.obj"));
+	//Collision FLoors
+	models.push_back(Model("Models/CollisionCubes/cube72.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube73.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube74.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube75.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube76.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube77.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube78.obj"));
+	models.push_back(Model("Models/CollisionCubes/cube79.obj"));
 
-	// TODO den convex bs mit triangle meshes fixen
+
+
+	// TODO den convex bs mit triangle meshes fixen(or not?)
 	/*models.push_back(wall01);
 	models.push_back(wall02);
 	models.push_back(wall03);
@@ -285,6 +370,7 @@ void Application::Run()
 			renderModel(wall03, basic, wallMat03);
 			renderModel(wall04, basic, wallMat04);
 			renderModel(wall05, basic, wallMat05);
+			renderModel(wall06, basic, wallMat06);
 		}
 		//-----------------------END TEMPORARY-------------------------------------------------------
 
