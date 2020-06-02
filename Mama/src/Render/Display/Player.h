@@ -99,7 +99,7 @@ private:
 			//if (moveVector.y < 0.5f && position.y <= 0) {
 			//	moveVector.y = velocity + 1;
 			//}
-			m_MoveVector.y = 1;
+			m_MoveVector.y = 0.2;
 			std::cout << m_Position.x << ", " << m_Position.y << ", " << m_Position.z << std::endl;
 		}
 		else if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
@@ -124,7 +124,7 @@ private:
 		lastMoveTime = now.count();
 		//sprintf(buf, "dura: %f\n", duration);
 		//OutputDebugString(buf);
-		physx::PxVec3 disp = physx::PxVec3(m_MoveVector.x, m_MoveVector.y - 0.5f, m_MoveVector.z); //TODO global variable for gravity
+		physx::PxVec3 disp = physx::PxVec3(m_MoveVector.x, m_MoveVector.y - 0.1f, m_MoveVector.z); //TODO global variable for gravity
 		controller->move(disp, 0.01f, duration / 1000, NULL); //TODO seconds or milliseconds?
 		m_Position.x = controller->getPosition().x;
 		m_Position.y = controller->getPosition().y;
