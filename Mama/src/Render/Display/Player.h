@@ -124,7 +124,7 @@ private:
 		lastMoveTime = now.count();
 		//sprintf(buf, "dura: %f\n", duration);
 		//OutputDebugString(buf);
-		physx::PxVec3 disp = physx::PxVec3(m_MoveVector.x, m_MoveVector.y - 0.1f, m_MoveVector.z); //TODO global variable for gravity
+		physx::PxVec3 disp = physx::PxVec3(m_MoveVector.x, m_MoveVector.y, m_MoveVector.z); //TODO global variable for gravity
 		controller->move(disp, 0.01f, duration / 1000, NULL); //TODO seconds or milliseconds?
 		m_Position.x = controller->getPosition().x;
 		m_Position.y = controller->getPosition().y;
