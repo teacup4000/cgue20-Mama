@@ -37,7 +37,7 @@ void Application::Run()
 	//--------------locals------------
 	glm::vec3 lightPos = glm::vec3(7.9922f, 50.0f, -4.0616f);
 
-	Bloom* bloom = new Bloom();
+	//Bloom* bloom = new Bloom();
 	ShadowMap* shadowMap = new ShadowMap();
 	Renderer* renderer = new Renderer();
 	Game* game = new Game();
@@ -63,8 +63,8 @@ void Application::Run()
 	Shader pointLights("Shader/multipleLight.shader");
 	Shader normal("Shader/multipleLightsNormalMap.shader");
 	Shader simpleShadow("Shader/multipleLightShadow.shader");
-	Shader blur("Shader/blur.shader");
-	Shader bloomFinal("Shader/bloom_final.shader");
+	//Shader blur("Shader/blur.shader");
+	//Shader bloomFinal("Shader/bloom_final.shader");
 	
 	Model floor01("Models/Floor/Path01.obj");
 	glm::mat4 path01 = glm::mat4(1.0f);
@@ -140,7 +140,7 @@ void Application::Run()
 	m_Player->setPlayerModel(playerObjects);
 
 	shadowMap->GenerateDepthMap(m_Nearplane, m_Farplane);
-	bloom->GenerateBloomParams(m_Width, m_Height);
+	//bloom->GenerateBloomParams(m_Width, m_Height);
 
 	basic.use();
 	basic.setInt("diffuse", 0);
@@ -149,12 +149,12 @@ void Application::Run()
 	normal.use();
 	normal.setInt("normalMap", 1);
 
-	blur.use();
-	blur.setInt("image", 0);
-
-	bloomFinal.use();
-	bloomFinal.setInt("scene", 0);
-	bloomFinal.setInt("bloomBlur", 1);
+	//blur.use();
+	//blur.setInt("image", 0);
+	//
+	//bloomFinal.use();
+	//bloomFinal.setInt("scene", 0);
+	//bloomFinal.setInt("bloomBlur", 1);
 
 	//--------setup Physx-------
 	physx->initPhysx();
@@ -209,169 +209,195 @@ void Application::Run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//------------------------SHADOWS------------------------------------------
-		shadowMap->GenerateCubeMap(lightPos);
-
-		glViewport(0, 0, m_Width, m_Height);
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			std::cout << "Framebuffer not complete" << std::endl;
-
-		shadowMap->RenderDepthMap(shadow, lightPos);
-		renderModel(character, shadow, m_Player->getModelMatrix());
-
-		if (renderer->isFrustum(floor01, path01))
-			renderModel(floor01, shadow, path01);
-
-		if (renderer->isFrustum(floor02, path02))
-			renderModel(floor02, shadow, path02);
-
-		if (renderer->isFrustum(floor03, path03))
-			renderModel(floor03, shadow, path03);
-
-		if (renderer->isFrustum(floor04, path04))
-			renderModel(floor04, shadow, path04);
-
-		if (renderer->isFrustum(container, containerMat))
-			renderModel(container, shadow, containerMat);
-
-		if (renderer->isFrustum(woodenElements, woodMat))
-			renderModel(woodenElements, shadow, woodMat);
-
-		if (renderer->isFrustum(debris, debMat))
-			renderModel(debris, shadow, debMat);
-
-		if (renderer->isFrustum(cart, cartMat))
-			renderModel(cart, shadow, cartMat);
-
-		if (renderer->isFrustum(fence, fenceMat))
-			renderModel(fence, shadow, fenceMat);
-
-		if (renderer->isFrustum(boxes, boxMat))
-			renderModel(boxes, shadow, boxMat);
-
-	
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			std::cout << "Framebuffer not complete" << std::endl;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
- 		
+		//shadowMap->GenerateCubeMap(lightPos);
+		//
+		//glViewport(0, 0, m_Width, m_Height);
+		//if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		//	std::cout << "Framebuffer not complete" << std::endl;
+		//
+		//shadowMap->RenderDepthMap(shadow, lightPos);
+		//renderModel(character, shadow, m_Player->getModelMatrix());
+		//
+		//if (renderer->isFrustum(floor01, path01))
+		//	renderModel(floor01, shadow, path01);
+		//
+		//if (renderer->isFrustum(floor02, path02))
+		//	renderModel(floor02, shadow, path02);
+		//
+		//if (renderer->isFrustum(floor03, path03))
+		//	renderModel(floor03, shadow, path03);
+		//
+		//if (renderer->isFrustum(floor04, path04))
+		//	renderModel(floor04, shadow, path04);
+		//
+		//if (renderer->isFrustum(container, containerMat))
+		//	renderModel(container, shadow, containerMat);
+		//
+		//if (renderer->isFrustum(woodenElements, woodMat))
+		//	renderModel(woodenElements, shadow, woodMat);
+		//
+		//if (renderer->isFrustum(debris, debMat))
+		//	renderModel(debris, shadow, debMat);
+		//
+		//if (renderer->isFrustum(cart, cartMat))
+		//	renderModel(cart, shadow, cartMat);
+		//
+		//if (renderer->isFrustum(fence, fenceMat))
+		//	renderModel(fence, shadow, fenceMat);
+		//
+		//if (renderer->isFrustum(boxes, boxMat))
+		//	renderModel(boxes, shadow, boxMat);
+		//
+		//
+		//if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		//	std::cout << "Framebuffer not complete" << std::endl;
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+ 		//
 		//--------------------------------------------------------------------------
-
+		//glClearColor(0,0,0,0); //gray
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		renderer->SetProps();
+
 		//setProjectionViewMatrix(m_Camera, m_Width, m_Height);
 
 		//-----------------------------------RENDER BLOOM------------------------------------------------
 	
-		bloom->Bind();
-
-		renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
-		if (renderer->isFrustum(floor01, path01))
-			renderModel(floor01, simpleShadow, path01);
-		
-		if (renderer->isFrustum(floor02, path02))
-			renderModel(floor02, simpleShadow, path02);
-		
-		if (renderer->isFrustum(floor03, path03))
-			renderModel(floor03, simpleShadow, path03);
-		
-		if (renderer->isFrustum(floor04, path04))
-			renderModel(floor04, simpleShadow, path04);
-
-		if (renderer->isFrustum(woodenElements, woodMat))
-			renderModel(woodenElements, simpleShadow, woodMat);
-
-		if (renderer->isFrustum(container, containerMat))
-			renderModel(container, simpleShadow, containerMat);
-
-		if (renderer->isFrustum(debris, debMat))
-			renderModel(debris, simpleShadow, debMat);
-
-		if (renderer->isFrustum(cart, cartMat))
-			renderModel(cart, simpleShadow, cartMat);
-
-		if (renderer->isFrustum(rails, railMat))
-			renderModel(rails, simpleShadow, railMat);
-
-		if (renderer->isFrustum(fence, fenceMat))
-			renderModel(fence, simpleShadow, fenceMat);
-
-		if (renderer->isFrustum(boxes, boxMat))
-			renderModel(boxes, simpleShadow, boxMat);
-
-		renderModel(character, simpleShadow, m_Player->getModelMatrix());
-
-		if (m_Player->m_ShowModel)
+		//bloom->Bind();
+		//--------------------THIS IS TEMPORARY----------------------------------------------------------
+		renderer->renderDefault(basic);
 		{
-			renderer->renderDefault(basic);
-			for (int i = 0; i < sizeof(cube.position) / sizeof(cube.position[0]); i++)
-			{
-				if (renderer->isFrustum(cubes, cubeMat[i]))
-					renderModel(cubes, basic, cubeMat[i]);
-				cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 0));
-			}
+			renderModel(floor01, basic, path01);
+			renderModel(floor02, basic, path02);
+			renderModel(floor03, basic, path03);
+			renderModel(floor04, basic, path04);
+			renderModel(woodenElements, basic, woodMat);
+			renderModel(container, basic, containerMat);
+			renderModel(woodenElements, basic, woodMat);
+			renderModel(container, basic, containerMat);
+			renderModel(debris, basic, debMat);
+			renderModel(cart, basic, cartMat);
+			renderModel(rails, basic, railMat);
+			renderModel(fence, basic, fenceMat);
+			renderModel(boxes, basic, boxMat);
+			renderModel(character, basic, m_Player->getModelMatrix());
+			renderModel(wall01, basic, wallMat01);
+			renderModel(wall02, basic, wallMat02);
+			renderModel(wall03, basic, wallMat03);
+			renderModel(wall04, basic, wallMat04);
+			renderModel(wall05, basic, wallMat05);
 		}
+		//-----------------------END TEMPORARY-------------------------------------------------------
 
-		if(m_NormalMap)
-		{
-			renderer->renderLight(normal);
-			if (renderer->isFrustum(wall01, wallMat01))
-				renderModel(wall01, normal, wallMat01);
+		//renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
+		//if (renderer->isFrustum(floor01, path01))
+		//	renderModel(floor01, simpleShadow, path01);
+		//
+		//if (renderer->isFrustum(floor02, path02))
+		//	renderModel(floor02, simpleShadow, path02);
+		//
+		//if (renderer->isFrustum(floor03, path03))
+		//	renderModel(floor03, simpleShadow, path03);
+		//
+		//if (renderer->isFrustum(floor04, path04))
+		//	renderModel(floor04, simpleShadow, path04);
+		//
+		//if (renderer->isFrustum(woodenElements, woodMat))
+		//	renderModel(woodenElements, simpleShadow, woodMat);
+		//
+		//if (renderer->isFrustum(container, containerMat))
+		//	renderModel(container, simpleShadow, containerMat);
+		//
+		//if (renderer->isFrustum(debris, debMat))
+		//	renderModel(debris, simpleShadow, debMat);
+		//
+		//if (renderer->isFrustum(cart, cartMat))
+		//	renderModel(cart, simpleShadow, cartMat);
+		//
+		//if (renderer->isFrustum(rails, railMat))
+		//	renderModel(rails, simpleShadow, railMat);
+		//
+		//if (renderer->isFrustum(fence, fenceMat))
+		//	renderModel(fence, simpleShadow, fenceMat);
+		//
+		//if (renderer->isFrustum(boxes, boxMat))
+		//	renderModel(boxes, simpleShadow, boxMat);
+		//
+		//renderModel(character, simpleShadow, m_Player->getModelMatrix());
+		//
+		//if (m_Player->m_ShowModel)
+		//{
+		//	renderer->renderDefault(basic);
+		//	for (int i = 0; i < sizeof(cube.position) / sizeof(cube.position[0]); i++)
+		//	{
+		//		if (renderer->isFrustum(cubes, cubeMat[i]))
+		//			renderModel(cubes, basic, cubeMat[i]);
+		//		cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 0));
+		//	}
+		//}
+		//
+		//if(m_NormalMap)
+		//{
+		//	renderer->renderLight(normal);
+		//	if (renderer->isFrustum(wall01, wallMat01))
+		//		renderModel(wall01, normal, wallMat01);
+		//
+		//	if (renderer->isFrustum(wall02, wallMat02))
+		//		renderModel(wall02, normal, wallMat02);
+		//
+		//	if (renderer->isFrustum(wall03, wallMat03))
+		//		renderModel(wall03, normal, wallMat03);
+		//
+		//	if (renderer->isFrustum(wall04, wallMat04))
+		//		renderModel(wall04, normal, wallMat04);
+		//
+		//	if (isShown = renderer->isFrustum(wall05, wallMat05))
+		//		renderModel(wall05, normal, wallMat05);
+		//
+		//	if (isShown)
+		//		std::cout << "is shown is " << isShown << std::endl;
+		//	if (!isShown)
+		//		std::cout << "is shown is " << isShown << std::endl;
+		//
+		//
+		//	if (renderer->isFrustum(wall06, wallMat06))
+		//		renderModel(wall06, normal, wallMat06);
+		//
+		//	if (renderer->isFrustum(rocks, rockMat))
+		//		renderModel(rocks, normal, rockMat);
+		//}
+		//else
+		//{
+		//	renderer->renderLight(pointLights);
+		//	if (renderer->isFrustum(wall01, wallMat01))
+		//		renderModel(wall01, pointLights, wallMat01);
+		//
+		//	if (renderer->isFrustum(wall02, wallMat02))
+		//		renderModel(wall02, pointLights, wallMat02);
+		//
+		//	if (renderer->isFrustum(wall03, wallMat03))
+		//		renderModel(wall03, pointLights, wallMat03);
+		//
+		//	if (renderer->isFrustum(wall04, wallMat04))
+		//		renderModel(wall04, pointLights, wallMat04);
+		//
+		//	if (renderer->isFrustum(wall05, wallMat05))
+		//		renderModel(wall05, pointLights, wallMat05);
+		//
+		//	if (renderer->isFrustum(wall06, wallMat06))
+		//		renderModel(wall06, pointLights, wallMat06);
+		//
+		//	if (renderer->isFrustum(rocks, rockMat))
+		//		renderModel(rocks, pointLights, rockMat);
+		//}	
+		//
+		//renderer->renderLight(pointLights);
+		//
+		//if (renderer->isFrustum(multipleLights, lights))
+		//	renderModel(multipleLights, pointLights, lights);
 
-			if (renderer->isFrustum(wall02, wallMat02))
-				renderModel(wall02, normal, wallMat02);
-
-			if (renderer->isFrustum(wall03, wallMat03))
-				renderModel(wall03, normal, wallMat03);
-
-			if (renderer->isFrustum(wall04, wallMat04))
-				renderModel(wall04, normal, wallMat04);
-
-			if (isShown = renderer->isFrustum(wall05, wallMat05))
-				renderModel(wall05, normal, wallMat05);
-
-			if (isShown)
-				std::cout << "is shown is " << isShown << std::endl;
-			if (!isShown)
-				std::cout << "is shown is " << isShown << std::endl;
-
-
-			if (renderer->isFrustum(wall06, wallMat06))
-				renderModel(wall06, normal, wallMat06);
-
-			if (renderer->isFrustum(rocks, rockMat))
-				renderModel(rocks, normal, rockMat);
-		}
-		else
-		{
-			renderer->renderLight(pointLights);
-			if (renderer->isFrustum(wall01, wallMat01))
-				renderModel(wall01, pointLights, wallMat01);
-
-			if (renderer->isFrustum(wall02, wallMat02))
-				renderModel(wall02, pointLights, wallMat02);
-
-			if (renderer->isFrustum(wall03, wallMat03))
-				renderModel(wall03, pointLights, wallMat03);
-
-			if (renderer->isFrustum(wall04, wallMat04))
-				renderModel(wall04, pointLights, wallMat04);
-
-			if (renderer->isFrustum(wall05, wallMat05))
-				renderModel(wall05, pointLights, wallMat05);
-
-			if (renderer->isFrustum(wall06, wallMat06))
-				renderModel(wall06, pointLights, wallMat06);
-
-			if (renderer->isFrustum(rocks, rockMat))
-				renderModel(rocks, pointLights, rockMat);
-		}	
-
-		renderer->renderLight(pointLights);
-
-		if (renderer->isFrustum(multipleLights, lights))
-			renderModel(multipleLights, pointLights, lights);
-
-		bloom->Unbind();
-		bloom->Postprocess(blur, bloomFinal);
-		bloom->Unbind();
+		//bloom->Unbind();
+		//bloom->Postprocess(blur, bloomFinal);
+		//bloom->Unbind();
 
 		//-------------------------------------BLOOM END---------------------------------------------------------------
 
@@ -401,13 +427,13 @@ void Application::Run()
 	}
 	//clean
 	basic.deleteShader();
-	bloomFinal.deleteShader();
-	blur.deleteShader();
+	//bloomFinal.deleteShader();
+	//blur.deleteShader();
 	shadow.deleteShader();
 	pointLights.deleteShader();
 	normal.deleteShader();
 
-	bloom->Destroy();
+	//bloom->Destroy();
 
 	glfwTerminate();
 
