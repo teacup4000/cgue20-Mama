@@ -1,8 +1,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "../Render/Display/Camera.h"
-#include "../Render/Effects/FrustumCulling.h"
+#include "Render/Display/Camera.h"
+#include "Render/Effects/FrustumCulling.h"
 
 class Event
 {
@@ -10,10 +10,9 @@ public:
 	bool m_Restart;
 
 	Event() = default;
-	Event(Camera* camera, int width, int height)
-		: m_Camera(camera), m_Width(width), m_Height(height)
+	Event(Camera* camera, int width, int height, bool fullscreen)
+		: m_Camera(camera), m_Width(width), m_Height(height), m_Fullscreen(fullscreen)
 	{
-		m_Fullscreen = false;
 		m_Frustum = false;
 		m_Cursor = false;
 		m_LastX = (float)(m_Width / 2.0f);
@@ -33,12 +32,13 @@ public:
 	void SetRestart();
 
 	void SetFullScreen();
+	
+	bool GetFrustum() { return m_Frustum; }
 
 private:
 	GLFWwindow* m_Window;
 	Camera* m_Camera;
 	Player* m_Player;
-	FrustumCulling* f;
 
 	bool m_Fullscreen, m_FirstMouse, m_Cursor, m_Frustum;
 	float m_LastX, m_LastY;

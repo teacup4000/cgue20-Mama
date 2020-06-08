@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include "Mesh.h"
 
+										////////////////////////////////////////////////////////////////
+										// THE MESH CLASS											  //
+										// This class stores the data from the object file inside     //
+										// specific vertex, index and array buffers.				  //
+										////////////////////////////////////////////////////////////////
+
 //--------------------------------------------------------------------Mesh.h---------------------------------------------------------------------------------
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures)
 {

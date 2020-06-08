@@ -2,7 +2,11 @@
 //Discription of functions in *.h files
 #include "Shader.h"
 
-
+								////////////////////////////////////////////////////////////////
+								// THE SHADER CLASS											  //
+								// This class loads	a shader file from a specific path and    //
+								// sets its specific fragment and vertex attributes			  //
+								////////////////////////////////////////////////////////////////
 
 //---------------------------------------------------only Shader intern functoins in this cpp------------------------------------------------------------
 Shader::Shader(const std::string& filePath)

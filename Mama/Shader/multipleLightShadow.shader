@@ -64,6 +64,7 @@ uniform vec3 lightPos;
 
 uniform samplerCube depthMap;
 
+uniform vec3 brightness;
 
 // array of offset direction for sampling
 vec3 gridSamplingDisk[20] = vec3[]
@@ -121,7 +122,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos)
 	float distance = length(light.position - fragPos);
 	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 	// combine results
-	vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
+	vec3 ambient = (light.ambient * vec3(texture(material.diffuse, TexCoords))) * brightness;
 	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
 	vec3 specular = light.specular * vec3(texture(material.specular, TexCoords));
 	ambient *= attenuation;

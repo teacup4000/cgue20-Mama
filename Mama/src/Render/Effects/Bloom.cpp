@@ -57,7 +57,7 @@ void Bloom::GenerateBloomParams(uint32_t width, uint32_t height)
 
 void Bloom::Bind()	
 {
-	glViewport(0.0f, 0.0f, m_Width, m_Height);
+	//glViewport(0.0f, 0.0f, m_Width, m_Height);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_BloomFbo);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -91,9 +91,13 @@ void Bloom::Postprocess(Shader &shader1, Shader &shader2)
 	bool horizontal = true, firstIt = true;
 	GLuint amount = 10;
 	shader1.use();
-	for (int j = 1; j <= amount; j++) {
+	for (uint32_t j = 0; j < amount; j++) {
 		//renderBlur(blur, horizontal, firstIt);
-		RenderBlur(shader1, horizontal, firstIt);
+		//RenderBlur(shader1, horizontal, firstIt);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_PingPongFbo[horizontal]);
+		shader1.setInt("horizontal", horizontal);
+		glBindTexture(GL_TEXTURE_2D, firstIt ? m_Colorbuffers[1] : m_PingpongColorbuffers[!horizontal]);
+
 		RenderQuad();
 		horizontal = !horizontal;
 		if (firstIt)
@@ -101,7 +105,15 @@ void Bloom::Postprocess(Shader &shader1, Shader &shader2)
 	}
 
 	Unbind();
-	RenderBloom(shader2, horizontal);
+	//RenderBloom(shader2, horizontal);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	shader2.use();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_Colorbuffers[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_PingpongColorbuffers[!horizontal]);
+	shader2.setFloat("exposure", 1.0f);
 	RenderQuad();
 }
 

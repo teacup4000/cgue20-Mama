@@ -43,13 +43,12 @@ void Event::OnKeyPressed(int key, int code, int action, int modifers)
 
 	if (glfwGetKey(m_Window, GLFW_KEY_F8) == GLFW_PRESS)
 	{
-		f->Toggle();
+		m_Frustum = !m_Frustum;
 	}
 }
 
 void Event::ProcessPlayerMovements(float &deltatime)
 {
-
 }
 
 /** process input from Mouse buttons */

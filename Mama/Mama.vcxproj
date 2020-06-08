@@ -156,6 +156,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\PhysX\PhysX.cpp" />
+    <ClCompile Include="src\Render\Display\AnimMesh.cpp" />
+    <ClCompile Include="src\Render\Display\AnimModel.cpp" />
     <ClCompile Include="glad.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -163,7 +166,6 @@
     <ClCompile Include="src\Core\EntryPoint.cpp" />
     <ClCompile Include="src\Core\Application.cpp" />
     <ClCompile Include="src\Core\Game.cpp" />
-    <ClCompile Include="src\Core\Physx.cpp" />
     <ClCompile Include="src\Render\Display\Camera.cpp" />
     <ClCompile Include="src\Render\Display\Mesh.cpp" />
     <ClCompile Include="src\Render\Display\Model.cpp" />
@@ -181,11 +183,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\PhysX\PhysX.h" />
+    <ClInclude Include="src\Render\Display\AnimMesh.h" />
+    <ClInclude Include="src\Render\Display\AnimModel.h" />
     <ClInclude Include="src\Core\Application.h" />
     <ClInclude Include="src\Core\Core.h" />
-    <ClInclude Include="src\Core\Framebuffer.h" />
     <ClInclude Include="src\Core\Game.h" />
-    <ClInclude Include="src\Core\Physx.h" />
     <ClInclude Include="src\Event\Events.h" />
     <ClInclude Include="src\Render\Display\Camera.h" />
     <ClInclude Include="src\Core\INIReader.h" />
@@ -204,13 +207,14 @@
     <None Include="Shader\basic.shader" />
     <None Include="Shader\bloom.shader" />
     <None Include="Shader\blur.shader" />
+    <None Include="Shader\multipleLightShadowBones.shader" />
     <None Include="Shader\emission.shader" />
     <None Include="Shader\multipleLightShadow.shader" />
     <None Include="Shader\normal.shader" />
     <None Include="Shader\multipleLight.shader" />
-    <None Include="Shader\notUsed.shader" />
     <None Include="Shader\multipleLightsNormalMap.shader" />
     <None Include="Shader\postprocess.shader" />
+    <None Include="Shader\bone.shader" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Shader\bloom_final.shader" />

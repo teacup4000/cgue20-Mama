@@ -36,6 +36,7 @@ void Renderer::renderSimpleShadow(Shader& shader, glm::vec3& lightPos,bool shado
 	shader.setInt("shadows", shadow);
 	shader.setFloat("far_plane", far_plane);
 	shader.setFloat("shininess", 32.0f);
+	shader.setVec3("brightness", m_Brightness);
 	
 	shader.setVec3("pointLights[0].position", m_Lights.position[0]);
 	shader.setVec3("pointLights[0].ambient", 0.0f, 0.0f, 0.0f);
@@ -118,14 +119,17 @@ void Renderer::renderSimpleLight(Shader& shader, glm::vec3& lightPos, bool shado
 	shader.setVec3("viewPos", m_Camera->m_Position);
 	shader.setInt("shadows", shadow);
 	shader.setFloat("far_plane", far_plane);
+	shader.setVec3("brightness", m_Brightness);
+
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, map->GetMap());
 }
 
-void Renderer::SetProps()
+void Renderer::SetProps(glm::vec3 brightness)
 {
 	m_ProjectionMatrix = glm::perspective(glm::radians(m_Camera->m_Zoom), (float)m_Width / (float)m_Height, 0.1f, 100.0f);
 	m_View = m_Camera->getViewMatrix();
+	m_Brightness = brightness;
 }
 
 void Renderer::renderDefault(Shader& shader)
@@ -134,6 +138,7 @@ void Renderer::renderDefault(Shader& shader)
 
 	shader.setMat4("projection", m_ProjectionMatrix);
 	shader.setMat4("view", m_View);
+	shader.setVec3("brightness", m_Brightness);
 	shader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 	glActiveTexture(GL_TEXTURE0);
 }
@@ -217,10 +222,10 @@ void Renderer::renderLight(Shader& shader)
 
 	shader.setMat4("projection", m_ProjectionMatrix);
 	shader.setMat4("view", m_View);
+	shader.setVec3("brightness", m_Brightness);
 
 	glActiveTexture(GL_TEXTURE0);
 }
-
 
 ///** set up the properties for the transparent shader*/
 void Renderer::renderTransparent(Shader& shader, float& brightness)
@@ -231,12 +236,35 @@ void Renderer::renderTransparent(Shader& shader, float& brightness)
 	shader.setMat4("view", m_View);
 	shader.setVec3("viewPos", m_Camera->m_Position);
 	shader.setVec3("ambient", 0.0f, 0.0f, 0.0f);
-	shader.setVec3("brightness", brightness, brightness, brightness);
+	shader.setVec3("brightness", m_Brightness);
 	glActiveTexture(GL_TEXTURE0);
 }
 
-bool Renderer::isFrustum(Model &model, glm::mat4 matrix)
+void Renderer::renderBones(Shader &shader)
+{
+
+	shader.use();
+	shader.setMat4("view", m_View);
+	shader.setMat4("projection", m_ProjectionMatrix);
+	shader.setVec3("view_pos", m_Camera->m_Position);
+	shader.setVec3("brightness", m_Brightness);
+
+	shader.setFloat("material.shininess", 32.0f);
+	shader.setFloat("material.transparency", 1.0f);
+
+	shader.setVec3("point_light.position", m_Camera->m_Position);
+	shader.setVec3("point_light.ambient", glm::vec3(0.1f));
+	shader.setVec3("point_light.diffuse", glm::vec3(1.0f));
+	shader.setVec3("point_light.specular", glm::vec3(1.0f));
+	shader.setFloat("point_light.constant", 1.0f);
+	shader.setFloat("point-light.linear", 0.007);
+	shader.setFloat("point_light.quadratic", 0.0002);
+
+	glActiveTexture(GL_TEXTURE0);
+}
+
+bool Renderer::isFrustum(Model &model, glm::mat4 matrix, bool off)
 {
 	glm::mat4 mvp = m_ProjectionMatrix * m_View * matrix;
-	return m_Frustum->isFrustum(model, matrix, mvp);
+	return m_Frustum->isFrustum(model, matrix, mvp, off);
 }

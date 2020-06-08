@@ -21,6 +21,8 @@ uniform sampler2D scene;
 uniform sampler2D bloomBlur;
 uniform float exposure;
 
+uniform vec3 brightness;
+
 void main()
 {             
     const float gamma = 2.2;

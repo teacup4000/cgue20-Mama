@@ -7,7 +7,12 @@
 
 #include <GLFW/glfw3.h>
 
-//--------------------------------------------------------------------Model.h---------------------------------------------------------------------------------
+								////////////////////////////////////////////////////////////////
+								// THE MODEL LOADING CLASS									  //
+								// This class loads an object file via the assimp library	  //
+								// and renders it onto the screen.							  //
+								////////////////////////////////////////////////////////////////
+
 void Model::draw(Shader shader)
 {
 	for (GLuint i = 0; i < this->meshes.size(); i++)
@@ -48,9 +53,6 @@ void Model::processNode(aiNode* node, const aiScene* scene)
 
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 {
-	m_MinPos = glm::vec3(std::numeric_limits<float>::max());
-	m_MaxPos = glm::vec3(-std::numeric_limits<float>::max());
-
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
 	std::vector<Texture> textures;
@@ -63,21 +65,23 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		vector.y = mesh->mVertices[i].y;
 		vector.z = mesh->mVertices[i].z;
 
-		//MIN
-		if (vector.x < m_MinPos.x)
-			m_MinPos.x = vector.x;
-		if (vector.y < m_MinPos.y)
-			m_MinPos.y = vector.y;
-		if (vector.z < m_MinPos.z)
-			m_MinPos.z = vector.z;
+		{
+			//MIN
+			if (vector.x < m_MinPos.x)
+				m_MinPos.x = vector.x;
+			if (vector.y < m_MinPos.y)
+				m_MinPos.y = vector.y;
+			if (vector.z < m_MinPos.z)
+				m_MinPos.z = vector.z;
 
-		//MAX
-		if (vector.x > m_MaxPos.x)
-			m_MaxPos.x = vector.x;
-		if (vector.y > m_MaxPos.y)
-			m_MaxPos.y = vector.y;
-		if (vector.z > m_MaxPos.z)
-			m_MaxPos.z = vector.z;
+			//MAX
+			if (vector.x > m_MaxPos.x)
+				m_MaxPos.x = vector.x;
+			if (vector.y > m_MaxPos.y)
+				m_MaxPos.y = vector.y;
+			if (vector.z > m_MaxPos.z)
+				m_MaxPos.z = vector.z;
+		}
 
 		vertex.position = vector;
 		m_Position = vector;
@@ -112,7 +116,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		vertex.bitangent = vector;
 		vertices.push_back(vertex);
 	}
-	std::cout << "First Object END" << std::endl;
+
 	for (GLuint i = 0; i < mesh->mNumFaces; i++)
 	{
 		aiFace face = mesh->mFaces[i];
@@ -219,10 +223,8 @@ unsigned int TextureFromFile(const char* path, std::string& directory, bool gamm
 	return textureID;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------Call in DCVisMain.cpp--------------------------------------------------------------------------
 void renderModel(Model &model, Shader &shader, glm::mat4 matrix)
 {
 	shader.setMat4("model", matrix);
 	model.draw(shader);
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------

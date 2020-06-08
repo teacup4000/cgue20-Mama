@@ -4,7 +4,6 @@
 #pragma once
 #include "Mesh.h"
 #include "Shader.h"
-#include <functional>
 
 
 
@@ -18,7 +17,7 @@ public:
 	std::string directory;
 	bool gammaCorrection;
 	//Vertex myPosition;
-	
+
 	Model(){}
 
 	Model(std::string const &path, bool gamma = false) : gammaCorrection(gamma)
@@ -26,20 +25,18 @@ public:
 		this->loadModel(path);
 		std::cout << "obj-File loaded" << std::endl;
 	}
+	float GetDistance() { return (float)sqrt(pow(m_MaxPos.x - m_MinPos.x, 2) + pow(m_MaxPos.y - m_MinPos.y, 2) + pow(m_MaxPos.z - m_MinPos.z, 2)); }
+	glm::vec3 GetPosition() { return m_Position; }
 
 	/** Draw the model */
 	void draw(Shader shader);
-	glm::vec3 GetPosition() { return m_Position; }
-	float GetDistance() {
-		return (float)sqrt(pow(m_MaxPos.x - m_MinPos.x, 2) + pow(m_MaxPos.y - m_MinPos.y, 2) + pow(m_MaxPos.z - m_MinPos.z, 2)); 
-	}
-	glm::vec3 GetMin() { return m_MinPos; }
-	glm::vec3 GetMax() { return m_MaxPos; }
 
 private:
 	glm::vec3 m_Position;
 	glm::vec3 m_MinPos;
 	glm::vec3 m_MaxPos;
+
+	glm::vec3 GetMax() { return m_MaxPos; }
 
 	/** load the Model with assimp from obj-file */
 	void loadModel(std::string path);

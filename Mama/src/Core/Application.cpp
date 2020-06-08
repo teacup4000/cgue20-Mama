@@ -1,9 +1,5 @@
 #include "stdafx.h"
 #include "Application.h"
-#include "PxPhysicsAPI.h"
-using namespace physx;
-
-
 
 //------globals------
 int count = 0;
@@ -12,12 +8,13 @@ int count = 0;
 
 //render Shaders
 void renderModel(Model &model, Shader &shader, glm::mat4 matrix);
+void renderAnimModel(AnimModel &model, Shader &shader, glm::mat4 matrix);
 
 //void lose();
 
 struct Cube
 {
-	glm::vec3 position[12] = { glm::vec3(-7.02779, 14.351f, -14.282f),
+	glm::vec3 position[12] = {  glm::vec3(-2.077, 12.041f, -13.686f),
 								glm::vec3(0.80503f, 11.556f, -13.148f),
 								glm::vec3(4.28787f, 10.535f, -11.942f),
 								glm::vec3(5.101f, 10.297f, -12.332f),
@@ -34,10 +31,9 @@ struct Cube
 
 void Application::Run()
 {
-	//--------------locals------------
 	glm::vec3 lightPos = glm::vec3(7.9922f, 50.0f, -4.0616f);
 
-	//Bloom* bloom = new Bloom();
+	Bloom* bloom = new Bloom();
 	ShadowMap* shadowMap = new ShadowMap();
 	Renderer* renderer = new Renderer();
 	Game* game = new Game();
@@ -45,9 +41,6 @@ void Application::Run()
 	event.SetRestart();
 
 	bool isShown = true;
-
-	//Frame Rate independency
-	float deltaTime = 0.0f, lastFrame = 0.0f;
 
 	//Timer variables
 	float counter = 0.0f;
@@ -58,14 +51,17 @@ void Application::Run()
 	CreateGLFWWindow();
 	renderer->Create(m_Width, m_Height, m_Camera);
 
+	//--------------------------------------------------------------SET SHADERS---------------------------------------------------------------
 	Shader basic("Shader/basic.shader");
 	Shader shadow("Shader/depth.shader");
 	Shader pointLights("Shader/multipleLight.shader");
 	Shader normal("Shader/multipleLightsNormalMap.shader");
 	Shader simpleShadow("Shader/multipleLightShadow.shader");
-	//Shader blur("Shader/blur.shader");
-	//Shader bloomFinal("Shader/bloom_final.shader");
+	Shader blur("Shader/blur.shader");
+	Shader bloomFinal("Shader/bloom_final.shader");
+	Shader bone("Shader/multipleLightShadowBones.shader");
 	
+	//--------------------------------------------------------------SET MODELS----------------------------------------------------------------
 	Model floor01("Models/Floor/Path01.obj");
 	glm::mat4 path01 = glm::mat4(1.0f);
 
@@ -123,6 +119,10 @@ void Application::Run()
 	Model boxes("Models/Single Elements/Box/boxes.obj");
 	glm::mat4 boxMat = glm::mat4(1.0f);
 
+	//AnimModel cowboy("Models/Player/bear.fbx");
+	//glm::mat4 animMat = glm::mat4(1.0f);
+	//animMat = glm::translate(animMat, glm::vec3(-7, 12.4f, -15.9479f));
+
 	Model cubes("Models/Single Elements/Cubes/cube.obj");
 	glm::mat4 cubeMat[12] = { glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f) ,glm::mat4(1.0f) ,glm::mat4(1.0f)};
 	for (int i = 0; i < sizeof(cube.position)/sizeof(cube.position[0]); i++)
@@ -134,35 +134,41 @@ void Application::Run()
 	glm::mat4 testobj = glm::mat4(1.0f);
 	testobj = glm::translate(testobj, glm::vec3(-7.02779, 14.351f, -14.282f));
 
-	std::vector<Model> playerObjects;
-	Model character("Models/Player/bearAtlas.obj");
+	std::vector<AnimModel> playerObjects;
+	AnimModel character("Models/Player/bear.fbx");
 	playerObjects.push_back(character);
 	m_Player->setPlayerModel(playerObjects);
 
-
-
+	//--------------------------------------------------SET SHADER PROPERTIERS-------------------------------------------------------------
 	shadowMap->GenerateDepthMap(m_Nearplane, m_Farplane);
-	//bloom->GenerateBloomParams(m_Width, m_Height);
+	bloom->GenerateBloomParams(m_Width, m_Height);
 
 	basic.use();
 	basic.setInt("diffuse", 0);
 	basic.setInt("specular", 1);
 
+	simpleShadow.use();
+	simpleShadow.setInt("depthMap", 1);
+
+	bone.use();
+	bone.setInt("depthMap", 1);
+
 	normal.use();
 	normal.setInt("normalMap", 1);
 
-	//blur.use();
-	//blur.setInt("image", 0);
-	//
-	//bloomFinal.use();
-	//bloomFinal.setInt("scene", 0);
-	//bloomFinal.setInt("bloomBlur", 1);
-
-	//--------setup Physx-------
-	physx->initPhysx();
-
-	m_Player->controller = physx->getController();
+	blur.use();
+	blur.setInt("image", 0);
 	
+	bloomFinal.use();
+	bloomFinal.setInt("scene", 0);
+	bloomFinal.setInt("bloomBlur", 1);
+	//----------------------------------------------------------END SHADER PROPERTIES---------------------------------------------------------
+	//-----------------------------------------------------------SET PHYSX PROPERTIES---------------------------------------------------------
+
+	m_PhysX->initPhysx();
+
+	m_Player->m_Controller = m_PhysX->getController();
+
 	std::vector<Model> models;
 
 	models.push_back(floor01);
@@ -170,330 +176,286 @@ void Application::Run()
 	//models.push_back(floor03);
 	models.push_back(floor04);
 	//Collision Walls
-	models.push_back(Model("Models/CollisionCubes/Cube.001.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.002.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.003.obj"));
-	//models.push_back(Model("Models/CollisionCubes/Cube.004.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.005.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.006.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.007.obj"));
-	//models.push_back(Model("Models/CollisionCubes/Cube.008.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.009.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.010.obj")); 
-	models.push_back(Model("Models/CollisionCubes/Cube.011.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.012.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.013.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.014.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.015.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.016.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.017.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.018.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.019.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.020.obj")); 
-	models.push_back(Model("Models/CollisionCubes/Cube.021.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.022.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.023.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.024.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.025.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.026.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.027.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.028.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.029.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.030.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.031.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.032.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.033.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.034.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.035.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.036.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.037.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.038.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.039.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.040.obj")); 
-	models.push_back(Model("Models/CollisionCubes/Cube.041.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.042.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.043.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.044.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.045.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.046.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.047.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.048.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.049.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.050.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.051.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.052.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.053.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.054.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.055.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.056.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.057.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.058.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.059.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.060.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.061.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.062.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.063.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.064.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.065.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.066.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.067.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.068.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.069.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.070.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.071.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.072.obj"));
-	models.push_back(Model("Models/CollisionCubes/Cube.073.obj"));
-	//Collision FLoors
-	models.push_back(Model("Models/CollisionCubes/cube72.obj"));
-	models.push_back(Model("Models/CollisionCubes/cube73.obj"));
-	models.push_back(Model("Models/CollisionCubes/cube74.obj"));
-	models.push_back(Model("Models/CollisionCubes/cube75.obj"));
-	models.push_back(Model("Models/CollisionCubes/cube76.obj"));
-	models.push_back(Model("Models/CollisionCubes/cube77.obj"));
-	models.push_back(Model("Models/CollisionCubes/cube78.obj"));
-	models.push_back(Model("Models/CollisionCubes/cube79.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.001.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.002.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.003.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.005.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.006.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.007.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.009.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.010.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.011.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.012.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.013.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.014.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.015.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.016.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.017.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.018.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.019.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.020.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.021.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.022.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.023.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.024.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.025.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.026.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.027.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.028.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.029.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.030.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.031.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.032.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.033.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.034.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.035.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.036.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.037.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.038.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.039.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.040.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.041.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.042.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.043.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.044.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.045.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.046.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.047.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.048.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.049.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.050.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.051.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.052.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.053.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.054.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.055.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.056.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.057.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.058.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.059.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.060.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.061.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.062.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.063.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.064.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.065.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.066.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.067.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.068.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.069.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.070.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.071.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.072.obj"));
+	models.push_back(Model("PhysX/Collision/Walls/Cube.073.obj"));
+												  
+	//Collision FLoors							  
+	models.push_back(Model("PhysX/Collision/Floor/Cube72.obj"));
+	models.push_back(Model("PhysX/Collision/Floor/Cube73.obj"));
+	models.push_back(Model("PhysX/Collision/Floor/Cube74.obj"));
+	models.push_back(Model("PhysX/Collision/Floor/Cube75.obj"));
+	models.push_back(Model("PhysX/Collision/Floor/Cube76.obj"));
+	models.push_back(Model("PhysX/Collision/Floor/Cube77.obj"));
+	models.push_back(Model("PhysX/Collision/Floor/Cube78.obj"));
+	models.push_back(Model("PhysX/Collision/Floor/Cube79.obj"));
 
+	m_PhysX->createModels(models);
+	//------------------------------------------------------------END PHYSX PROPERTIES---------------------------------------------------------
 
-
-	// TODO den convex bs mit triangle meshes fixen(or not?)
-	/*models.push_back(wall01);
-	models.push_back(wall02);
-	models.push_back(wall03);
-	models.push_back(wall04);
-	models.push_back(wall05);
-	models.push_back(wall06);*/
-
-	physx->createModels(models);
-
-	//--------Loop-----------
 	while (!glfwWindowShouldClose(m_Window))
 	{
-		float currentTime = glfwGetTime();
-		timeDiff = currentTime - lastFrame;
-		counter += timeDiff;
+		SetFrameRateIndependency(); //Frame rate independency
+		counter += m_DeltaTime;
 
 		if (counter >= 5.0f) {
 			m_Player->setModel(false);
 			counter = 0.0f;
 		}
-		SetFrameRateIndependency(deltaTime, lastFrame); //Frame rate independency
-		//glm::vec3 playerPosition = camera.position;
-		m_Player->move(m_Window, deltaTime);
-		//processInput(window, deltaTime);
-		SetGLFWEvents();
-		
-		//simulate Physx
-		physx->simulate();
-	
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			std::cout << "Framebuffer not complete" << std::endl;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, m_Width, m_Height);
 
+		//glm::vec3 playerPosition = camera.position;
+		m_Player->move(m_Window, m_DeltaTime);
+		
+		SetGLFWEvents();
+
+		m_PhysX->simulate();
+	
+		//--------------------------------------------------------------RENDER SHADOWS------------------------------------------------------#	
+		renderer->SetProps(m_Brightness);
+		shadowMap->GenerateCubeMap(lightPos);
+		//glViewport(0, 0, m_Width, m_Height);
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		/* Render background */
 		glClearColor(0.5f, 0.5f, 0.5f, 0.0f); //gray
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//------------------------SHADOWS------------------------------------------
-		//shadowMap->GenerateCubeMap(lightPos);
-		//
-		//glViewport(0, 0, m_Width, m_Height);
-		//if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		//	std::cout << "Framebuffer not complete" << std::endl;
-		//
-		//shadowMap->RenderDepthMap(shadow, lightPos);
-		//renderModel(character, shadow, m_Player->getModelMatrix());
-		//
-		//if (renderer->isFrustum(floor01, path01))
-		//	renderModel(floor01, shadow, path01);
-		//
-		//if (renderer->isFrustum(floor02, path02))
-		//	renderModel(floor02, shadow, path02);
-		//
-		//if (renderer->isFrustum(floor03, path03))
-		//	renderModel(floor03, shadow, path03);
-		//
-		//if (renderer->isFrustum(floor04, path04))
-		//	renderModel(floor04, shadow, path04);
-		//
-		//if (renderer->isFrustum(container, containerMat))
-		//	renderModel(container, shadow, containerMat);
-		//
-		//if (renderer->isFrustum(woodenElements, woodMat))
-		//	renderModel(woodenElements, shadow, woodMat);
-		//
-		//if (renderer->isFrustum(debris, debMat))
-		//	renderModel(debris, shadow, debMat);
-		//
-		//if (renderer->isFrustum(cart, cartMat))
-		//	renderModel(cart, shadow, cartMat);
-		//
-		//if (renderer->isFrustum(fence, fenceMat))
-		//	renderModel(fence, shadow, fenceMat);
-		//
-		//if (renderer->isFrustum(boxes, boxMat))
-		//	renderModel(boxes, shadow, boxMat);
-		//
-		//
-		//if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		//	std::cout << "Framebuffer not complete" << std::endl;
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
- 		//
-		//--------------------------------------------------------------------------
-		//glClearColor(0,0,0,0); //gray
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		renderer->SetProps();
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			std::cout << "Framebuffer not complete" << std::endl;
 
-		//setProjectionViewMatrix(m_Camera, m_Width, m_Height);
+		shadowMap->RenderDepthMap(shadow, lightPos);
 
-		//-----------------------------------RENDER BLOOM------------------------------------------------
-	
-		//bloom->Bind();
-		//--------------------THIS IS TEMPORARY----------------------------------------------------------
-		renderer->renderDefault(basic);
-		{
-			renderModel(floor01, basic, path01);
-			renderModel(floor02, basic, path02);
-			renderModel(floor03, basic, path03);
-			renderModel(floor04, basic, path04);
-			renderModel(woodenElements, basic, woodMat);
-			renderModel(container, basic, containerMat);
-			renderModel(woodenElements, basic, woodMat);
-			renderModel(container, basic, containerMat);
-			renderModel(debris, basic, debMat);
-			renderModel(cart, basic, cartMat);
-			renderModel(rails, basic, railMat);
-			renderModel(fence, basic, fenceMat);
-			renderModel(boxes, basic, boxMat);
-			renderModel(character, basic, m_Player->getModelMatrix());
-			renderModel(wall01, basic, wallMat01);
-			renderModel(wall02, basic, wallMat02);
-			renderModel(wall03, basic, wallMat03);
-			renderModel(wall04, basic, wallMat04);
-			renderModel(wall05, basic, wallMat05);
-			renderModel(wall06, basic, wallMat06);
-		}
-		//-----------------------END TEMPORARY-------------------------------------------------------
+		if (renderer->isFrustum(floor01, path01, event.GetFrustum()))
+			renderModel(floor01, shadow, path01);
 
-		//renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
-		//if (renderer->isFrustum(floor01, path01))
-		//	renderModel(floor01, simpleShadow, path01);
-		//
-		//if (renderer->isFrustum(floor02, path02))
-		//	renderModel(floor02, simpleShadow, path02);
-		//
-		//if (renderer->isFrustum(floor03, path03))
-		//	renderModel(floor03, simpleShadow, path03);
-		//
-		//if (renderer->isFrustum(floor04, path04))
-		//	renderModel(floor04, simpleShadow, path04);
-		//
-		//if (renderer->isFrustum(woodenElements, woodMat))
-		//	renderModel(woodenElements, simpleShadow, woodMat);
-		//
-		//if (renderer->isFrustum(container, containerMat))
-		//	renderModel(container, simpleShadow, containerMat);
-		//
-		//if (renderer->isFrustum(debris, debMat))
-		//	renderModel(debris, simpleShadow, debMat);
-		//
-		//if (renderer->isFrustum(cart, cartMat))
-		//	renderModel(cart, simpleShadow, cartMat);
-		//
-		//if (renderer->isFrustum(rails, railMat))
-		//	renderModel(rails, simpleShadow, railMat);
-		//
-		//if (renderer->isFrustum(fence, fenceMat))
-		//	renderModel(fence, simpleShadow, fenceMat);
-		//
-		//if (renderer->isFrustum(boxes, boxMat))
-		//	renderModel(boxes, simpleShadow, boxMat);
-		//
-		//renderModel(character, simpleShadow, m_Player->getModelMatrix());
-		//
-		//if (m_Player->m_ShowModel)
-		//{
-		//	renderer->renderDefault(basic);
-		//	for (int i = 0; i < sizeof(cube.position) / sizeof(cube.position[0]); i++)
-		//	{
-		//		if (renderer->isFrustum(cubes, cubeMat[i]))
-		//			renderModel(cubes, basic, cubeMat[i]);
-		//		cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 0));
-		//	}
-		//}
-		//
-		//if(m_NormalMap)
-		//{
-		//	renderer->renderLight(normal);
-		//	if (renderer->isFrustum(wall01, wallMat01))
-		//		renderModel(wall01, normal, wallMat01);
-		//
-		//	if (renderer->isFrustum(wall02, wallMat02))
-		//		renderModel(wall02, normal, wallMat02);
-		//
-		//	if (renderer->isFrustum(wall03, wallMat03))
-		//		renderModel(wall03, normal, wallMat03);
-		//
-		//	if (renderer->isFrustum(wall04, wallMat04))
-		//		renderModel(wall04, normal, wallMat04);
-		//
-		//	if (isShown = renderer->isFrustum(wall05, wallMat05))
-		//		renderModel(wall05, normal, wallMat05);
-		//
-		//	if (isShown)
-		//		std::cout << "is shown is " << isShown << std::endl;
-		//	if (!isShown)
-		//		std::cout << "is shown is " << isShown << std::endl;
-		//
-		//
-		//	if (renderer->isFrustum(wall06, wallMat06))
-		//		renderModel(wall06, normal, wallMat06);
-		//
-		//	if (renderer->isFrustum(rocks, rockMat))
-		//		renderModel(rocks, normal, rockMat);
-		//}
-		//else
-		//{
-		//	renderer->renderLight(pointLights);
-		//	if (renderer->isFrustum(wall01, wallMat01))
-		//		renderModel(wall01, pointLights, wallMat01);
-		//
-		//	if (renderer->isFrustum(wall02, wallMat02))
-		//		renderModel(wall02, pointLights, wallMat02);
-		//
-		//	if (renderer->isFrustum(wall03, wallMat03))
-		//		renderModel(wall03, pointLights, wallMat03);
-		//
-		//	if (renderer->isFrustum(wall04, wallMat04))
-		//		renderModel(wall04, pointLights, wallMat04);
-		//
-		//	if (renderer->isFrustum(wall05, wallMat05))
-		//		renderModel(wall05, pointLights, wallMat05);
-		//
-		//	if (renderer->isFrustum(wall06, wallMat06))
-		//		renderModel(wall06, pointLights, wallMat06);
-		//
-		//	if (renderer->isFrustum(rocks, rockMat))
-		//		renderModel(rocks, pointLights, rockMat);
-		//}	
-		//
-		//renderer->renderLight(pointLights);
-		//
-		//if (renderer->isFrustum(multipleLights, lights))
-		//	renderModel(multipleLights, pointLights, lights);
+		if (renderer->isFrustum(floor02, path02, event.GetFrustum()))
+			renderModel(floor02, shadow, path02);
 
-		//bloom->Unbind();
-		//bloom->Postprocess(blur, bloomFinal);
-		//bloom->Unbind();
+		if (renderer->isFrustum(floor03, path03, event.GetFrustum()))
+			renderModel(floor03, shadow, path03);
 
-		//-------------------------------------BLOOM END---------------------------------------------------------------
+		if (renderer->isFrustum(floor04, path04, event.GetFrustum()))
+			renderModel(floor04, shadow, path04);
+
+		if (renderer->isFrustum(container, containerMat, event.GetFrustum()))
+			renderModel(container, shadow, containerMat);
+
+		if (renderer->isFrustum(woodenElements, woodMat, event.GetFrustum()))
+			renderModel(woodenElements, shadow, woodMat);
+
+		if (renderer->isFrustum(debris, debMat, event.GetFrustum()))
+			renderModel(debris, shadow, debMat);
+
+		if (renderer->isFrustum(cart, cartMat, event.GetFrustum()))
+			renderModel(cart, shadow, cartMat);
+
+		if (renderer->isFrustum(fence, fenceMat, event.GetFrustum()))
+			renderModel(fence, shadow, fenceMat);
+
+		if (renderer->isFrustum(boxes, boxMat, event.GetFrustum()))
+			renderModel(boxes, shadow, boxMat);
+
+		character.InitShader(shadow);
+		renderAnimModel(character, shadow, m_Player->getModelMatrix());
+
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			std::cout << "Framebuffer not complete" << std::endl;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		
-		for (int i = 0; i < sizeof(cube.position) / sizeof(cube.position[0]); i++) {
-			//ToDo: If Player collides with cube objects
-			if (m_Player->getPlayerPosition() == cube.position[i]) {
-				//lose
+		glViewport(0, 0, m_Width, m_Height);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+		//-------------------------------------------------------------SHADOWS END------------------------------------------------------------
+
+
+		//-------------------------------------------------------------RENDER BLOOM-----------------------------------------------------------
+		bloom->Bind();
+
+		renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
+		//renderer->renderLight(normal);
+		if (renderer->isFrustum(floor01, path01, event.GetFrustum()));
+			renderModel(floor01, simpleShadow, path01);
+		
+		if (renderer->isFrustum(floor02, path02, event.GetFrustum()))
+			renderModel(floor02, simpleShadow, path02);
+		
+		if (renderer->isFrustum(floor03, path03, event.GetFrustum()))
+			renderModel(floor03, simpleShadow, path03);
+		
+		if (renderer->isFrustum(floor04, path04, event.GetFrustum()))
+			renderModel(floor04, simpleShadow, path04);
+		
+		if (renderer->isFrustum(woodenElements, woodMat, event.GetFrustum()))
+			renderModel(woodenElements, simpleShadow, woodMat);
+		
+		if (renderer->isFrustum(container, containerMat, event.GetFrustum()))
+			renderModel(container, simpleShadow, containerMat);
+		
+		if (renderer->isFrustum(debris, debMat, event.GetFrustum()))
+			renderModel(debris, simpleShadow, debMat);
+		
+		if (renderer->isFrustum(cart, cartMat, event.GetFrustum()))
+			renderModel(cart, simpleShadow, cartMat);
+		
+		if (renderer->isFrustum(rails, railMat, event.GetFrustum()))
+			renderModel(rails, simpleShadow, railMat);
+		
+		if (renderer->isFrustum(fence, fenceMat, event.GetFrustum()))
+			renderModel(fence, simpleShadow, fenceMat);
+		
+		if (renderer->isFrustum(boxes, boxMat, event.GetFrustum()))
+			renderModel(boxes, simpleShadow, boxMat);
+		
+		character.InitShader(bone);
+		renderer->renderSimpleShadow(bone,lightPos, m_Shadow, m_Farplane, shadowMap);
+		renderAnimModel(character, bone, m_Player->getModelMatrix());
+		
+		if (m_Player->m_ShowModel)
+		{
+			renderer->renderDefault(basic);
+			for (int i = 0; i < sizeof(cube.position) / sizeof(cube.position[0]); i++)
+			{
+				renderModel(cubes, basic, cubeMat[i]);
+				cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 1));
 			}
 		}
+
+		if(m_NormalMap)
+		{
+			renderer->renderLight(normal);
+			if (renderer->isFrustum(wall01, wallMat01, event.GetFrustum()))
+				renderModel(wall01, normal, wallMat01);
+		
+			if (renderer->isFrustum(wall02, wallMat02, event.GetFrustum()))
+				renderModel(wall02, normal, wallMat02);
+		
+			if (renderer->isFrustum(wall03, wallMat03, event.GetFrustum()))
+				renderModel(wall03, normal, wallMat03);
+		
+			if (renderer->isFrustum(wall04, wallMat04, event.GetFrustum()))
+				renderModel(wall04, normal, wallMat04);
+		
+			if (isShown = renderer->isFrustum(wall05, wallMat05, event.GetFrustum()))
+				renderModel(wall05, normal, wallMat05);		
+		
+			if (renderer->isFrustum(wall06, wallMat06, event.GetFrustum()))
+				renderModel(wall06, normal, wallMat06);
+		
+			if (renderer->isFrustum(rocks, rockMat, event.GetFrustum()))
+				renderModel(rocks, normal, rockMat);
+		}
+		else
+		{
+			renderer->renderLight(pointLights);
+			if (renderer->isFrustum(wall01, wallMat01, event.GetFrustum()))
+				renderModel(wall01, pointLights, wallMat01);
+		
+			if (renderer->isFrustum(wall02, wallMat02, event.GetFrustum()))
+				renderModel(wall02, pointLights, wallMat02);
+		
+			if (renderer->isFrustum(wall03, wallMat03, event.GetFrustum()))
+				renderModel(wall03, pointLights, wallMat03);
+		
+			if (renderer->isFrustum(wall04, wallMat04, event.GetFrustum()))
+				renderModel(wall04, pointLights, wallMat04);
+		
+			if (renderer->isFrustum(wall05, wallMat05, event.GetFrustum()))
+				renderModel(wall05, pointLights, wallMat05);
+		
+			if (renderer->isFrustum(wall06, wallMat06, event.GetFrustum()))
+				renderModel(wall06, pointLights, wallMat06);
+		
+			if (renderer->isFrustum(rocks, rockMat, event.GetFrustum()))
+				renderModel(rocks, pointLights, rockMat);
+		}	
+		
+		renderer->renderLight(pointLights);
+		if (renderer->isFrustum(multipleLights, lights, event.GetFrustum()))
+			renderModel(multipleLights, pointLights, lights);
+
+		bloom->Unbind();
+		bloom->Postprocess(blur, bloomFinal);
+		bloom->Unbind();
+
+		//-------------------------------------BLOOM END---------------------------------------------------------------
+		glFlush();
+
+		//std::cout << m_Player->getPlayerPosition().x << ", " << m_Player->getPlayerPosition().y << ", " << m_Player->getPlayerPosition().z << std::endl;
+		
+		//for (int i = 0; i < sizeof(cube.position) / sizeof(cube.position[0]); i++) {
+		//	//ToDo: If Player collides with cube objects
+		//	if (m_Player->getPlayerPosition() == cube.position[i]) {
+		//		//lose
+		//	}
+		//}
 
 		//
 		//if (m_Player->getPlayerPosition().x >= 1.0f && m_Player->getPlayerPosition().x <= 1.3f && m_Player->getPlayerPosition().z >= -7.0f && m_Player->getPlayerPosition().z <= -5.0f ||
@@ -505,6 +467,9 @@ void Application::Run()
 		//m_Player->getDown(deltaTime);
 		//std::cout << glm::to_string(camera.position) << std::endl;
 		//std::cout << glm::to_string(player.position) << std::endl;
+		//glEnable(GL_DEPTH_TEST);
+		//glDisable(GL_BLEND);
+		
 		//glDepthFunc(GL_LESS);
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
@@ -512,23 +477,25 @@ void Application::Run()
 	}
 	//clean
 	basic.deleteShader();
-	//bloomFinal.deleteShader();
-	//blur.deleteShader();
+	bloomFinal.deleteShader();
+	blur.deleteShader();
 	shadow.deleteShader();
 	pointLights.deleteShader();
 	normal.deleteShader();
 
-	//bloom->Destroy();
+	bloom->Destroy();
 
+	m_PhysX->releasePhysx();
 	glfwTerminate();
-
-	physx->releasePhysx();
 }
 
 void Application::CreateGLFWWindow()
 {
 	InitGLFW();
-	m_Window = glfwCreateWindow(m_Width, m_Height, "Mama", NULL, NULL);
+	if (m_Fullscreen)
+		m_Window = glfwCreateWindow(m_Width, m_Height, "Mama", glfwGetPrimaryMonitor(), NULL);
+	else
+		m_Window = glfwCreateWindow(m_Width, m_Height, "Mama", NULL, NULL);
 
 	if (!m_Window)
 	{

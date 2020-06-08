@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "Camera.h"
 
+										////////////////////////////////////////////////////////////////
+										// THE CAMERA CLASS											  //
+										// This class processes the camera movement and interactions  //
+										////////////////////////////////////////////////////////////////
+
 Camera::Camera(Player* player, glm::vec3 currPosition)
 	: m_Player(player), m_Position(currPosition)
 {

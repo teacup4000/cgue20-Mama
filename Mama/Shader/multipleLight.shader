@@ -55,6 +55,8 @@ uniform vec3 viewPos;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform Material material;
 
+uniform vec3 brightness;
+
 // function prototypes
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos);
 
@@ -96,7 +98,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos)
 	float distance = length(light.position - fragPos);
 	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 	// combine results
-	vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
+	vec3 ambient = (light.ambient * vec3(texture(material.diffuse, TexCoords))) * brightness;
 	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
 	vec3 specular = light.specular * vec3(texture(material.specular, TexCoords));
 	ambient *= attenuation;

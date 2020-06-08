@@ -90,6 +90,7 @@ uniform sampler2D normalMap;
 
 uniform PointLight pointLights[NR_PT_LT];
 uniform vec3 viewPos;
+uniform vec3 brightness;
 
 vec3 CalcLight(PointLight light, int i);
 
@@ -118,7 +119,7 @@ vec3 CalcLight(PointLight light, int i)
 	vec3 color = texture(diffuseMap, fs_in.TexCoords).rgb;
 	vec3 spec = texture(specMap, fs_in.TexCoords).rgb;
 	// ambient
-	vec3 ambient = light.ambient * color;
+	vec3 ambient = (light.ambient * color) * brightness;
 	// diffuse
 	vec3 lightDir = normalize(fs_in.TangentLightPos[i] - fs_in.TangentFragPos[i]);
 	float diff = max(dot(lightDir, normal), 0.0);

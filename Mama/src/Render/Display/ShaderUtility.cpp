@@ -1,8 +1,13 @@
 #include "stdafx.h"
 #include "Shader.h"
 
-/* These functions can set variables in the *.shader program */
+							////////////////////////////////////////////////////////////////
+							// THE UTILITY CLASS										  //
+							// This class sets specific properties for a shader that are  //
+							// used for the shader files.								  //
+							////////////////////////////////////////////////////////////////
 
+/* These functions can set variables in the *.shader program */
 void Shader::setBool(const std::string &name, bool value) const
 {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);

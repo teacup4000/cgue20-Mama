@@ -22,13 +22,14 @@ class Renderer
 {
 public:
 	void Create(uint32_t width, uint32_t height, Camera* camera);
-	void SetProps();
+	void SetProps(glm::vec3 brightness);
 	void renderDefault(Shader& shader);
 	void renderSimpleShadow(Shader& shader, glm::vec3& lightPos, bool shadow, float far_plane, ShadowMap* map);
 	void renderSimpleLight(Shader& shader, glm::vec3& lightPos, bool shadow, float far_plane, ShadowMap* map);
 	void renderLight(Shader& shader);
 	void renderTransparent(Shader &shader, float &brightness);
-	bool isFrustum(Model &model, glm::mat4 matrix);
+	void renderBones(Shader& shader);
+	bool isFrustum(Model &model, glm::mat4 matrix, bool off);
 
 private:
 	uint32_t m_Width, m_Height;
@@ -38,5 +39,7 @@ private:
 	Lights m_Lights;
 	glm::mat4 m_ProjectionMatrix;
 	glm::mat4 m_View;
+
+	glm::vec3 m_Brightness;
 
 };
