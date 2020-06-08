@@ -56,6 +56,9 @@ private:
 	bool m_IsPressed = false;
 	float jumpHeight = m_Position.y;
 	float lastJump = 0;
+	bool groundContact = true;
+	bool jumped = false;
+	bool peaked = false;
 
 	float lastMoveTime = -1.0f;
 
@@ -65,6 +68,7 @@ private:
 	{
 		m_PlayerVelocity = m_PlayerRunSpeed * deltaTime;
 		m_MoveVector = glm::vec3(0);
+		m_MoveVector.y = m_MoveVector.y - GRAVITY * deltaTime * 250;
 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
@@ -96,39 +100,60 @@ private:
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		{
 			std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch() / 1000;
-			if (m_Position.y - jumpHeight <= 1 && m_MoveVector.y >= 0.0f && (lastJump == 0 || now.count() - lastJump > 1))
+			if (!jumped && groundContact && (lastJump == 0 || now.count() - lastJump > 1))
 			{
-				m_MoveVector.y = 0.1f;
-			}
-			else if (m_Position.y - jumpHeight >= 1) {
+				m_MoveVector.y = 0.025f * deltaTime * 250;
+				jumped = true;
 				std::chrono::duration<float, std::milli> last = std::chrono::high_resolution_clock::now().time_since_epoch();
 				lastJump = last.count() / 1000;
+			}
+			else if (!peaked && jumped && m_Position.y - jumpHeight < 1 && m_Position.y - jumpHeight >= 0) {
+				m_MoveVector.y = 0.025f * deltaTime * 250;
+			}
+			else if (!peaked && jumped && m_Position.y - jumpHeight >= 1) {
+				peaked = true;
 			}
 		}
 		
 		else
-		{
+		{	
+			if (jumped && groundContact) {
+				jumped = false;
+				peaked = false;
+			}
 			this->m_PlayerCurrentTurnSpeed = 0;
 			//m_MoveVector.y = 0;
 			jumpHeight = m_Position.y;
 		}
 
-		//m_Position += m_MoveVector;
-
-		//TODO move fkn player model
 		//-----Physx chatacter controller movement------
 		std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch();
 		float duration = lastMoveTime < 0 ? 0 : now.count() - lastMoveTime; // if first move then lastMove=-1 and no time passed, else calculate time passed
 		lastMoveTime = now.count();
 		
-		physx::PxVec3 disp = physx::PxVec3(m_MoveVector.x, m_MoveVector.y - GRAVITY, m_MoveVector.z);
-		controller->move(disp, 0.01f, duration / 1000, NULL);
-		m_Position.x = controller->getPosition().x;
-		m_Position.y = controller->getPosition().y;
-		m_Position.z = controller->getPosition().z;
+		
+		physx::PxVec3 disp = physx::PxVec3(m_MoveVector.x, m_MoveVector.y, m_MoveVector.z);
+		PxControllerCollisionFlags flags = controller->move(disp, 0.01f, duration / 1000, NULL);
+		
+		int mask = 1 << 2;
+		int maskedFlags = flags.operator uint8_t() & mask;
+		int collisionDown = maskedFlags >> 2;
+
+		if (collisionDown == 1) {
+			groundContact = true;
+		}
+		else {
+			groundContact = false;
+		}
+
+		m_Position.x = controller->getFootPosition().x;
+		m_Position.y = controller->getFootPosition().y + 0.1;
+		m_Position.z = controller->getFootPosition().z;
 		
 		char buf[4096], *p = buf;
-		sprintf(buf, "%f\n", m_MoveVector.y);
+		sprintf(buf, "cntr %f %f %f\n", controller->getPosition()[0], controller->getPosition()[1], controller->getPosition()[2]);
+		OutputDebugString(buf);
+		sprintf(buf, "feet %f %f %f\n", controller->getFootPosition()[0], controller->getFootPosition()[1], controller->getFootPosition()[2]);
 		OutputDebugString(buf);
 	}
 	
