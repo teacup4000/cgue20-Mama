@@ -19,7 +19,14 @@ void Player::Update()
 {
 	m_ModelMatrix = glm::mat4(1.0f);
 	m_ModelMatrix = glm::translate(m_ModelMatrix, m_Position);
-	//m_ModelMatrix = glm::rotate(m_ModelMatrix, 90.0f, glm::vec3(0, 1, 0));
+	
+	//atan(det, dot)
+	//dot = x * 0 + z * 1
+	//det = x * 1 - z * 0
+	float angle = atan2(m_Front.x, m_Front.z);
+	m_ModelMatrix = glm::rotate(m_ModelMatrix, angle, glm::vec3(0, 1, 0));
+
+	//m_ModelMatrix = glm::rotate(m_ModelMatrix, m_PlayerRotation, glm::vec3(0, 1, 0));
 	//m_ModelMatrix = glm::scale(m_ModelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
 }
 
