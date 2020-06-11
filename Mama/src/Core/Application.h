@@ -18,6 +18,8 @@
 #include "Render/Renderer.h"
 #include "Render/Display/Player.h"
 
+#include "Sound/IrrKlang.h"
+
 
 class Application
 {
@@ -170,6 +172,11 @@ private: //FUNCTIONS
 			Event* event = static_cast<Event*>(glfwGetWindowUserPointer(window));
 			event->OnMouseScrolled(offsetX, offsetY);
 		});
+	}
+
+	float getRad(float degree)
+	{
+		return degree * (glm::pi<float>() / 180);
 	}
 
 };

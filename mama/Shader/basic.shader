@@ -12,8 +12,7 @@ out vec3 fragPos;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-
-uniform mat4 shadorMatrices[6];
+uniform vec3 brightness;
 
 void main()
 {
@@ -33,10 +32,11 @@ in vec2 texCoords;
 out vec4 fragColor;
 
 uniform sampler2D texture_diffuse1;
+uniform vec3 brightness;
 
 void main()
 {
 	vec3 ambient = texture(texture_diffuse1, texCoords).rgb;
-	vec3 color = ambient * texture(texture_diffuse1, texCoords).rgb;
+	vec3 color = (ambient*brightness) * texture(texture_diffuse1, texCoords).rgb;
 	fragColor = vec4(color, 1.0f);
 }

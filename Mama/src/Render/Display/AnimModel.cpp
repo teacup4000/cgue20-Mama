@@ -207,6 +207,7 @@ uint32_t AnimModel::GetPosition(float time, const aiNodeAnim* nodeAnim)
 {
 	for (uint32_t i = 0; i < nodeAnim->mNumPositionKeys - 1; i++)
 	{
+		//std::cout << "AnimTime: " << time << ", KeyTime: " << (float)nodeAnim->mPositionKeys[i + 1].mTime << std::endl;
 		if (time < (float)nodeAnim->mPositionKeys[i + 1].mTime)
 			return i;
 	}
