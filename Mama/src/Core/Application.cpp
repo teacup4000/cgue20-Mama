@@ -271,7 +271,7 @@ void Application::Run()
 	models.push_back(Model("PhysX/Collision/Walls/Cube.072.obj"));
 	models.push_back(Model("PhysX/Collision/Walls/Cube.073.obj"));
 												  
-	//Collision FLoors							  
+	//Collision Floors							  
 	models.push_back(Model("PhysX/Collision/Floor/Cube72.obj"));
 	models.push_back(Model("PhysX/Collision/Floor/Cube73.obj"));
 	models.push_back(Model("PhysX/Collision/Floor/Cube74.obj"));
@@ -280,6 +280,15 @@ void Application::Run()
 	models.push_back(Model("PhysX/Collision/Floor/Cube77.obj"));
 	models.push_back(Model("PhysX/Collision/Floor/Cube78.obj"));
 	models.push_back(Model("PhysX/Collision/Floor/Cube79.obj"));
+
+	//Collision Other
+	models.push_back(Model("PhysX/Collision/OtherElems/boxCube1.obj"));
+	models.push_back(Model("PhysX/Collision/OtherElems/boxCube2.obj"));
+	models.push_back(Model("PhysX/Collision/OtherElems/cartCube.obj"));
+	models.push_back(Model("PhysX/Collision/OtherElems/containerCube.obj"));
+	models.push_back(Model("PhysX/Collision/OtherElems/blockingElem1.obj"));
+	models.push_back(Model("PhysX/Collision/OtherElems/blockingElem2.obj"));
+
 	
 	m_PhysX->createModels(models);
 	//------------------------------------------------------------END PHYSX PROPERTIES---------------------------------------------------------
