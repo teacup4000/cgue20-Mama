@@ -123,7 +123,6 @@ private:
 				peaked = false;
 			}
 			this->m_PlayerCurrentTurnSpeed = 0;
-			//m_MoveVector.y = 0;
 			jumpHeight = m_Position.y;
 		}
 
@@ -151,11 +150,11 @@ private:
 		m_Position.y = m_Controller->getFootPosition().y + 0.1;
 		m_Position.z = m_Controller->getFootPosition().z;
 
-		char buf[4096], *p = buf;
-		sprintf(buf, "cntr %f %f %f\n", m_Controller->getPosition()[0], m_Controller->getPosition()[1], m_Controller->getPosition()[2]);
+		/*char buf[4096], *p = buf;
+		sprintf(buf, "right %f %f %f\n", getPlayerRight()[0], getPlayerRight()[1], getPlayerRight()[2]);
 		OutputDebugString(buf);
-		sprintf(buf, "feet %f %f %f\n", m_Controller->getFootPosition()[0], m_Controller->getFootPosition()[1], m_Controller->getFootPosition()[2]);
-		OutputDebugString(buf);
+		sprintf(buf, "front %f %f %f\n", getPlayerFront()[0], getPlayerFront()[1], getPlayerFront()[2]);
+		OutputDebugString(buf);*/
 
 	}
 };

@@ -11,9 +11,9 @@ Camera::Camera(Player* player, glm::vec3 currPosition)
 {
 	m_Distance = 3.0f;
 	m_WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	m_Yaw = -90.0f;
-	m_Pitch = 0.0f;
-	m_Front = glm::vec3(0.0f, 0.0f, -1.0f);
+	m_Yaw = 1.2f;
+	m_Pitch = -31.7f;
+	m_Front = glm::vec3(0.848714f, 0.0f, -1.0f);
 	m_MovementSpeed = 2.5f;
 	m_MouseSensitivity = 0.1f;
 	m_Zoom = 45.0f;
@@ -24,7 +24,7 @@ Camera::Camera(Player* player, glm::vec3 currPosition)
 //----------------------------------------------------------------------Camera funktions------------------------------------------------------------------------------------------
 void Camera::processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
 {
-	//this->position = this->player->position;
+	
 	xoffset *= getSensitivity();
 	yoffset *= getSensitivity();
 
