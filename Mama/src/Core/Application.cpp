@@ -14,7 +14,7 @@ void renderAnimModel(AnimModel &model, Shader &shader, glm::mat4 matrix);
 
 struct Cube
 {
-	glm::vec3 position[12] = {  glm::vec3(-2.077, 12.041f, -13.686f),
+	glm::vec3 position[18] = {	glm::vec3(-2.077, 12.041f, -13.686f),
 								glm::vec3(0.80503f, 11.556f, -13.148f),
 								glm::vec3(4.28787f, 10.535f, -11.942f),
 								glm::vec3(5.101f, 10.297f, -12.332f),
@@ -25,7 +25,13 @@ struct Cube
 								glm::vec3(19.902f, 8.9282f, -9.9726f),
 								glm::vec3(9.87476f, 8.92818f, -5.80611f),
 								glm::vec3(12.9748f, 8.92818f, -2.43073f),
-								glm::vec3(13.3258f, 8.92818f, 0.582654f)
+								glm::vec3(13.3258f, 8.92818f, 0.582654f),
+								glm::vec3(-4.4982, 12.141, -21.777),
+								glm::vec3(-1.3995, 12.141, -27.784),
+								glm::vec3(8.37, 8.6946, 3.2595),
+								glm::vec3(1.5233, 15.512, 29.11),
+								glm::vec3(-3.77218, 15.5121, 29.11),
+								glm::vec3(-5.74799, 15.512, 33.383)
 	};
 };
 
@@ -44,7 +50,7 @@ void Application::Run()
 	Bloom* bloom = new Bloom();
 	ShadowMap* shadowMap = new ShadowMap();
 	Renderer* renderer = new Renderer();
-	Game* game = new Game();
+	Game* game = new Game(); //ToDo: Do something with it or delete.
 	event.SetRestart();
 
 	bool isShown = true;
@@ -55,8 +61,6 @@ void Application::Run()
 	//Timer variables
 	float counter = 0.0f;
 	float timeDiff = 0.0f;
-
-	
 
 	/*Read the settings file*/
 	CreateGLFWWindow();
@@ -176,7 +180,11 @@ void Application::Run()
 
 	Cube* cube = new Cube();
 	Model cubes("Models/Single Elements/Cubes/cube.obj");
-	glm::mat4 cubeMat[12] = { glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f) ,glm::mat4(1.0f) ,glm::mat4(1.0f) };
+	glm::mat4 cubeMat[18] = {	glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), 
+								glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), 
+								glm::mat4(1.0f), glm::mat4(1.0f) ,glm::mat4(1.0f) ,glm::mat4(1.0f),
+								glm::mat4(1.0f), glm::mat4(1.0f) ,glm::mat4(1.0f) ,glm::mat4(1.0f),
+								glm::mat4(1.0f) ,glm::mat4(1.0f) };
 	for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++)
 		cubeMat[i] = glm::translate(cubeMat[i], cube->position[i]);
 
@@ -197,19 +205,15 @@ void Application::Run()
 	mamaMat = glm::scale(mamaMat, glm::vec3(1.5f, 1.5f, 1.5f));
 	mamaMat = glm::rotate(mamaMat, getRad(90), glm::vec3(0, 1, 0));
 
-
 	//-----------------------------------------------------------SET PHYSX PROPERTIES---------------------------------------------------------
 
 	m_PhysX->initPhysx();
-
 	m_Player->m_Controller = m_PhysX->getController();
 
 	std::vector<Model> models;
 
-
 	models.push_back(floor01);
 	models.push_back(floor02);
-	//models.push_back(floor03);
 	models.push_back(floor04);
 	//Collision Walls
 	models.push_back(Model("PhysX/Collision/Walls/Cube.001.obj"));
@@ -302,7 +306,6 @@ void Application::Run()
 	models.push_back(Model("PhysX/Collision/OtherElems/blockingElem1.obj"));
 	models.push_back(Model("PhysX/Collision/OtherElems/blockingElem2.obj"));
 
-	
 	m_PhysX->createModels(models);
 	//------------------------------------------------------------END PHYSX PROPERTIES---------------------------------------------------------
 	//------------------------------------------------------------SET SOUND PROPERTIES---------------------------------------------------------
@@ -312,31 +315,20 @@ void Application::Run()
 
 	IrrKlang* snore = new IrrKlang();
 	snore->createSound();
+	//----------------------------------------------------------------------------------------------------------------------------------------
 
 	while (!glfwWindowShouldClose(m_Window))
 	{
 
 		SetFrameRateIndependency(); //Frame rate independency
-		counter += m_DeltaTime;
-
-		if (counter >= 5.0f) {
-			m_Player->setModel(false);
-			counter = 0.0f;
-		}
-
-		//glm::vec3 playerPosition = camera.position;
 		m_Player->move(m_Window, m_DeltaTime);
-
 		SetGLFWEvents();
-
 		m_PhysX->simulate();
 
 		//--------------------------------------------------------------RENDER SHADOWS------------------------------------------------------#	
 		renderer->SetProps(m_Brightness);
 		shadowMap->GenerateCubeMap(lightPos);
-		//glViewport(0, 0, m_Width, m_Height);
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		/* Render background */
+
 		glClearColor(0.5f, 0.5f, 0.5f, 0.0f); //gray
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -378,11 +370,10 @@ void Application::Run()
 		mama.InitShader(shadow);
 		renderAnimModel(mama, shadow, mamaMat);
 
-		//std::cout << "Mama anim" << std::endl;
-		//mama.InitShader(shadow);
-		//renderAnimModel(mama, shadow, mamaMat);
-		//std::cout << "bear anim" << std::endl;
 		character.InitShader(shadow);
+		renderAnimModel(character, shadow, m_Player->getModelMatrix());
+
+		cowboy.InitShader(shadow);
 		renderAnimModel(character, shadow, m_Player->getModelMatrix());
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -397,11 +388,11 @@ void Application::Run()
 
 		//-------------------------------------------------------------RENDER BLOOM-----------------------------------------------------------
 		bloom->Bind();
-
+		//Models with shadows
 		renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
-		//renderer->renderLight(normal);
+
 		if (renderer->isFrustum(floor01, path01, event.GetFrustum()));
-		renderModel(floor01, simpleShadow, path01);
+			renderModel(floor01, simpleShadow, path01);
 
 		if (renderer->isFrustum(floor02, path02, event.GetFrustum()))
 			renderModel(floor02, simpleShadow, path02);
@@ -433,16 +424,10 @@ void Application::Run()
 		if (renderer->isFrustum(boxes, boxMat, event.GetFrustum()))
 			renderModel(boxes, simpleShadow, boxMat);
 
-		//std::cout << "Mama anim" << std::endl;
-		//mama.InitShader(bone);
-		//renderer->renderSimpleShadow(bone, lightPos, m_Shadow, m_Farplane, shadowMap);
-		//renderAnimModel(mama, bone, mamaMat);
-
-
-
-		//std::cout << "bear anim" << std::endl;
-		character.InitShader(bone);
+		//Models with bones and shadows
 		renderer->renderSimpleShadow(bone, lightPos, m_Shadow, m_Farplane, shadowMap);
+
+		character.InitShader(bone);
 		renderAnimModel(character, bone, m_Player->getModelMatrix());
 
 		mama.InitShader(bone);
@@ -450,36 +435,8 @@ void Application::Run()
 
 		cowboy.InitShader(bone);
 		renderAnimModel(cowboy, bone, boyMat);
-	
-		if (boyStartPos.x < endX && !isOnPos && m_DeltaTime < 1.0f)
-		{
-			boyMat = glm::translate(boyMat, glm::vec3(0, -0.4, 0));
-			boyStartPos.x+= 10*m_DeltaTime;
-			if (boyStartPos.x > endX)
-			{
-				boyMat = glm::rotate(boyMat, getRad(180), glm::vec3(0, 0, 1));
-				isOnPos = !isOnPos;
-			}
 		
-		}
-		else if(boyStartPos.x > startX && isOnPos && m_DeltaTime < 1.0f)
-		{
-			boyMat = glm::translate(boyMat, glm::vec3(0, -0.4, 0));
-			boyStartPos.x -= 10 *m_DeltaTime;
-			if (boyStartPos.x < startX)
-			{
-				boyMat = glm::rotate(boyMat, getRad(180), glm::vec3(0, 0, -1));
-				isOnPos = !isOnPos;
-			}
-		}
-		
-
-		//if (boyStartPos.x == 5.91987)
-		//{
-		//	boyMat = glm::translate(boyMat, glm::vec3(1, 0, 0));
-		//	boyStartPos.x = boyStartPos.x + 1;
-		//}
-		//
+		//Models without shadows
 		renderer->renderDefault(basic);
 		if (m_Player->m_ShowModel)
 		{
@@ -487,6 +444,12 @@ void Application::Run()
 			{
 				renderModel(cubes, basic, cubeMat[i]);
 				cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 1));
+			}
+			counter += m_DeltaTime;
+			if (counter >= 5)
+			{
+				m_Player->m_ShowModel = false;
+				counter = 0.0f;
 			}
 		}
 		for (int i = 0; i < sizeof(food->position) / sizeof(food->position[0]); i++)
@@ -497,6 +460,7 @@ void Application::Run()
 
 		if (m_NormalMap)
 		{
+			//Models with normal mapping
 			renderer->renderLight(normal);
 			if (renderer->isFrustum(wall01, wallMat01, event.GetFrustum()))
 				renderModel(wall01, normal, wallMat01);
@@ -521,6 +485,7 @@ void Application::Run()
 		}
 		else
 		{
+			//models with multiple lights
 			renderer->renderLight(pointLights);
 			if (renderer->isFrustum(wall01, wallMat01, event.GetFrustum()))
 				renderModel(wall01, pointLights, wallMat01);
@@ -548,25 +513,21 @@ void Application::Run()
 		if (renderer->isFrustum(multipleLights, lights, event.GetFrustum()))
 			renderModel(multipleLights, pointLights, lights);
 
-	
-			
 		bloom->Unbind();
 		bloom->Postprocess(blur, bloomFinal);
 		bloom->Unbind();
-
-		//-------------------------------------BLOOM END---------------------------------------------------------------
 		glFlush();
-
+		//---------------------------------------------------------------BLOOM END--------------------------------------------------------------
+		//----------------------------------------------------------------WIN/LOSE--------------------------------------------------------------
 		if (lose)
 		{
 			glViewport(0, 0, m_Width, m_Height);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			renderer->renderDefault(basic);
-			renderModel(foods, basic, foodMat[0]);
 
 		}
-
+		//----------------------------------------------------------------END WIN/LOSE----------------------------------------------------------
+		//---------------------------------------------------------SET ADDITIONAL SOUNDS---------------------------------------------------------
 		if (m_Player->getPlayerPosition().y >= 13) 
 		{
 			if (!isPlayed)
@@ -586,30 +547,34 @@ void Application::Run()
 			snore->stop();
 			isPlayed = false;
 		}
-		
-		//std::cout << m_Player->getPlayerPosition().x << ", " << m_Player->getPlayerPosition().y << ", " << m_Player->getPlayerPosition().z << std::endl;
-		
-		//for (int i = 0; i < sizeof(cube.position) / sizeof(cube.position[0]); i++) {
-		//	//ToDo: If Player collides with cube objects
-		//	if (m_Player->getPlayerPosition() == cube.position[i]) {
-		//		//lose
-		//	}
-		//}
+		//---------------------------------------------------------------END SOUNDS--------------------------------------------------------------
+		//-----------------------------------------------------COWBOY RUNNING FUNCTION-----------------------------------------------------------
+		if (boyStartPos.x < endX && !isOnPos && m_DeltaTime < 1.0f)
+		{
+			boyMat = glm::translate(boyMat, glm::vec3(0, -0.4, 0));
+			boyStartPos.x += 10 * m_DeltaTime;
+			if (boyStartPos.x > endX)
+			{
+				boyMat = glm::rotate(boyMat, getRad(180), glm::vec3(0, 0, 1));
+				isOnPos = !isOnPos;
+			}
 
-		//
-		//if (m_Player->getPlayerPosition().x >= 1.0f && m_Player->getPlayerPosition().x <= 1.3f && m_Player->getPlayerPosition().z >= -7.0f && m_Player->getPlayerPosition().z <= -5.0f ||
-		//	m_Player->getPlayerPosition().x >= -0.7f && m_Player->getPlayerPosition().x <= -0.5f && m_Player->getPlayerPosition().z >= -13.2f && m_Player->getPlayerPosition().z <= -13.0f)
-		//{
-		//	//lose();
-		//}
-		
-		//m_Player->getDown(deltaTime);
-		//std::cout << glm::to_string(camera.position) << std::endl;
-		//std::cout << glm::to_string(player.position) << std::endl;
-		//glEnable(GL_DEPTH_TEST);
-		//glDisable(GL_BLEND);
-		
-		//glDepthFunc(GL_LESS);
+		}
+		else if (boyStartPos.x > startX && isOnPos && m_DeltaTime < 1.0f)
+		{
+			boyMat = glm::translate(boyMat, glm::vec3(0, -0.4, 0));
+			boyStartPos.x -= 10 * m_DeltaTime;
+			if (boyStartPos.x < startX)
+			{
+				boyMat = glm::rotate(boyMat, getRad(180), glm::vec3(0, 0, -1));
+				isOnPos = !isOnPos;
+			}
+		}
+		//---------------------------------------------------------------------------------------------------------------------------------------
+	
+
+
+
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
 	
