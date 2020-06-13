@@ -164,7 +164,7 @@ void Application::Run()
 	Model boxes("Models/Single Elements/Box/boxes.obj");
 	glm::mat4 boxMat = glm::mat4(1.0f);
 
-	AnimModel cowboy("Models/Player/model.dae");
+	AnimModel cowboy("Animation/Cowboy/model.dae");
 	glm::mat4 boyMat = glm::mat4(1.0f);
 	glm::vec3 boyStartPos = glm::vec3(-0.85059, 12, -23.9644);
 	float startX = -0.85059f;
@@ -187,11 +187,11 @@ void Application::Run()
 		foodMat[i] = glm::translate(foodMat[i], food->position[i]);
 
 	std::vector<AnimModel> playerObjects;
-	AnimModel character("Models/Player/bear.fbx");
+	AnimModel character("Animation/Player/bear.fbx");
 	playerObjects.push_back(character);
 	m_Player->setPlayerModel(playerObjects);
 
-	AnimModel mama("Models/mama/mama.fbx");
+	AnimModel mama("Animation/Mama/mama.fbx");
 	glm::mat4 mamaMat = glm::mat4(1.0f);
 	mamaMat = glm::translate(mamaMat, glm::vec3(-1.7344, 15.3156, 32.f));
 	mamaMat = glm::scale(mamaMat, glm::vec3(1.5f, 1.5f, 1.5f));
