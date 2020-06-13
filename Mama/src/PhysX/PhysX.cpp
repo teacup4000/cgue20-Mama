@@ -183,8 +183,6 @@ void Physx::createModels(std::vector<Model> models) {
 		meshDesc.triangles.count = md.meshes.size();
 		meshDesc.triangles.stride = 3 * sizeof(PxU32);
 		*/
-
-
 	}
 }
 

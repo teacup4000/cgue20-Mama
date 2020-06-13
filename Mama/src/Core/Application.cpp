@@ -29,6 +29,14 @@ struct Cube
 	};
 };
 
+struct Food
+{
+	glm::vec3 position[3] = {	glm::vec3(-6.67638, 12.35, -28.739),
+								glm::vec3(11.589, 8.7499, -7.8574),
+								glm::vec3(21.819, 8.7499, -9.007)
+	};
+};
+
 void Application::Run()
 {
 	glm::vec3 lightPos = glm::vec3(7.9922f, 50.0f, -4.0616f);
@@ -37,12 +45,12 @@ void Application::Run()
 	ShadowMap* shadowMap = new ShadowMap();
 	Renderer* renderer = new Renderer();
 	Game* game = new Game();
-	Cube cube;
 	event.SetRestart();
 
 	bool isShown = true;
-	bool isLoaded = false;
+	bool lose = false;
 	bool isOnPos = false;
+	bool isPlayed = false;
 
 	//Timer variables
 	float counter = 0.0f;
@@ -155,10 +163,6 @@ void Application::Run()
 	
 	Model boxes("Models/Single Elements/Box/boxes.obj");
 	glm::mat4 boxMat = glm::mat4(1.0f);
-	
-	AnimModel mama("Models/mama/mama.fbx");
-	glm::mat4 mamaMat = glm::mat4(1.0f);
-	mamaMat = glm::translate(mamaMat, glm::vec3(-7, 12.4f, -15.9479f));
 
 	AnimModel cowboy("Models/Player/model.dae");
 	glm::mat4 boyMat = glm::mat4(1.0f);
@@ -170,19 +174,28 @@ void Application::Run()
 	boyMat = glm::rotate(boyMat, getRad(90), glm::vec3(-1, 0, 0));
 	boyMat = glm::rotate(boyMat, getRad(90), glm::vec3(0, 0, -1));
 
-	
+	Cube* cube = new Cube();
 	Model cubes("Models/Single Elements/Cubes/cube.obj");
 	glm::mat4 cubeMat[12] = { glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f) ,glm::mat4(1.0f) ,glm::mat4(1.0f) };
-	for (int i = 0; i < sizeof(cube.position) / sizeof(cube.position[0]); i++)
-	{
-		cubeMat[i] = glm::translate(cubeMat[i], cube.position[i]);
-	}
+	for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++)
+		cubeMat[i] = glm::translate(cubeMat[i], cube->position[i]);
 
+	Food* food = new Food();
+	Model foods("Models/Single Elements/Food/Food.obj");
+	glm::mat4 foodMat[3] = { glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f) };
+	for (int i = 0; i < sizeof(food->position) / sizeof(food->position[0]); i++)
+		foodMat[i] = glm::translate(foodMat[i], food->position[i]);
 
 	std::vector<AnimModel> playerObjects;
 	AnimModel character("Models/Player/bear.fbx");
 	playerObjects.push_back(character);
 	m_Player->setPlayerModel(playerObjects);
+
+	AnimModel mama("Models/mama/mama.fbx");
+	glm::mat4 mamaMat = glm::mat4(1.0f);
+	mamaMat = glm::translate(mamaMat, glm::vec3(-1.7344, 15.3156, 32.f));
+	mamaMat = glm::scale(mamaMat, glm::vec3(1.5f, 1.5f, 1.5f));
+	mamaMat = glm::rotate(mamaMat, getRad(90), glm::vec3(0, 1, 0));
 
 
 	//-----------------------------------------------------------SET PHYSX PROPERTIES---------------------------------------------------------
@@ -297,6 +310,8 @@ void Application::Run()
 	sound->createSound();
 	sound->play("Assets/sounds/hazy-cosmos.mp3");
 
+	IrrKlang* snore = new IrrKlang();
+	snore->createSound();
 
 	while (!glfwWindowShouldClose(m_Window))
 	{
@@ -360,7 +375,9 @@ void Application::Run()
 		if (renderer->isFrustum(boxes, boxMat, event.GetFrustum()))
 			renderModel(boxes, shadow, boxMat);
 
-		
+		mama.InitShader(shadow);
+		renderAnimModel(mama, shadow, mamaMat);
+
 		//std::cout << "Mama anim" << std::endl;
 		//mama.InitShader(shadow);
 		//renderAnimModel(mama, shadow, mamaMat);
@@ -415,24 +432,25 @@ void Application::Run()
 
 		if (renderer->isFrustum(boxes, boxMat, event.GetFrustum()))
 			renderModel(boxes, simpleShadow, boxMat);
+
 		//std::cout << "Mama anim" << std::endl;
 		//mama.InitShader(bone);
 		//renderer->renderSimpleShadow(bone, lightPos, m_Shadow, m_Farplane, shadowMap);
 		//renderAnimModel(mama, bone, mamaMat);
 
-	
+
 
 		//std::cout << "bear anim" << std::endl;
 		character.InitShader(bone);
 		renderer->renderSimpleShadow(bone, lightPos, m_Shadow, m_Farplane, shadowMap);
 		renderAnimModel(character, bone, m_Player->getModelMatrix());
 
+		mama.InitShader(bone);
+		renderAnimModel(mama, bone, mamaMat);
+
 		cowboy.InitShader(bone);
 		renderAnimModel(cowboy, bone, boyMat);
 	
-		std::cout << boyStartPos.x << std::endl;
-		std::cout << m_DeltaTime << std::endl;
-
 		if (boyStartPos.x < endX && !isOnPos && m_DeltaTime < 1.0f)
 		{
 			boyMat = glm::translate(boyMat, glm::vec3(0, -0.4, 0));
@@ -462,16 +480,19 @@ void Application::Run()
 		//	boyStartPos.x = boyStartPos.x + 1;
 		//}
 		//
-
+		renderer->renderDefault(basic);
 		if (m_Player->m_ShowModel)
 		{
-			renderer->renderDefault(basic);
-			for (int i = 0; i < sizeof(cube.position) / sizeof(cube.position[0]); i++)
+			for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++)
 			{
 				renderModel(cubes, basic, cubeMat[i]);
 				cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 1));
 			}
-
+		}
+		for (int i = 0; i < sizeof(food->position) / sizeof(food->position[0]); i++)
+		{
+			renderModel(foods, basic, foodMat[i]);
+			foodMat[i] = glm::rotate(foodMat[i], 0.05f, glm::vec3(0, 1, 0));
 		}
 
 		if (m_NormalMap)
@@ -536,6 +557,35 @@ void Application::Run()
 		//-------------------------------------BLOOM END---------------------------------------------------------------
 		glFlush();
 
+		if (lose)
+		{
+			glViewport(0, 0, m_Width, m_Height);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			renderer->renderDefault(basic);
+			renderModel(foods, basic, foodMat[0]);
+
+		}
+
+		if (m_Player->getPlayerPosition().y >= 13) 
+		{
+			if (!isPlayed)
+			{
+				snore->play("Assets/sounds/snore.mp3");
+				snore->setVolume(0.1);
+			}
+			isPlayed = true;
+		}
+		if (m_Player->getPlayerPosition().y > 14)
+		{
+			if(isPlayed)
+				snore->setVolume(0.8);
+		}
+		if (m_Player->getPlayerPosition().y < 13 && snore != 0)
+		{
+			snore->stop();
+			isPlayed = false;
+		}
 		
 		//std::cout << m_Player->getPlayerPosition().x << ", " << m_Player->getPlayerPosition().y << ", " << m_Player->getPlayerPosition().z << std::endl;
 		

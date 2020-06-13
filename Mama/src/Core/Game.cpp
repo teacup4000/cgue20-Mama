@@ -3,12 +3,12 @@
 
 void Game::Win()
 {
-
+	
 }
 
 void Game::Lose()
 {
-
+	Stop();
 }
 
 void Game::GetDamage()

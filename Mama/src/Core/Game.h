@@ -23,5 +23,4 @@ public:
 private:
 	GameStatus m_Status;
 	uint32_t m_Life;
-
 };

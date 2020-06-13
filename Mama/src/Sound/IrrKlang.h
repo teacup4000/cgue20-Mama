@@ -30,9 +30,16 @@ public:
 		m_Engine->play2D(filepath, true);
 	}
 
+	
+
 	void stop()
 	{
 		m_Engine->stopAllSounds();
+	}
+
+	void setVolume(float volume)
+	{
+		m_Engine->setSoundVolume(volume);
 	}
 
 private:
