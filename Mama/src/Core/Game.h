@@ -11,7 +11,7 @@ enum class GameStatus {
 class Game
 {
 public:
-	bool m_Running;
+	bool m_Running = true;
 
 	void Win();
 	void Lose();
@@ -19,8 +19,9 @@ public:
 	void GetLife();
 	void CheckStatus(uint32_t status);
 	void Stop();
+	GameStatus getStatus() { return m_Status; }
 
 private:
-	GameStatus m_Status;
-	uint32_t m_Life;
+	GameStatus m_Status = GameStatus::DEFAULT;
+	int32_t m_Life = 100;
 };

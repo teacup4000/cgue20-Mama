@@ -50,7 +50,7 @@ void Application::Run()
 	Bloom* bloom = new Bloom();
 	ShadowMap* shadowMap = new ShadowMap();
 	Renderer* renderer = new Renderer();
-	Game* game = new Game(); //ToDo: Do something with it or delete.
+	Game* m_Game = new Game();
 	event.SetRestart();
 
 	bool isShown = true;
@@ -205,8 +205,13 @@ void Application::Run()
 	mamaMat = glm::scale(mamaMat, glm::vec3(1.5f, 1.5f, 1.5f));
 	mamaMat = glm::rotate(mamaMat, getRad(90), glm::vec3(0, 1, 0));
 
+	Model loseScreen("Models/GUI/gameOver.obj");
+	glm::mat4 loseScreenMat = glm::mat4(1.0f);
+	loseScreenMat = glm::translate(loseScreenMat, glm::vec3(-1.7344, 15.3156, 32.f));
+
 	//-----------------------------------------------------------SET PHYSX PROPERTIES---------------------------------------------------------
 
+	m_PhysX->setGame(m_Game);
 	m_PhysX->initPhysx();
 	m_Player->m_Controller = m_PhysX->getController();
 
@@ -307,6 +312,15 @@ void Application::Run()
 	models.push_back(Model("PhysX/Collision/OtherElems/blockingElem2.obj"));
 
 	m_PhysX->createModels(models);
+
+	for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++) {
+		m_PhysX->createTrigger(PxVec3(cube->position[i].x, cube->position[i].y, cube->position[i].z), PxVec3(0.2f, 0.2f, 0.2f), Physx::TRAP);
+	}
+	for (int i = 0; i < sizeof(food->position) / sizeof(food->position[0]); i++) {
+		m_PhysX->createTrigger(PxVec3(food->position[i].x, food->position[i].y, food->position[i].z), PxVec3(0.3f, 0.3f, 0.3f), Physx::MEAT);
+	}
+	m_PhysX->createTrigger(PxVec3(-1.7344, 15.3156, 32.f), PxVec3(1.0f, 2.0f, 1.0f), Physx::MOMMY);
+
 	//------------------------------------------------------------END PHYSX PROPERTIES---------------------------------------------------------
 	//------------------------------------------------------------SET SOUND PROPERTIES---------------------------------------------------------
 	IrrKlang* sound = new IrrKlang();
@@ -319,11 +333,22 @@ void Application::Run()
 
 	while (!glfwWindowShouldClose(m_Window))
 	{
-
 		SetFrameRateIndependency(); //Frame rate independency
 		m_Player->move(m_Window, m_DeltaTime);
 		SetGLFWEvents();
 		m_PhysX->simulate();
+
+		if (m_Player->getPlayerPosition().y < 4.0f) {
+			m_Game->Lose();
+		}
+		if (!m_Game->m_Running) {
+			if (m_Game->getStatus() == GameStatus::LOSE) {
+				renderer->renderDefault(basic);
+
+				renderModel(loseScreen, basic, loseScreenMat);
+			}
+			//break;
+		}
 
 		//--------------------------------------------------------------RENDER SHADOWS------------------------------------------------------#	
 		renderer->SetProps(m_Brightness);
@@ -391,7 +416,7 @@ void Application::Run()
 		//Models with shadows
 		renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
 
-		if (renderer->isFrustum(floor01, path01, event.GetFrustum()));
+		if (renderer->isFrustum(floor01, path01, event.GetFrustum()))
 			renderModel(floor01, simpleShadow, path01);
 
 		if (renderer->isFrustum(floor02, path02, event.GetFrustum()))

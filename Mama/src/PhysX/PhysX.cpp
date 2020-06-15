@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Physx.h"
+#include <chrono>
 
 void Physx::initPhysx()
 {
@@ -38,6 +39,7 @@ void Physx::initPhysx()
 	sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(1);
 	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
 	gScene = gPhysics->createScene(sceneDesc);
+	gScene->setSimulationEventCallback(this);
 
 	//--------------------------------CREATE PVD Client---------------------------------------
 	PxPvdSceneClient *pvdClient = gScene->getScenePvdClient();
@@ -112,11 +114,11 @@ void Physx::initPhysx()
 	desc.material = gPhysics->createMaterial(0.5f, 0.5f, 0.1f); // material defines physical properties like friction, bounciness etc. - see PhysX materials
 	controller = manager->createController(desc);
 
-	PxRigidDynamic *cActor = controller->getActor();
+	/*PxRigidDynamic *cActor = controller->getActor();
 	PxShape *cShapes[1];
 	cActor->getShapes(cShapes, 1, 0);
 	PxShape *cShape = cShapes[0];
-	cShape->setLocalPose(PxTransform(PxQuat(1.5708, PxVec3(0, 0, 1))));
+	cShape->setLocalPose(PxTransform(PxQuat(1.5708, PxVec3(0, 0, 1))));*/
 }
 
 void Physx::createModels(std::vector<Model> models) {
@@ -160,7 +162,6 @@ void Physx::createModels(std::vector<Model> models) {
 		convexDesc.points.data = convexVerts;
 		convexDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
 
-
 		PxMaterial *mMaterial = gPhysics->createMaterial(0.5, 0.5, 0.5);
 
 		PxDefaultMemoryOutputStream buf;
@@ -183,6 +184,89 @@ void Physx::createModels(std::vector<Model> models) {
 		meshDesc.triangles.count = md.meshes.size();
 		meshDesc.triangles.stride = 3 * sizeof(PxU32);
 		*/
+	}
+}
+
+void Physx::createTrigger(PxVec3 position, PxVec3 size, TriggerType type) {
+	
+	PxMaterial *mMaterial = gPhysics->createMaterial(0.5, 0.5, 0.5);
+	PxRigidStatic *trigger;
+	PxTransform triggerPos(position);
+	PxBoxGeometry triggerGeometry(size);
+	PxShape *triggerShape = gPhysics->createShape(triggerGeometry, *mMaterial);
+	trigger = gPhysics->createRigidStatic(triggerPos);
+	triggerShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+	triggerShape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+	trigger->attachShape(*triggerShape);
+	gScene->addActor(*trigger);
+	
+	switch (type)
+	{
+	case TRAP:
+		traps.push_back(trigger);
+		break;
+	case MEAT:
+		meat.push_back(trigger);
+		break;
+	case MOMMY:
+		if (!mommy) {
+			mommy = trigger;
+		}
+		else {
+			std::cout << "Error: Multiple Mommies detected." << std::endl;
+		}
+		break;
+	default:
+		OutputDebugString("How did you even...?\n");
+		break;
+	}
+}
+
+void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {
+	for (PxU32 i = 0; i < count; i++) {
+
+		bool isMeat = false;
+		
+		std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch();
+		lastTriggerTime = newTriggerTime;
+		newTriggerTime = now.count() / 1000;
+
+		lastTrigger = newTrigger;
+		newTrigger = pairs[i].triggerActor;
+		
+		if (pairs[i].otherActor == controller->getActor()) {
+			if (lastTrigger != newTrigger || newTriggerTime - lastTriggerTime > 1) {
+				if (pairs[i].triggerActor == mommy) {
+					m_Game->Win();
+
+					OutputDebugString("HAHAUE-SAMA!\n");
+					lastTriggerType = MOMMY;
+				}
+				else {
+					for (PxActor *a : meat) {
+						if (pairs[i].triggerActor == a) {
+							lastTriggerType = MEAT;
+							isMeat = true;
+							m_Game->GetLife();
+
+							OutputDebugString("OM NOM NOM NOM!\n");
+							break;
+						}
+					}
+					if (!isMeat) {
+						for (PxActor *a : traps) {
+							if (pairs[i].triggerActor == a) {
+								lastTriggerType = TRAP;
+								m_Game->GetDamage();
+
+								OutputDebugString("IT'S A TRAP!\n");
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
 

@@ -25,7 +25,30 @@ void Player::Update()
 	//det = x * 1 - z * 0
 	float angle = atan2(m_Front.x, m_Front.z);
 	m_ModelMatrix = glm::rotate(m_ModelMatrix, angle, glm::vec3(0, 1, 0));
-
+	if (m_Controller) {
+		if (!positionSet) {
+			float zNorm = m_Front.z / sqrt(pow(m_Front.z, 2) + pow(m_Front.x, 2));
+			float xNorm = m_Front.x / sqrt(pow(m_Front.z, 2) + pow(m_Front.x, 2));
+			PxVec3 normal = PxVec3(-zNorm, 0.0f, xNorm);
+			PxRigidDynamic *cActor = m_Controller->getActor();
+			PxShape *cShapes[1];
+			cActor->getShapes(cShapes, 1, 0);
+			PxShape *cShape = cShapes[0];
+			cShape->setLocalPose(PxTransform(PxQuat(1.5708, normal)));
+			positionSet = true;
+		}
+		else {
+			float dot = m_Front.x * m_FrontOld.x + m_Front.z * m_FrontOld.z;
+			float det = m_Front.x* m_FrontOld.z - m_Front.z * m_FrontOld.x;
+			angle = atan2(det, dot);
+			PxRigidDynamic *cActor = m_Controller->getActor();
+			PxShape *cShapes[1];
+			cActor->getShapes(cShapes, 1, 0);
+			PxShape *cShape = cShapes[0];
+			cShape->setLocalPose(PxTransform(PxQuat(angle, PxVec3(1, 0, 0))).transform(cShape->getLocalPose()));
+		}
+	}
+	m_FrontOld = m_Front;
 	//m_ModelMatrix = glm::rotate(m_ModelMatrix, m_PlayerRotation, glm::vec3(0, 1, 0));
 	//m_ModelMatrix = glm::scale(m_ModelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
 }

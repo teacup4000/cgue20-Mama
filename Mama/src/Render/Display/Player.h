@@ -39,6 +39,7 @@ public:
 
 	void setRight(glm::vec3 right) { m_Right = right; }
 	void setFront(glm::vec3 front) { m_Front = front; }
+	void setFrontOld(glm::vec3 frontOld) { m_FrontOld = frontOld; }
 	void setModel(bool setting) { m_ShowModel = setting; }
 	void move(GLFWwindow *window, float& deltaTime);
 	void Update();
@@ -50,6 +51,7 @@ private:
 	glm::vec3 m_MoveVector;
 	glm::vec3 m_Right = glm::vec3(1, 0, 0);
 	glm::vec3 m_Front = glm::vec3(0, 0, 1);
+	glm::vec3 m_FrontOld = glm::vec3(0, 0, 0);
 
 	float m_PlayerVelocity;
 	float m_PlayerRunSpeed = 10.0f;
@@ -63,6 +65,7 @@ private:
 	bool groundContact = true;
 	bool jumped = false;
 	bool peaked = false;
+	bool positionSet = false;
 
 	virtual void rotate(float& movementSpeed, float& deltaTime);
 
