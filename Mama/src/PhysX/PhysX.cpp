@@ -274,19 +274,30 @@ void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {
 float Physx::checkCamera(PxVec3 cameraPos, PxVec3 playerPos) {
 	
 	PxVec3 unitDir(cameraPos - playerPos);
-	char buf[4096], *p = buf;
-	sprintf(buf, "right %f %f %f\n", unitDir.x, unitDir.y, unitDir.z);
-	OutputDebugString(buf);
 	float length = sqrt(pow(unitDir.x, 2) + pow(unitDir.y, 2) + pow(unitDir.z, 2));
 	unitDir = unitDir.getNormalized();
-	sprintf(buf, "right %f %f %f\n", unitDir.x, unitDir.y, unitDir.z);
-	OutputDebugString(buf);
 	PxRaycastBuffer hit;
 	
 	bool status = gScene->raycast(playerPos, unitDir, length, hit);
+	
+
 	if (status) {
-		OutputDebugString("HIT\n");
-		return hit.block.distance;
+		PxShape *cShapes[1];
+		hit.block.actor->getShapes(cShapes, 1, 0);
+		PxShape *cShape = cShapes[0];
+		PxShapeFlags flags = cShape->getFlags();
+
+		int mask = 1 << 2;
+		int maskedFlags = flags.operator uint8_t() & mask;
+		int triggerFlag = maskedFlags >> 2;
+		
+		//hit a trigger -> ignore
+		if (triggerFlag == 0) {
+			return hit.block.distance;
+		}
+		else {
+			return length;
+		}
 	}
 	else {
 		return length;
