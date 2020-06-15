@@ -33,7 +33,10 @@ public:
 	void createModels(std::vector<Model> models);
 	//create a Trigger Box of Size size at Position position
 	void createTrigger(PxVec3 position, PxVec3 size, TriggerType type);
-	
+	//checks if the camera colides with something and gives out collision distance
+	float checkCamera(PxVec3 cameraPos, PxVec3 playerPos);
+
+
 	//PxSimulationEventCallback functions
 	virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) { OutputDebugString("CONTACT\n"); }
 	virtual void onTrigger(PxTriggerPair* pairs, PxU32 count);

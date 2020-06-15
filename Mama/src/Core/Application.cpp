@@ -214,6 +214,7 @@ void Application::Run()
 	m_PhysX->setGame(m_Game);
 	m_PhysX->initPhysx();
 	m_Player->m_Controller = m_PhysX->getController();
+	m_Camera->setPhysx(m_PhysX);
 
 	std::vector<Model> models;
 
@@ -337,17 +338,17 @@ void Application::Run()
 		m_Player->move(m_Window, m_DeltaTime);
 		SetGLFWEvents();
 		m_PhysX->simulate();
-
+		
 		if (m_Player->getPlayerPosition().y < 4.0f) {
 			m_Game->Lose();
 		}
 		if (!m_Game->m_Running) {
 			if (m_Game->getStatus() == GameStatus::LOSE) {
-				renderer->renderDefault(basic);
+				//renderer->renderDefault(basic);
 
-				renderModel(loseScreen, basic, loseScreenMat);
+				//renderModel(loseScreen, basic, loseScreenMat);
 			}
-			//break;
+			break;
 		}
 
 		//--------------------------------------------------------------RENDER SHADOWS------------------------------------------------------#	

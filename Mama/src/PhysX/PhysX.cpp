@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Physx.h"
 #include <chrono>
+#include <math.h>
 
 void Physx::initPhysx()
 {
@@ -268,6 +269,29 @@ void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {
 			}
 		}
 	}
+}
+
+float Physx::checkCamera(PxVec3 cameraPos, PxVec3 playerPos) {
+	
+	PxVec3 unitDir(cameraPos - playerPos);
+	char buf[4096], *p = buf;
+	sprintf(buf, "right %f %f %f\n", unitDir.x, unitDir.y, unitDir.z);
+	OutputDebugString(buf);
+	float length = sqrt(pow(unitDir.x, 2) + pow(unitDir.y, 2) + pow(unitDir.z, 2));
+	unitDir = unitDir.getNormalized();
+	sprintf(buf, "right %f %f %f\n", unitDir.x, unitDir.y, unitDir.z);
+	OutputDebugString(buf);
+	PxRaycastBuffer hit;
+	
+	bool status = gScene->raycast(playerPos, unitDir, length, hit);
+	if (status) {
+		OutputDebugString("HIT\n");
+		return hit.block.distance;
+	}
+	else {
+		return length;
+	}
+
 }
 
 void Physx::releasePhysx() {

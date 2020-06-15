@@ -9,6 +9,7 @@
 #include <gtc/matrix_transform.hpp>
 #include <GLFW\glfw3.h>
 #include "Player.h"
+#include "PhysX/PhysX.h"
 
 //calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 class Camera
@@ -37,6 +38,7 @@ public:
 	glm::vec3 getFront() { return m_Front; }
 	float getYaw() { return m_Yaw; }
 	float getPitch() { return m_Yaw; }
+	void setPhysx(Physx* physx) { m_physx = physx; }
 
 
 private:
@@ -54,7 +56,8 @@ private:
 	//Camera options
 	float m_MovementSpeed;
 	float m_MouseSensitivity;
-	
+	Physx* m_physx;
+
 	Player* m_Player;
 
 	/** Calculates the front vector from the Camera's (updated) Euler Angles */

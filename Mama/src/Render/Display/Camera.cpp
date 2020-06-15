@@ -44,14 +44,26 @@ void Camera::processMouseMovement(float xoffset, float yoffset, GLboolean constr
 
 	/* Update Front, Right and Up Vectors using the updated Euler angles */
 	this->updateCameraVectors();
-
-	m_Position -= m_Front * m_Distance;
 }
 
 glm::mat4 Camera::getViewMatrix()
 {
 	m_Position = m_Player->getPlayerPosition();
-	m_Position -= m_Front * m_Distance;
+
+	glm::vec3 position = m_Position - m_Front * m_Distance;
+
+	PxVec3 camPos(position.x, position.y, position.z);
+	PxVec3 playerPos(m_Player->getPlayerPosition().x, m_Player->getPlayerPosition().y, m_Player->getPlayerPosition().z);
+	float distance = m_physx->checkCamera(camPos, playerPos);
+	//distance -= 0.1;
+	if (distance <= 0.0f) {
+		distance = 0.01f;
+	}else if(distance > 3.0f) {
+		distance = 3.0f;
+	}
+
+	m_Position -= m_Front * distance;
+
 	return glm::lookAt(m_Position, m_Position + m_Front, m_WorldUp);
 }
 
