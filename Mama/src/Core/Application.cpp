@@ -100,12 +100,6 @@ void Application::Run()
 	bloomFinal.setInt("bloomBlur", 1);
 	//----------------------------------------------------------END SHADER PROPERTIES---------------------------------------------------------
 	//--------------------------------------------------------------SET MODELS----------------------------------------------------------------	
-	glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
-	glViewport(0, 0, m_Width, m_Height);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	uint32_t percentNow = 0;
-	uint32_t step = 100 / 23;
 
 	Model loader("Models/Loader/Loader.obj");
 	glm::mat4 loadMat = glm::mat4(1.0f);
@@ -207,8 +201,11 @@ void Application::Run()
 
 	Model loseScreen("Models/GUI/gameOver.obj");
 	glm::mat4 loseScreenMat = glm::mat4(1.0f);
-	loseScreenMat = glm::translate(loseScreenMat, glm::vec3(-1.7344, 15.3156, 32.f));
-
+	//loseScreenMat = glm::translate(loseScreenMat, glm::vec3(-1.7344, 15.3156, 32.f));
+	loseScreenMat = glm::translate(loseScreenMat, glm::vec3(2.33505, 10.999, -12.4322));
+	loseScreenMat = glm::rotate(loseScreenMat, getRad(180), glm::vec3(0, 1, 0));
+	loseScreenMat = glm::scale(loseScreenMat, glm::vec3(3, 3, 3));
+	int count = 0;
 	//-----------------------------------------------------------SET PHYSX PROPERTIES---------------------------------------------------------
 
 	m_PhysX->setGame(m_Game);
@@ -342,15 +339,7 @@ void Application::Run()
 		if (m_Player->getPlayerPosition().y < 4.0f) {
 			m_Game->Lose();
 		}
-		if (!m_Game->m_Running) {
-			if (m_Game->getStatus() == GameStatus::LOSE) {
-				//renderer->renderDefault(basic);
-
-				//renderModel(loseScreen, basic, loseScreenMat);
-			}
-			break;
-		}
-
+	
 		//--------------------------------------------------------------RENDER SHADOWS------------------------------------------------------#	
 		renderer->SetProps(m_Brightness);
 		shadowMap->GenerateCubeMap(lightPos);
@@ -414,134 +403,154 @@ void Application::Run()
 
 		//-------------------------------------------------------------RENDER BLOOM-----------------------------------------------------------
 		bloom->Bind();
-		//Models with shadows
-		renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
 
-		if (renderer->isFrustum(floor01, path01, event.GetFrustum()))
-			renderModel(floor01, simpleShadow, path01);
-
-		if (renderer->isFrustum(floor02, path02, event.GetFrustum()))
-			renderModel(floor02, simpleShadow, path02);
-
-		if (renderer->isFrustum(floor03, path03, event.GetFrustum()))
-			renderModel(floor03, simpleShadow, path03);
-
-		if (renderer->isFrustum(floor04, path04, event.GetFrustum()))
-			renderModel(floor04, simpleShadow, path04);
-
-		if (renderer->isFrustum(woodenElements, woodMat, event.GetFrustum()))
-			renderModel(woodenElements, simpleShadow, woodMat);
-
-		if (renderer->isFrustum(container, containerMat, event.GetFrustum()))
-			renderModel(container, simpleShadow, containerMat);
-
-		if (renderer->isFrustum(debris, debMat, event.GetFrustum()))
-			renderModel(debris, simpleShadow, debMat);
-
-		if (renderer->isFrustum(cart, cartMat, event.GetFrustum()))
-			renderModel(cart, simpleShadow, cartMat);
-
-		if (renderer->isFrustum(rails, railMat, event.GetFrustum()))
-			renderModel(rails, simpleShadow, railMat);
-
-		if (renderer->isFrustum(fence, fenceMat, event.GetFrustum()))
-			renderModel(fence, simpleShadow, fenceMat);
-
-		if (renderer->isFrustum(boxes, boxMat, event.GetFrustum()))
-			renderModel(boxes, simpleShadow, boxMat);
-
-		//Models with bones and shadows
-		renderer->renderSimpleShadow(bone, lightPos, m_Shadow, m_Farplane, shadowMap);
-
-		character.InitShader(bone);
-		renderAnimModel(character, bone, m_Player->getModelMatrix());
-
-		mama.InitShader(bone);
-		renderAnimModel(mama, bone, mamaMat);
-
-		cowboy.InitShader(bone);
-		renderAnimModel(cowboy, bone, boyMat);
-		
-		//Models without shadows
 		renderer->renderDefault(basic);
-		if (m_Player->m_ShowModel)
+		if (m_Game->getStatus() == GameStatus::LOSE) {
+			count++;
+			renderer->renderDefault(basic);
+			renderModel(loseScreen, basic, loseScreenMat);
+			if(count == 1)
+				m_Camera->m_Position = -m_Player->getPlayerPosition();
+			
+		}
+		if (m_Game->getStatus() == GameStatus::WIN)
 		{
-			for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++)
+			renderer->renderDefault(basic);
+			renderModel(loseScreen, basic, loseScreenMat);
+
+			//dasselbe mit einem winscreen
+		}
+		else {
+			//Models with shadows
+			renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
+
+			if (renderer->isFrustum(floor01, path01, event.GetFrustum()))
+				renderModel(floor01, simpleShadow, path01);
+
+			if (renderer->isFrustum(floor02, path02, event.GetFrustum()))
+				renderModel(floor02, simpleShadow, path02);
+
+			if (renderer->isFrustum(floor03, path03, event.GetFrustum()))
+				renderModel(floor03, simpleShadow, path03);
+
+			if (renderer->isFrustum(floor04, path04, event.GetFrustum()))
+				renderModel(floor04, simpleShadow, path04);
+
+			if (renderer->isFrustum(woodenElements, woodMat, event.GetFrustum()))
+				renderModel(woodenElements, simpleShadow, woodMat);
+
+			if (renderer->isFrustum(container, containerMat, event.GetFrustum()))
+				renderModel(container, simpleShadow, containerMat);
+
+			if (renderer->isFrustum(debris, debMat, event.GetFrustum()))
+				renderModel(debris, simpleShadow, debMat);
+
+			if (renderer->isFrustum(cart, cartMat, event.GetFrustum()))
+				renderModel(cart, simpleShadow, cartMat);
+
+			if (renderer->isFrustum(rails, railMat, event.GetFrustum()))
+				renderModel(rails, simpleShadow, railMat);
+
+			if (renderer->isFrustum(fence, fenceMat, event.GetFrustum()))
+				renderModel(fence, simpleShadow, fenceMat);
+
+			if (renderer->isFrustum(boxes, boxMat, event.GetFrustum()))
+				renderModel(boxes, simpleShadow, boxMat);
+
+			//Models with bones and shadows
+			renderer->renderSimpleShadow(bone, lightPos, m_Shadow, m_Farplane, shadowMap);
+
+			character.InitShader(bone);
+			renderAnimModel(character, bone, m_Player->getModelMatrix());
+
+			mama.InitShader(bone);
+			renderAnimModel(mama, bone, mamaMat);
+
+			cowboy.InitShader(bone);
+			renderAnimModel(cowboy, bone, boyMat);
+
+			//Models without shadows
+			renderer->renderDefault(basic);
+			if (m_Player->m_ShowModel)
 			{
-				renderModel(cubes, basic, cubeMat[i]);
-				cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 1));
+				for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++)
+				{
+					renderModel(cubes, basic, cubeMat[i]);
+					cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 1));
+				}
+				counter += m_DeltaTime;
+				if (counter >= 5)
+				{
+					m_Player->m_ShowModel = false;
+					counter = 0.0f;
+				}
 			}
-			counter += m_DeltaTime;
-			if (counter >= 5)
+			for (int i = 0; i < sizeof(food->position) / sizeof(food->position[0]); i++)
 			{
-				m_Player->m_ShowModel = false;
-				counter = 0.0f;
+				renderModel(foods, basic, foodMat[i]);
+				foodMat[i] = glm::rotate(foodMat[i], 0.05f, glm::vec3(0, 1, 0));
 			}
-		}
-		for (int i = 0; i < sizeof(food->position) / sizeof(food->position[0]); i++)
-		{
-			renderModel(foods, basic, foodMat[i]);
-			foodMat[i] = glm::rotate(foodMat[i], 0.05f, glm::vec3(0, 1, 0));
-		}
 
-		if (m_NormalMap)
-		{
-			//Models with normal mapping
-			renderer->renderLight(normal);
-			if (renderer->isFrustum(wall01, wallMat01, event.GetFrustum()))
-				renderModel(wall01, normal, wallMat01);
+			if (m_NormalMap)
+			{
+				//Models with normal mapping
+				renderer->renderLight(normal);
+				if (renderer->isFrustum(wall01, wallMat01, event.GetFrustum()))
+					renderModel(wall01, normal, wallMat01);
 
-			if (renderer->isFrustum(wall02, wallMat02, event.GetFrustum()))
-				renderModel(wall02, normal, wallMat02);
+				if (renderer->isFrustum(wall02, wallMat02, event.GetFrustum()))
+					renderModel(wall02, normal, wallMat02);
 
-			if (renderer->isFrustum(wall03, wallMat03, event.GetFrustum()))
-				renderModel(wall03, normal, wallMat03);
+				if (renderer->isFrustum(wall03, wallMat03, event.GetFrustum()))
+					renderModel(wall03, normal, wallMat03);
 
-			if (renderer->isFrustum(wall04, wallMat04, event.GetFrustum()))
-				renderModel(wall04, normal, wallMat04);
+				if (renderer->isFrustum(wall04, wallMat04, event.GetFrustum()))
+					renderModel(wall04, normal, wallMat04);
 
-			if (isShown = renderer->isFrustum(wall05, wallMat05, event.GetFrustum()))
-				renderModel(wall05, normal, wallMat05);
+				if (isShown = renderer->isFrustum(wall05, wallMat05, event.GetFrustum()))
+					renderModel(wall05, normal, wallMat05);
 
-			if (renderer->isFrustum(wall06, wallMat06, event.GetFrustum()))
-				renderModel(wall06, normal, wallMat06);
+				if (renderer->isFrustum(wall06, wallMat06, event.GetFrustum()))
+					renderModel(wall06, normal, wallMat06);
 
-			if (renderer->isFrustum(rocks, rockMat, event.GetFrustum()))
-				renderModel(rocks, normal, rockMat);
-		}
-		else
-		{
-			//models with multiple lights
+				if (renderer->isFrustum(rocks, rockMat, event.GetFrustum()))
+					renderModel(rocks, normal, rockMat);
+			}
+			else
+			{
+				//models with multiple lights
+				renderer->renderLight(pointLights);
+				if (renderer->isFrustum(wall01, wallMat01, event.GetFrustum()))
+					renderModel(wall01, pointLights, wallMat01);
+
+				if (renderer->isFrustum(wall02, wallMat02, event.GetFrustum()))
+					renderModel(wall02, pointLights, wallMat02);
+
+				if (renderer->isFrustum(wall03, wallMat03, event.GetFrustum()))
+					renderModel(wall03, pointLights, wallMat03);
+
+				if (renderer->isFrustum(wall04, wallMat04, event.GetFrustum()))
+					renderModel(wall04, pointLights, wallMat04);
+
+				if (renderer->isFrustum(wall05, wallMat05, event.GetFrustum()))
+					renderModel(wall05, pointLights, wallMat05);
+
+				if (renderer->isFrustum(wall06, wallMat06, event.GetFrustum()))
+					renderModel(wall06, pointLights, wallMat06);
+
+				if (renderer->isFrustum(rocks, rockMat, event.GetFrustum()))
+					renderModel(rocks, pointLights, rockMat);
+			}
+
 			renderer->renderLight(pointLights);
-			if (renderer->isFrustum(wall01, wallMat01, event.GetFrustum()))
-				renderModel(wall01, pointLights, wallMat01);
+			if (renderer->isFrustum(multipleLights, lights, event.GetFrustum()))
+				renderModel(multipleLights, pointLights, lights);
 
-			if (renderer->isFrustum(wall02, wallMat02, event.GetFrustum()))
-				renderModel(wall02, pointLights, wallMat02);
-
-			if (renderer->isFrustum(wall03, wallMat03, event.GetFrustum()))
-				renderModel(wall03, pointLights, wallMat03);
-
-			if (renderer->isFrustum(wall04, wallMat04, event.GetFrustum()))
-				renderModel(wall04, pointLights, wallMat04);
-
-			if (renderer->isFrustum(wall05, wallMat05, event.GetFrustum()))
-				renderModel(wall05, pointLights, wallMat05);
-
-			if (renderer->isFrustum(wall06, wallMat06, event.GetFrustum()))
-				renderModel(wall06, pointLights, wallMat06);
-
-			if (renderer->isFrustum(rocks, rockMat, event.GetFrustum()))
-				renderModel(rocks, pointLights, rockMat);
 		}
-
-		renderer->renderLight(pointLights);
-		if (renderer->isFrustum(multipleLights, lights, event.GetFrustum()))
-			renderModel(multipleLights, pointLights, lights);
-
 		bloom->Unbind();
 		bloom->Postprocess(blur, bloomFinal);
 		bloom->Unbind();
+
 		glFlush();
 		//---------------------------------------------------------------BLOOM END--------------------------------------------------------------
 		//----------------------------------------------------------------WIN/LOSE--------------------------------------------------------------

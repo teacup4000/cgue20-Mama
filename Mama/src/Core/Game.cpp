@@ -5,7 +5,6 @@ void Game::Win()
 {
 	OutputDebugString("WON!\n");
 	m_Status = GameStatus::WIN;
-	Stop();
 }
 
 void Game::Lose()

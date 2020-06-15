@@ -19,6 +19,7 @@ void Player::Update()
 {
 	m_ModelMatrix = glm::mat4(1.0f);
 	m_ModelMatrix = glm::translate(m_ModelMatrix, m_Position);
+
 	
 	//atan(det, dot)
 	//dot = x * 0 + z * 1

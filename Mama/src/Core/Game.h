@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 
+
 enum class GameStatus {
 
 	DEFAULT = 0,
