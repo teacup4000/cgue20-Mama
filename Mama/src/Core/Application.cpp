@@ -601,14 +601,6 @@ void Application::Run()
 		glFlush();
 		//---------------------------------------------------------------BLOOM END--------------------------------------------------------------
 		//----------------------------------------------------------------WIN/LOSE--------------------------------------------------------------
-		if (lose)
-		{
-			glViewport(0, 0, m_Width, m_Height);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-		}
-
 		if (m_Game->getStatus() == GameStatus::LOSE && !processedEnd) {
 
 			m_Game->pauseGame();
@@ -623,8 +615,6 @@ void Application::Run()
 		}
 		//----------------------------------------------------------------END WIN/LOSE----------------------------------------------------------
 		//---------------------------------------------------------SET ADDITIONAL SOUNDS---------------------------------------------------------
-		
-		
 		if (!m_Game->isMuted()) {
 			sound->setVolume(m_Game->getVolume());
 			if (!soundOn) {
@@ -699,10 +689,6 @@ void Application::Run()
 			OutputDebugString(buf);
 		}
 		//---------------------------------------------------------------------------------------------------------------------------------------
-	
-
-
-
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
 	}
@@ -713,9 +699,7 @@ void Application::Run()
 	shadow.deleteShader();
 	pointLights.deleteShader();
 	normal.deleteShader();
-
 	bloom->Destroy();
-
 	m_PhysX->releasePhysx();
 	glfwTerminate();
 }
