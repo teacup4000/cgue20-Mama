@@ -106,13 +106,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\assimp2\include;$(SolutionDir)Dependencies\glad\include;$(SolutionDir)Mama\src;$(SolutionDir)Dependencies\PhysX\include;$(SolutionDir)Dependencies\pxshared\include;$(SolutionDir)Dependencies\irrKlang\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\assimp2\include;$(SolutionDir)Dependencies\glad\include;$(SolutionDir)Mama\src;$(SolutionDir)Dependencies\PhysX\debug-include;$(SolutionDir)Dependencies\pxshared\include;$(SolutionDir)Dependencies\irrKlang\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\GLFW\lib;$(SolutionDir)Dependencies\assimp2\win64;$(SolutionDir)Dependencies\PhysX\lib;$(SolutionDir)Dependencies\irrKlang\lib\Winx64-visualStudio</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\GLFW\lib;$(SolutionDir)Dependencies\assimp2\win64;$(SolutionDir)Dependencies\PhysX\debug-lib;$(SolutionDir)Dependencies\irrKlang\lib\Winx64-visualStudio</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;assimp.lib;PhysXCommon_64.lib;PhysX_64.lib;PhysXExtensions_static_64.lib;PhysXFoundation_64.lib;PhysXPvdSDK_static_64.lib;PhysXCharacterKinematic_static_64.lib;PhysXCooking_64.lib;SampleBase_static_64.lib;Samples_64.lib;irrKlang.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

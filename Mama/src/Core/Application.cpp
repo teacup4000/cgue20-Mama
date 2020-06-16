@@ -313,7 +313,7 @@ void Application::Run()
 	m_PhysX->createModels(models);
 
 	for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++) {
-		m_PhysX->createTrigger(PxVec3(cube->position[i].x, cube->position[i].y, cube->position[i].z), PxVec3(0.2f, 0.2f, 0.2f), Physx::TriggerType::TRAP);
+		m_PhysX->createTrigger(PxVec3(cube->position[i].x, cube->position[i].y, cube->position[i].z), PxVec3(0.2f, 0.4f, 0.2f), Physx::TriggerType::TRAP);
 	}
 	for (int i = 0; i < sizeof(food->position) / sizeof(food->position[0]); i++) {
 		m_PhysX->createTrigger(PxVec3(food->position[i].x, food->position[i].y, food->position[i].z), PxVec3(0.3f, 0.3f, 0.3f), Physx::TriggerType::MEAT);
