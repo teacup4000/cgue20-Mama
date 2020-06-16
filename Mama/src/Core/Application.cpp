@@ -1,16 +1,9 @@
 #include "stdafx.h"
 #include "Application.h"
 
-//------globals------
-int count = 0; //TODO useful?
-//-----------------------------
-
-
 //render Shaders
 void renderModel(Model &model, Shader &shader, glm::mat4 matrix);
 void renderAnimModel(AnimModel &model, Shader &shader, glm::mat4 matrix);
-
-//void lose();
 
 struct Cube
 {
@@ -55,7 +48,6 @@ void Application::Run()
 	event.SetRestart();
 
 	bool isShown = true;
-	bool lose = false;
 	bool isOnPos = false;
 	bool isPlayed = false;
 	bool soundOn = true;
@@ -332,10 +324,16 @@ void Application::Run()
 	//------------------------------------------------------------SET SOUND PROPERTIES---------------------------------------------------------
 	IrrKlang* sound = new IrrKlang();
 	sound->createSound();
-	sound->play("Assets/sounds/hazy-cosmos.mp3");
+	sound->play("Assets/sounds/hazy-cosmos.mp3", true);
 
 	IrrKlang* snore = new IrrKlang();
 	snore->createSound();
+
+	IrrKlang* win = new IrrKlang();
+	win->createSound();
+
+	IrrKlang* lose = new IrrKlang();
+	lose->createSound();
 	//----------------------------------------------------------------------------------------------------------------------------------------
 
 	while (!glfwWindowShouldClose(m_Window))
@@ -366,7 +364,10 @@ void Application::Run()
 			boyMat = glm::scale(boyMat, glm::vec3(0.2f, 0.2f, 0.2f));
 			boyMat = glm::rotate(boyMat, getRad(90), glm::vec3(-1, 0, 0));
 			boyMat = glm::rotate(boyMat, getRad(90), glm::vec3(0, 0, -1));
-		
+
+			//reset Music
+			sound->play("Assets/sounds/hazy-cosmos.mp3", true);
+
 			//deactivate restart
 			event.SetRestart();
 		}
@@ -603,12 +604,17 @@ void Application::Run()
 		//----------------------------------------------------------------WIN/LOSE--------------------------------------------------------------
 		if (m_Game->getStatus() == GameStatus::LOSE && !processedEnd) {
 
+			sound->stop();
+			lose->play("Assets/sounds/lose.mp3",false);
 			m_Game->pauseGame();
 			m_Camera->loseScreen();
 			processedEnd = true;
 		}
 		if (m_Game->getStatus() == GameStatus::WIN && !processedEnd) {
 
+			sound->stop();
+			snore->stop();
+			win->play("Assets/sounds/win.mp3", false);
 			m_Game->pauseGame();
 			m_Camera->winScreen();
 			processedEnd = true;
@@ -618,7 +624,7 @@ void Application::Run()
 		if (!m_Game->isMuted()) {
 			sound->setVolume(m_Game->getVolume());
 			if (!soundOn) {
-				sound->play("Assets/sounds/hazy-cosmos.mp3");
+				sound->play("Assets/sounds/hazy-cosmos.mp3", true);
 				soundOn = true;
 			}
 
@@ -627,7 +633,7 @@ void Application::Run()
 				{
 					if (!isPlayed)
 					{
-						snore->play("Assets/sounds/snore.mp3");
+						snore->play("Assets/sounds/snore.mp3", true);
 						snore->setVolume(0.1 * m_Game->getVolume());
 					}
 					isPlayed = true;

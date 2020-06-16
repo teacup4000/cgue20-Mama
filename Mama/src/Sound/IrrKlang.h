@@ -25,12 +25,10 @@ public:
 		}
 	}
 
-	void play(const char* filepath)
+	void play(const char* filepath, bool repeat)
 	{
-		m_Engine->play2D(filepath, true);
-	}
-
-	
+		m_Engine->play2D(filepath, repeat);
+	}	
 
 	void stop()
 	{
