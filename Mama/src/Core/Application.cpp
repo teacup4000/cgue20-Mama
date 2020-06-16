@@ -694,9 +694,6 @@ void Application::Run()
 			else {
 				m_PhysX->createTrigger(PxVec3(-boyStartPos.x, boyStartPos.y, boyStartPos.z), PxVec3(0.25f, 1.0f, 0.25f), Physx::TriggerType::BOY);
 			}
-			char buf[4096], *p = buf;
-			sprintf(buf, "BOYX %f\n", boyStartPos.x);
-			OutputDebugString(buf);
 		}
 		//---------------------------------------------------------------------------------------------------------------------------------------
 	

@@ -78,22 +78,22 @@ private:
 		m_MoveVector = glm::vec3(0);
 		m_MoveVector.y = m_MoveVector.y - GRAVITY * deltaTime * 250;
 
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		if ((glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) && (!glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || !glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS))
 		{
 			m_MoveVector.z = -m_PlayerVelocity * m_Front.z;
 			m_MoveVector.x = -m_PlayerVelocity * m_Front.x;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		else if ((glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) && (!glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || !glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)) {
 			m_MoveVector.z = m_PlayerVelocity * m_Front.z;
 			m_MoveVector.x = m_PlayerVelocity * m_Front.x;
 		}
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		if ((glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) && (!glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || !glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS))
 		{
 			this->m_PlayerCurrentTurnSpeed = m_PlayerTurnSpeed;
 			m_MoveVector.x = -m_PlayerVelocity * m_Right.x;
 			m_MoveVector.z = -m_PlayerVelocity * m_Right.z;
 		}
-		else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && !glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		else if ((glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) && (!glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || !glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS))
 		{
 			this->m_PlayerCurrentTurnSpeed = -m_PlayerTurnSpeed;
 			m_MoveVector.x = m_PlayerVelocity * m_Right.x;
@@ -155,10 +155,6 @@ private:
 		m_Position.x = m_Controller->getFootPosition().x;
 		m_Position.y = m_Controller->getFootPosition().y + 0.1;
 		m_Position.z = m_Controller->getFootPosition().z;
-
-		char buf[4096], *p = buf;
-		sprintf(buf, "x %f\n", m_Position.x);
-		OutputDebugString(buf);
 
 		/*char buf[4096], *p = buf;
 		sprintf(buf, "right %f %f %f\n", getPlayerRight()[0], getPlayerRight()[1], getPlayerRight()[2]);

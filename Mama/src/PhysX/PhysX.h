@@ -39,7 +39,7 @@ public:
 
 
 	//PxSimulationEventCallback functions
-	virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) { OutputDebugString("CONTACT\n"); }
+	virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {}
 	virtual void onTrigger(PxTriggerPair* pairs, PxU32 count);
 	virtual void onConstraintBreak(PxConstraintInfo*, PxU32) {}
 	virtual void onWake(PxActor**, PxU32) {}
