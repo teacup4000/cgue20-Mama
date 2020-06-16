@@ -602,18 +602,22 @@ void Application::Run()
 		//---------------------------------------------------------------BLOOM END--------------------------------------------------------------
 		//----------------------------------------------------------------WIN/LOSE--------------------------------------------------------------
 		if (m_Game->getStatus() == GameStatus::LOSE && !processedEnd) {
-
+			if (!m_Game->isMuted()) {
 			sound->stop();
-			lose->play("Assets/sounds/lose.mp3",false);
+			lose->play("Assets/sounds/lose.mp3", false);
+			lose->setVolume(m_Game->getVolume());
+		}
 			m_Game->pauseGame();
 			m_Camera->loseScreen();
 			processedEnd = true;
 		}
 		if (m_Game->getStatus() == GameStatus::WIN && !processedEnd) {
-
-			sound->stop();
-			snore->stop();
-			win->play("Assets/sounds/win.mp3", false);
+			if (!m_Game->isMuted()) {
+				sound->stop();
+				snore->stop();
+				win->play("Assets/sounds/win.mp3", false);
+				win->setVolume(m_Game->getVolume());
+			}
 			m_Game->pauseGame();
 			m_Camera->winScreen();
 			processedEnd = true;
