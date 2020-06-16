@@ -529,9 +529,12 @@ void Application::Run()
 		}
 		for (int i = 0; i < sizeof(food->position) / sizeof(food->position[0]); i++)
 		{
-			renderModel(foods, basic, foodMat[i]);
-			if (!m_Game->isPaused()) {
-				foodMat[i] = glm::rotate(foodMat[i], 0.05f, glm::vec3(0, 1, 0));
+			glm::vec3 pos(food->position[i]);
+			if (!m_PhysX->checkMeat(PxVec3(pos.x, pos.y, pos.z))) {
+				renderModel(foods, basic, foodMat[i]);
+				if (!m_Game->isPaused()) {
+					foodMat[i] = glm::rotate(foodMat[i], 0.05f, glm::vec3(0, 1, 0));
+				}
 			}
 		}
 

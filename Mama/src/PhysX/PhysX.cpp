@@ -208,6 +208,7 @@ void Physx::createTrigger(PxVec3 position, PxVec3 size, TriggerType type) {
 		break;
 	case MEAT:
 		meat.push_back(trigger);
+		meatPos.push_back(position);
 		break;
 	case MOMMY:
 		if (!mommy) {
@@ -228,6 +229,8 @@ void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {
 		for (PxU32 i = 0; i < count; i++) {
 
 			bool isMeat = false;
+			bool isEaten = false;
+			int meatCount = 0;
 
 			std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch();
 			lastTriggerTime = newTriggerTime;
@@ -239,23 +242,31 @@ void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {
 			if (pairs[i].otherActor == controller->getActor()) {
 				if (lastTrigger != newTrigger || newTriggerTime - lastTriggerTime > 1) {
 					if (pairs[i].triggerActor == mommy) {
-						OutputDebugString("HAHAUE-SAMA!\n");
 						m_Game->Win();
 					}
 					else {
 						for (PxActor *a : meat) {
 							if (pairs[i].triggerActor == a) {
-								OutputDebugString("OM NOM NOM NOM!\n");
-								isMeat = true;
-								m_Game->GainLife();
-
+								for (PxActor* e : eaten) {
+									//if meat already eaten -> ignore
+									if (e == a) {
+										eatenPos.push_back(meatPos[meatCount]);
+										isEaten = true;
+										break;
+									}
+								}
+								if (!isEaten) {
+									eaten.push_back(a);
+									isMeat = true;
+									m_Game->GainLife();
+								}
 								break;
 							}
+							meatCount++;
 						}
 						if (!isMeat) {
 							for (PxActor *a : traps) {
 								if (pairs[i].triggerActor == a) {
-									OutputDebugString("IT'S A TRAP!\n");
 									m_Game->ReceiveDamage();
 
 									break;
@@ -303,9 +314,19 @@ float Physx::checkCamera(PxVec3 cameraPos, PxVec3 playerPos) {
 
 }
 
+bool Physx::checkMeat(PxVec3 position) {
+	for (PxVec3 v : eatenPos) {
+		if (position == v) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void Physx::Reset() {
 	std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch();
-	newTriggerTime = now.count() /1000 ;
+	newTriggerTime = now.count() /1000;
+	eaten.clear();
 }
 
 void Physx::releasePhysx() {

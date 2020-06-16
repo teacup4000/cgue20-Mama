@@ -49,7 +49,8 @@ public:
 	PxActor* getNewTrigger() { return newTrigger; }
 	float getLastTriggerTime() { return lastTriggerTime; }
 	float getNewTriggerTime() { return newTriggerTime; }
-
+	//checks meat has already been eaten; returns true if so
+	bool checkMeat(PxVec3 position);
 	void setGame(Game* game) { m_Game = game; }
 	void Reset();
 
@@ -70,7 +71,10 @@ private:
 	float newTriggerTime;
 
 	std::vector<PxActor*> traps;
+	std::vector<PxActor*> eaten;
 	std::vector<PxActor*> meat;
+	std::vector<PxVec3> meatPos;
+	std::vector<PxVec3> eatenPos;
 	PxRigidStatic *mommy = nullptr;
 
 	Game* m_Game;
