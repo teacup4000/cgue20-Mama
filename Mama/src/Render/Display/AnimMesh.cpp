@@ -53,9 +53,6 @@ void AnimMesh::Draw(Shader shader)
 		glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
 	}
 
-	/* set each mesh's shininess property to a default value */
-	//glUniform1f(glGetUniformLocation(shader.ID, "material.shininess"), 10.0f);
-
 	/** Draw mesh */
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, 0);

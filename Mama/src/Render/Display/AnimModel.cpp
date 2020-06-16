@@ -16,7 +16,7 @@ AnimModel::AnimModel(std::string const &path, bool gamma)
 {
 	m_Scene = nullptr;
 	loadModel(path);
-	std::cout << "anim-File loaded" << std::endl;
+	std::cout << "anim-File " << path << " loaded" << std::endl;
 }
 
 void AnimModel::InitShader(Shader &shader)

@@ -23,7 +23,7 @@ public:
 	Model(std::string const &path, bool gamma = false) : gammaCorrection(gamma)
 	{
 		this->loadModel(path);
-		std::cout << "obj-File loaded" << std::endl;
+		std::cout << "obj-File " << path << " loaded" << std::endl;
 	}
 	float GetDistance() { return (float)sqrt(pow(m_MaxPos.x - m_MinPos.x, 2) + pow(m_MaxPos.y - m_MinPos.y, 2) + pow(m_MaxPos.z - m_MinPos.z, 2)); }
 	glm::vec3 GetPosition() { return m_Position; }

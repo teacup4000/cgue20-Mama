@@ -21,7 +21,6 @@ uniform mat4 bones[MAX_BONES];
 
 uniform bool reverse_normals;
 
-
 void main()
 {
 	mat4 MVP = projection * view * model;
@@ -34,7 +33,7 @@ void main()
 
 	vec4 boned_position = bone_transform * vec4(aPos, 1.0); // transformed by bones
 
-	Normal = normalize(vec3(normals_matrix * (bone_transform * vec4(aNormal, 0.0))));
+	Normal = vec3(normals_matrix * (bone_transform * vec4(aNormal, 0.0)));
 
 	FragPos = vec3(model * boned_position);
 	TexCoords = aTexCoords;
@@ -105,11 +104,12 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 view_dir, vec3 fragPos)
 
 void main()
 {
+	Normal = normalize(Normal);
+
 	vec3 view_dir = normalize(view_pos - FragPos);
 
 	vec4 calc_color = vec4(CalcPointLight(point_light, Normal, view_dir, FragPos), 1.0);
 	calc_color.a *= material.transparency;
 
 	FragColor = calc_color;
-
 }

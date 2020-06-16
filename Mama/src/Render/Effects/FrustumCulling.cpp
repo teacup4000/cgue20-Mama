@@ -11,70 +11,67 @@ bool FrustumCulling::isFrustum(Model &model, glm::mat4 matrix, glm::mat4 proj, b
 	return FrustumBox(model.GetPosition(), size);
 }
 
-void FrustumCulling::CalculateFrustum(glm::mat4 matrix, glm::mat4 proj)
+void FrustumCulling::CalculateFrustum(glm::mat4 modelMat, glm::mat4 proj)
 {
-	float clip[16];
+	float matrix[16];
 
-	clip[0] = matrix[0].x * proj[0].x + matrix[0].y * proj[1].x + matrix[0].z * proj[2].x + matrix[0].w * proj[3].x;
-	clip[1] = matrix[0].x * proj[0].y + matrix[0].y * proj[1].y + matrix[0].z * proj[2].y + matrix[0].w * proj[3].y;
-	clip[2] = matrix[0].x * proj[0].z + matrix[0].y * proj[1].z + matrix[0].z * proj[2].z + matrix[0].w * proj[3].z;
-	clip[3] = matrix[0].x * proj[0].w + matrix[0].y * proj[1].w + matrix[0].z * proj[2].w + matrix[0].w * proj[3].w;
+	matrix[0] = modelMat[0].x * proj[0].x + modelMat[0].y * proj[1].x + modelMat[0].z * proj[2].x + modelMat[0].w * proj[3].x;
+	matrix[1] = modelMat[0].x * proj[0].y + modelMat[0].y * proj[1].y + modelMat[0].z * proj[2].y + modelMat[0].w * proj[3].y;
+	matrix[2] = modelMat[0].x * proj[0].z + modelMat[0].y * proj[1].z + modelMat[0].z * proj[2].z + modelMat[0].w * proj[3].z;
+	matrix[3] = modelMat[0].x * proj[0].w + modelMat[0].y * proj[1].w + modelMat[0].z * proj[2].w + modelMat[0].w * proj[3].w;
 
-	clip[4] = matrix[1].x * proj[0].x + matrix[1].y *proj[1].x + matrix[1].z * proj[2].x + matrix[1].w * proj[3].x;
-	clip[5] = matrix[1].x * proj[0].y + matrix[1].y *proj[1].y + matrix[1].z * proj[2].y + matrix[1].w * proj[3].y;
-	clip[6] = matrix[1].x * proj[0].z + matrix[1].y *proj[1].z + matrix[1].z * proj[2].z + matrix[1].w * proj[3].z;
-	clip[7] = matrix[1].x * proj[0].w + matrix[1].y *proj[1].w + matrix[1].z * proj[2].w + matrix[1].w * proj[3].w;
+	matrix[4] = modelMat[1].x * proj[0].x + modelMat[1].y *proj[1].x + modelMat[1].z * proj[2].x + modelMat[1].w * proj[3].x;
+	matrix[5] = modelMat[1].x * proj[0].y + modelMat[1].y *proj[1].y + modelMat[1].z * proj[2].y + modelMat[1].w * proj[3].y;
+	matrix[6] = modelMat[1].x * proj[0].z + modelMat[1].y *proj[1].z + modelMat[1].z * proj[2].z + modelMat[1].w * proj[3].z;
+	matrix[7] = modelMat[1].x * proj[0].w + modelMat[1].y *proj[1].w + modelMat[1].z * proj[2].w + modelMat[1].w * proj[3].w;
 
-	clip[8] = matrix[2].x * proj[0].x + matrix[2].y *proj[1].x + matrix[2].z * proj[2].x + matrix[2].w * proj[3].x;
-	clip[9] = matrix[2].x * proj[0].y + matrix[2].y *proj[1].y + matrix[2].z * proj[2].y + matrix[2].w * proj[3].y;
-	clip[10] = matrix[2].x * proj[0].z + matrix[2].y *proj[1].z + matrix[2].z * proj[2].z + matrix[2].w * proj[3].z;
-	clip[11] = matrix[2].x * proj[0].w + matrix[2].y *proj[1].w + matrix[2].z * proj[2].w + matrix[2].w * proj[3].w;
+	matrix[8] = modelMat[2].x * proj[0].x + modelMat[2].y *proj[1].x + modelMat[2].z * proj[2].x + modelMat[2].w * proj[3].x;
+	matrix[9] = modelMat[2].x * proj[0].y + modelMat[2].y *proj[1].y + modelMat[2].z * proj[2].y + modelMat[2].w * proj[3].y;
+	matrix[10] = modelMat[2].x * proj[0].z + modelMat[2].y *proj[1].z + modelMat[2].z * proj[2].z + modelMat[2].w * proj[3].z;
+	matrix[11] = modelMat[2].x * proj[0].w + modelMat[2].y *proj[1].w + modelMat[2].z * proj[2].w + modelMat[2].w * proj[3].w;
 
-	clip[12] = matrix[3].x * proj[0].x + matrix[3].y *proj[1].x + matrix[3].z * proj[2].x + matrix[3].w * proj[3].x;
-	clip[13] = matrix[3].x * proj[0].y + matrix[3].y *proj[1].y + matrix[3].z * proj[2].y + matrix[3].w * proj[3].y;
-	clip[14] = matrix[3].x * proj[0].z + matrix[3].y *proj[1].z + matrix[3].z * proj[2].z + matrix[3].w * proj[3].z;
-	clip[15] = matrix[3].x * proj[0].w + matrix[3].y *proj[1].w + matrix[3].z * proj[2].w + matrix[3].w * proj[3].w;
+	matrix[12] = modelMat[3].x * proj[0].x + modelMat[3].y *proj[1].x + modelMat[3].z * proj[2].x + modelMat[3].w * proj[3].x;
+	matrix[13] = modelMat[3].x * proj[0].y + modelMat[3].y *proj[1].y + modelMat[3].z * proj[2].y + modelMat[3].w * proj[3].y;
+	matrix[14] = modelMat[3].x * proj[0].z + modelMat[3].y *proj[1].z + modelMat[3].z * proj[2].z + modelMat[3].w * proj[3].z;
+	matrix[15] = modelMat[3].x * proj[0].w + modelMat[3].y *proj[1].w + modelMat[3].z * proj[2].w + modelMat[3].w * proj[3].w;
 
-	m_Frustum[RIGHT][A] = clip[3] - clip[0];
-	m_Frustum[RIGHT][B] = clip[7] - clip[4];
-	m_Frustum[RIGHT][C] = clip[11] - clip[8];
-	m_Frustum[RIGHT][D] = clip[15] - clip[12];
+	//get planes from projection Matrix
+	m_Frustum[RIGHT][A] = matrix[3] - matrix[0];
+	m_Frustum[RIGHT][B] = matrix[7] - matrix[4];
+	m_Frustum[RIGHT][C] = matrix[11] - matrix[8];
+	m_Frustum[RIGHT][D] = matrix[15] - matrix[12];
 
+	m_Frustum[LEFT][A] = matrix[3] + matrix[0];
+	m_Frustum[LEFT][B] = matrix[7] + matrix[4];
+	m_Frustum[LEFT][C] = matrix[11] + matrix[8];
+	m_Frustum[LEFT][D] = matrix[15] + matrix[12];
+
+	m_Frustum[BOTTOM][A] = matrix[3] + matrix[1];
+	m_Frustum[BOTTOM][B] = matrix[7] + matrix[5];
+	m_Frustum[BOTTOM][C] = matrix[11] + matrix[9];
+	m_Frustum[BOTTOM][D] = matrix[15] + matrix[13];
+
+	m_Frustum[TOP][A] = matrix[3] - matrix[1];
+	m_Frustum[TOP][B] = matrix[7] - matrix[5];
+	m_Frustum[TOP][C] = matrix[11] - matrix[9];
+	m_Frustum[TOP][D] = matrix[15] - matrix[13];
+
+	m_Frustum[BACK][A] = matrix[3] - matrix[2];
+	m_Frustum[BACK][B] = matrix[7] - matrix[6];
+	m_Frustum[BACK][C] = matrix[11] - matrix[10];
+	m_Frustum[BACK][D] = matrix[15] - matrix[14];
+
+	m_Frustum[FRONT][A] = matrix[3] + matrix[2];
+	m_Frustum[FRONT][B] = matrix[7] + matrix[6];
+	m_Frustum[FRONT][C] = matrix[11] + matrix[10];
+	m_Frustum[FRONT][D] = matrix[15] + matrix[14];
+
+	//normalize planes
 	Normalize(RIGHT);
-
-	m_Frustum[LEFT][A] = clip[3] + clip[0];
-	m_Frustum[LEFT][B] = clip[7] + clip[4];
-	m_Frustum[LEFT][C] = clip[11] + clip[8];
-	m_Frustum[LEFT][D] = clip[15] + clip[12];
-
 	Normalize(LEFT);
-
-	m_Frustum[BOTTOM][A] = clip[3] + clip[1];
-	m_Frustum[BOTTOM][B] = clip[7] + clip[5];
-	m_Frustum[BOTTOM][C] = clip[11] + clip[9];
-	m_Frustum[BOTTOM][D] = clip[15] + clip[13];
-
 	Normalize(BOTTOM);
-
-	m_Frustum[TOP][A] = clip[3] - clip[1];
-	m_Frustum[TOP][B] = clip[7] - clip[5];
-	m_Frustum[TOP][C] = clip[11] - clip[9];
-	m_Frustum[TOP][D] = clip[15] - clip[13];
-
 	Normalize(TOP);
-
-	m_Frustum[BACK][A] = clip[3] - clip[2];
-	m_Frustum[BACK][B] = clip[7] - clip[6];
-	m_Frustum[BACK][C] = clip[11] - clip[10];
-	m_Frustum[BACK][D] = clip[15] - clip[14];
-
 	Normalize(BACK);
-
-	m_Frustum[FRONT][A] = clip[3] + clip[2];
-	m_Frustum[FRONT][B] = clip[7] + clip[6];
-	m_Frustum[FRONT][C] = clip[11] + clip[10];
-	m_Frustum[FRONT][D] = clip[15] + clip[14];
-
 	Normalize(FRONT);
 }
 
@@ -91,24 +88,17 @@ bool FrustumCulling::FrustumBox(glm::vec3 center, float radius)
 {
 	for (int i = 0; i < 6; i++)
 	{
-		if (m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D] > 0)
-			continue;
-		if (m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D] > 0)
-			continue;
-		if (m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D] > 0)
-			continue;
-		if (m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D] > 0)
-			continue;
-		if (m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D] > 0)
-			continue;
-		if (m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D] > 0)
-			continue;
-		if (m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D] > 0)
-			continue;
-		if (m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D] > 0)
-			continue;
+		float box1 = m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D];
+		float box2 = m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D];
+		float box3 = m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D];
+		float box4 = m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D];
+		float box5 = m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D];
+		float box6 = m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D];
+		float box7 = m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D];
+		float box8 = m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D];
 
-		return false;
+		if (box1 < 0 && box2 < 0 && box3 < 0 && box4 < 0 && box5 < 0 && box6 < 0 && box7 < 0 && box8 < 0)
+			return false;
 	}
 
 	return true;

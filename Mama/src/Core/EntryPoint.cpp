@@ -7,6 +7,5 @@ int main() {
 	Camera* camera = new Camera(player, glm::vec3(0.0f));
 
 	app->Init(player,camera);
-	//app->Run();
 	return 0;
 }

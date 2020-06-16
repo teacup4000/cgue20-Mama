@@ -94,7 +94,7 @@ void Application::Run()
 	bloomFinal.setInt("scene", 0);
 	bloomFinal.setInt("bloomBlur", 1);
 	//----------------------------------------------------------END SHADER PROPERTIES---------------------------------------------------------
-	//--------------------------------------------------------------SET MODELS----------------------------------------------------------------	
+	//----------------------------------------------------------SET MODEL PROPERTIES----------------------------------------------------------
 
 	Model loader("Models/Loader/Loader.obj");
 	glm::mat4 loadMat = glm::mat4(1.0f);
@@ -206,7 +206,7 @@ void Application::Run()
 
 	Model healthBar("Models/GUI/lifeBar.obj");
 	glm::mat4 healthBarMat = glm::mat4(1.0f);
-
+	//-----------------------------------------------------------END MODEL PROPERTIES---------------------------------------------------------
 	//-----------------------------------------------------------SET PHYSX PROPERTIES---------------------------------------------------------
 
 	m_PhysX->setGame(m_Game);
@@ -334,7 +334,7 @@ void Application::Run()
 
 	IrrKlang* lose = new IrrKlang();
 	lose->createSound();
-	//----------------------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------END SOUND-------------------------------------------------------------
 
 	while (!glfwWindowShouldClose(m_Window))
 	{
@@ -444,7 +444,6 @@ void Application::Run()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//-------------------------------------------------------------SHADOWS END------------------------------------------------------------
-
 		//-------------------------------------------------------------RENDER BLOOM-----------------------------------------------------------
 		bloom->Bind();
 
@@ -663,7 +662,7 @@ void Application::Run()
 		if (!m_Game->isPaused()) {
 			if (boyStartPos.x < endX && !isOnPos && m_DeltaTime < 1.0f)
 			{
-				boyMat = glm::translate(boyMat, glm::vec3(0, -0.4, 0));
+				boyMat = glm::translate(boyMat, glm::vec3(0, -20 * m_DeltaTime, 0)); //-0.4
 				boyStartPos.x += 10 * m_DeltaTime;
 				if (boyStartPos.x > endX)
 				{
@@ -673,7 +672,7 @@ void Application::Run()
 			}
 			else if (boyStartPos.x > startX && isOnPos && m_DeltaTime < 1.0f)
 			{
-				boyMat = glm::translate(boyMat, glm::vec3(0, -0.4, 0));
+				boyMat = glm::translate(boyMat, glm::vec3(0, -20 * m_DeltaTime, 0));
 				boyStartPos.x -= 10 * m_DeltaTime;
 				if (boyStartPos.x < startX)
 				{
@@ -726,26 +725,3 @@ void Application::CreateGLFWWindow()
 	SetInitialGLFWEvents();
 	EnableGL();
 }
-
-
-
-
-
-//void lose()
-//{
-//	int msgboxID = MessageBox(
-//		NULL,
-//		(LPCTSTR)"Game Over! Want to try again?",
-//		(LPCTSTR)"Player1",
-//		MB_ICONQUESTION | MB_CANCELTRYCONTINUE 
-//	);
-//
-//	switch (msgboxID)
-//	{
-//	case IDCANCEL:
-//		glfwTerminate();
-//		break;
-//	case IDTRYAGAIN:
-//		break;
-//	}
-//}

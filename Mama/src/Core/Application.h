@@ -39,7 +39,6 @@ public:
 		m_Farplane = 100.0f;
 		event = Event(m_Camera, m_Width, m_Height, m_Fullscreen);
 
-		std::cout << "Sensitivity: " << m_Camera->getSensitivity() << std::endl;
 		Run();
 	}
 
@@ -111,10 +110,7 @@ private: //FUNCTIONS
 	void EnableGL()
 	{
 		glEnable(GL_DEPTH_TEST);
-		//glEnable(GL_CULL_FACE); //Enable cull face if you don't want the program to render the back side of your objects 
-		//glCullFace(GL_BACK);
 		glEnable(GL_BLEND);;
-		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //with this no bump mapping/normal mapping/alpha mapping is possible but less memory usage!
 		glEnable(GL_MULTISAMPLE);
 	}
 

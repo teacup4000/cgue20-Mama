@@ -7,7 +7,7 @@
 
 struct Lights
 {
-	glm::vec3 position[8] = { glm::vec3(-7.02779, 14.351f, -14.282f),
+	glm::vec3 position[8] = {	glm::vec3(-7.02779, 14.351f, -14.282f),
 								glm::vec3(2.0601f, 14.351f, -13.435f),
 								glm::vec3(7.9922f, 11.784f, -4.0616f),
 								glm::vec3(24.048f, 11.784f, -4.0616f),
