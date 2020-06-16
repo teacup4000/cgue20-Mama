@@ -50,3 +50,15 @@ void Game::Stop()
 {
 	m_Running = false;
 }
+
+void Game::volumeIncrease() {
+	if (volume < 1) {
+		volume += 0.05f;
+	}
+}
+
+void Game::volumeDecrease() {
+	if (volume > 0) {
+		volume -= 0.05f;
+	}
+}

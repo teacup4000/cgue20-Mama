@@ -58,6 +58,7 @@ void Application::Run()
 	bool lose = false;
 	bool isOnPos = false;
 	bool isPlayed = false;
+	bool soundOn = true;
 
 	//Timer variables
 	float counter = 0.0f;
@@ -346,8 +347,8 @@ void Application::Run()
 			boyMat = glm::scale(boyMat, glm::vec3(0.2f, 0.2f, 0.2f));
 			boyMat = glm::rotate(boyMat, getRad(90), glm::vec3(-1, 0, 0));
 			boyMat = glm::rotate(boyMat, getRad(90), glm::vec3(0, 0, -1));
-			OutputDebugString("RESTART\n");
 		}
+		
 
 		SetFrameRateIndependency(); //Frame rate independency
 		if (!m_Game->isPaused()) {
@@ -590,24 +591,42 @@ void Application::Run()
 		}
 		//----------------------------------------------------------------END WIN/LOSE----------------------------------------------------------
 		//---------------------------------------------------------SET ADDITIONAL SOUNDS---------------------------------------------------------
-		if (m_Player->getPlayerPosition().y >= 13) 
-		{
-			if (!isPlayed)
-			{
-				snore->play("Assets/sounds/snore.mp3");
-				snore->setVolume(0.1);
+		
+		
+		if (!m_Game->isMuted()) {
+			sound->setVolume(m_Game->getVolume());
+			if (!soundOn) {
+				sound->play("Assets/sounds/hazy-cosmos.mp3");
+				soundOn = true;
 			}
-			isPlayed = true;
+
+			if (m_Player->getPlayerPosition().y >= 13)
+			{
+				if (!isPlayed)
+				{
+					snore->play("Assets/sounds/snore.mp3");
+					snore->setVolume(0.1 * m_Game->getVolume());
+				}
+				isPlayed = true;
+			}
+			if (m_Player->getPlayerPosition().y > 14)
+			{
+				if (isPlayed)
+					snore->setVolume(0.8 * m_Game->getVolume());
+			}
+			if (m_Player->getPlayerPosition().y < 13 && snore != 0)
+			{
+				snore->stop();
+				isPlayed = false;
+			}
 		}
-		if (m_Player->getPlayerPosition().y > 14)
-		{
-			if(isPlayed)
-				snore->setVolume(0.8);
-		}
-		if (m_Player->getPlayerPosition().y < 13 && snore != 0)
-		{
-			snore->stop();
-			isPlayed = false;
+		else {
+			sound->stop();
+			soundOn = false;
+			if (isPlayed) {
+				snore->stop();
+				isPlayed = false;
+			}
 		}
 		//---------------------------------------------------------------END SOUNDS--------------------------------------------------------------
 		//-----------------------------------------------------COWBOY RUNNING FUNCTION-----------------------------------------------------------

@@ -62,11 +62,26 @@ void Event::OnKeyPressed(int key, int code, int action, int modifers)
 		}
 	}
 
-	if (glfwGetKey(m_Window, GLFW_KEY_ENTER) == GLFW_PRESS)
+	if (glfwGetKey(m_Window, GLFW_KEY_ENTER) == GLFW_PRESS || glfwGetKey(m_Window, GLFW_KEY_KP_ENTER) == GLFW_PRESS)
 	{
 		if (m_Game->getStatus() != GameStatus::DEFAULT) {
 			m_Restart = true;
 		}
+	}
+
+	if (glfwGetKey(m_Window, GLFW_KEY_M) == GLFW_PRESS)
+	{
+		m_Game->muteUnmute();
+	}
+
+	if (glfwGetKey(m_Window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS || glfwGetKey(m_Window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
+	{
+		m_Game->volumeIncrease();
+	}
+
+	if (glfwGetKey(m_Window, GLFW_KEY_SLASH) == GLFW_PRESS || glfwGetKey(m_Window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS)
+	{
+		m_Game->volumeDecrease();
 	}
 }
 
