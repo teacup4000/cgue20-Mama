@@ -42,9 +42,11 @@ public:
 	void setFrontOld(glm::vec3 frontOld) { m_FrontOld = frontOld; }
 	void setModel(bool setting) { m_ShowModel = setting; }
 	void move(GLFWwindow *window, float& deltaTime);
+	void Reset();
 	void Update();
 
 private:
+	glm::vec3 m_StartPosition;
 	glm::vec3 m_Position;
 	glm::mat4 m_ModelMatrix;
 	glm::mat4 m_Rotation;

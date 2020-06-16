@@ -291,10 +291,11 @@ float Physx::checkCamera(PxVec3 cameraPos, PxVec3 playerPos) {
 		int maskedFlags = flags.operator uint8_t() & mask;
 		int triggerFlag = maskedFlags >> 2;
 		
-		//hit a trigger -> ignore
+		//didn't hit a trigger -> proceed
 		if (triggerFlag == 0) {
 			return hit.block.distance;
 		}
+		//hit a trigger -> ignore
 		else {
 			return length;
 		}

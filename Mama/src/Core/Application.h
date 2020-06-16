@@ -153,7 +153,7 @@ private: //FUNCTIONS
 	void SetGLFWEvents()
 	{
 		event.SetNativeWindow(m_Window);
-		event.setNativePlayer(m_Player);
+		event.SetNativePlayer(m_Player);
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int code, int action, int mods)
 		{
 		Event* event = static_cast<Event*>(glfwGetWindowUserPointer(window));

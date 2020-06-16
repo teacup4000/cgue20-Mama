@@ -51,6 +51,7 @@ void Application::Run()
 	ShadowMap* shadowMap = new ShadowMap();
 	Renderer* renderer = new Renderer();
 	Game* m_Game = new Game();
+	event.SetNativeGame(m_Game);
 	event.SetRestart();
 
 	bool isShown = true;
@@ -331,10 +332,29 @@ void Application::Run()
 
 	while (!glfwWindowShouldClose(m_Window))
 	{
+		if (event.GetRestart()) {
+			event.SetRestart();
+			m_Player->Reset();
+			m_Camera->Reset();
+			m_Game = new Game();
+			event.SetNativeGame(m_Game);
+
+			isOnPos = false;
+			boyStartPos = glm::vec3(-0.85059, 12, -23.9644);
+			boyMat = glm::mat4(1.0f);
+			boyMat = glm::translate(boyMat, boyStartPos);
+			boyMat = glm::scale(boyMat, glm::vec3(0.2f, 0.2f, 0.2f));
+			boyMat = glm::rotate(boyMat, getRad(90), glm::vec3(-1, 0, 0));
+			boyMat = glm::rotate(boyMat, getRad(90), glm::vec3(0, 0, -1));
+			OutputDebugString("RESTART\n");
+		}
+
 		SetFrameRateIndependency(); //Frame rate independency
-		m_Player->move(m_Window, m_DeltaTime);
+		if (!m_Game->isPaused()) {
+			m_Player->move(m_Window, m_DeltaTime);
+			m_PhysX->simulate();
+		}
 		SetGLFWEvents();
-		m_PhysX->simulate();
 		
 		if (m_Player->getPlayerPosition().y < 4.0f) {
 			m_Game->Lose();
@@ -382,15 +402,16 @@ void Application::Run()
 		if (renderer->isFrustum(boxes, boxMat, event.GetFrustum()))
 			renderModel(boxes, shadow, boxMat);
 
-		mama.InitShader(shadow);
-		renderAnimModel(mama, shadow, mamaMat);
+		if (!m_Game->isPaused()) {
+			mama.InitShader(shadow);
+			renderAnimModel(mama, shadow, mamaMat);
 
-		character.InitShader(shadow);
-		renderAnimModel(character, shadow, m_Player->getModelMatrix());
+			character.InitShader(shadow);
+			renderAnimModel(character, shadow, m_Player->getModelMatrix());
 
-		cowboy.InitShader(shadow);
-		renderAnimModel(character, shadow, m_Player->getModelMatrix());
-
+			cowboy.InitShader(shadow);
+			renderAnimModel(cowboy, shadow, boyMat);
+		}
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			std::cout << "Framebuffer not complete" << std::endl;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -459,16 +480,16 @@ void Application::Run()
 
 			//Models with bones and shadows
 			renderer->renderSimpleShadow(bone, lightPos, m_Shadow, m_Farplane, shadowMap);
+			if (!m_Game->isPaused()) {
+				character.InitShader(bone);
+				renderAnimModel(character, bone, m_Player->getModelMatrix());
 
-			character.InitShader(bone);
-			renderAnimModel(character, bone, m_Player->getModelMatrix());
+				mama.InitShader(bone);
+				renderAnimModel(mama, bone, mamaMat);
 
-			mama.InitShader(bone);
-			renderAnimModel(mama, bone, mamaMat);
-
-			cowboy.InitShader(bone);
-			renderAnimModel(cowboy, bone, boyMat);
-
+				cowboy.InitShader(bone);
+				renderAnimModel(cowboy, bone, boyMat);
+			}
 			//Models without shadows
 			renderer->renderDefault(basic);
 			if (m_Player->m_ShowModel)
@@ -476,9 +497,13 @@ void Application::Run()
 				for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++)
 				{
 					renderModel(cubes, basic, cubeMat[i]);
-					cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 1));
+					if (!m_Game->isPaused()) {
+						cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 1));
+					}
 				}
-				counter += m_DeltaTime;
+				if (!m_Game->isPaused()) {
+					counter += m_DeltaTime;
+				}
 				if (counter >= 5)
 				{
 					m_Player->m_ShowModel = false;
@@ -488,7 +513,9 @@ void Application::Run()
 			for (int i = 0; i < sizeof(food->position) / sizeof(food->position[0]); i++)
 			{
 				renderModel(foods, basic, foodMat[i]);
-				foodMat[i] = glm::rotate(foodMat[i], 0.05f, glm::vec3(0, 1, 0));
+				if (!m_Game->isPaused()) {
+					foodMat[i] = glm::rotate(foodMat[i], 0.05f, glm::vec3(0, 1, 0));
+				}
 			}
 
 			if (m_NormalMap)
@@ -584,25 +611,27 @@ void Application::Run()
 		}
 		//---------------------------------------------------------------END SOUNDS--------------------------------------------------------------
 		//-----------------------------------------------------COWBOY RUNNING FUNCTION-----------------------------------------------------------
-		if (boyStartPos.x < endX && !isOnPos && m_DeltaTime < 1.0f)
-		{
-			boyMat = glm::translate(boyMat, glm::vec3(0, -0.4, 0));
-			boyStartPos.x += 10 * m_DeltaTime;
-			if (boyStartPos.x > endX)
+		if (!m_Game->isPaused()) {
+			if (boyStartPos.x < endX && !isOnPos && m_DeltaTime < 1.0f)
 			{
-				boyMat = glm::rotate(boyMat, getRad(180), glm::vec3(0, 0, 1));
-				isOnPos = !isOnPos;
-			}
+				boyMat = glm::translate(boyMat, glm::vec3(0, -0.4, 0));
+				boyStartPos.x += 10 * m_DeltaTime;
+				if (boyStartPos.x > endX)
+				{
+					boyMat = glm::rotate(boyMat, getRad(180), glm::vec3(0, 0, 1));
+					isOnPos = !isOnPos;
+				}
 
-		}
-		else if (boyStartPos.x > startX && isOnPos && m_DeltaTime < 1.0f)
-		{
-			boyMat = glm::translate(boyMat, glm::vec3(0, -0.4, 0));
-			boyStartPos.x -= 10 * m_DeltaTime;
-			if (boyStartPos.x < startX)
+			}
+			else if (boyStartPos.x > startX && isOnPos && m_DeltaTime < 1.0f)
 			{
-				boyMat = glm::rotate(boyMat, getRad(180), glm::vec3(0, 0, -1));
-				isOnPos = !isOnPos;
+				boyMat = glm::translate(boyMat, glm::vec3(0, -0.4, 0));
+				boyStartPos.x -= 10 * m_DeltaTime;
+				if (boyStartPos.x < startX)
+				{
+					boyMat = glm::rotate(boyMat, getRad(180), glm::vec3(0, 0, -1));
+					isOnPos = !isOnPos;
+				}
 			}
 		}
 		//---------------------------------------------------------------------------------------------------------------------------------------

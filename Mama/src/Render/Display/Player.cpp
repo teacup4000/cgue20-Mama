@@ -12,6 +12,7 @@ extern Player player;
 Player::Player(glm::vec3 startPosition)
 {
 	m_Position = startPosition;
+	m_StartPosition = startPosition;
 	Update();
 }
 
@@ -52,6 +53,17 @@ void Player::Update()
 	m_FrontOld = m_Front;
 	//m_ModelMatrix = glm::rotate(m_ModelMatrix, m_PlayerRotation, glm::vec3(0, 1, 0));
 	//m_ModelMatrix = glm::scale(m_ModelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
+}
+
+void Player::Reset() {
+	m_Position = m_StartPosition;
+	m_Controller->setPosition(PxExtendedVec3(m_StartPosition.x, m_StartPosition.y, m_StartPosition.z));
+	positionSet = false;
+	m_Right = glm::vec3(1, 0, 0);
+	m_Front = glm::vec3(0, 0, 1);
+	m_FrontOld = glm::vec3(0, 0, 0);
+	lastJump = 0;
+	lastMoveTime = -1.0f;
 }
 
 void Player::setPlayerModel(std::vector<AnimModel> playerObject)

@@ -28,8 +28,10 @@ public:
 
 	void OnButtonClicked(int button, int action, int mods);
 	void SetNativeWindow(GLFWwindow* window) { m_Window = window; }
-	void setNativePlayer(Player* player) { m_Player = player; }
+	void SetNativePlayer(Player* player) { m_Player = player; }
+	void SetNativeGame(Game* game) { m_Game = game; }
 	void SetRestart();
+	bool GetRestart() { return m_Restart; }
 
 	void SetFullScreen();
 	
@@ -39,6 +41,7 @@ private:
 	GLFWwindow* m_Window;
 	Camera* m_Camera;
 	Player* m_Player;
+	Game* m_Game;
 
 	bool m_Fullscreen, m_FirstMouse, m_Cursor, m_Frustum;
 	float m_LastX, m_LastY;

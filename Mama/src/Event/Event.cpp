@@ -38,12 +38,35 @@ void Event::OnKeyPressed(int key, int code, int action, int modifers)
 
 	if (glfwGetKey(m_Window, GLFW_KEY_1) == GLFW_PRESS)
 	{
-		m_Player->m_ShowModel = true;
+		if (m_Game->getStatus() == GameStatus::DEFAULT) {
+			m_Player->m_ShowModel = true;
+		}
+	}
+
+	if (glfwGetKey(m_Window, GLFW_KEY_2) == GLFW_PRESS)
+	{
+		if (m_Game->getStatus() == GameStatus::DEFAULT) {
+			m_Game->pauseGame();
+		}
 	}
 
 	if (glfwGetKey(m_Window, GLFW_KEY_F8) == GLFW_PRESS)
 	{
 		m_Frustum = !m_Frustum;
+	}
+
+	if (glfwGetKey(m_Window, GLFW_KEY_X) == GLFW_PRESS)
+	{
+		if (m_Game->getStatus() != GameStatus::DEFAULT) {
+			glfwSetWindowShouldClose(m_Window, true);
+		}
+	}
+
+	if (glfwGetKey(m_Window, GLFW_KEY_ENTER) == GLFW_PRESS)
+	{
+		if (m_Game->getStatus() != GameStatus::DEFAULT) {
+			m_Restart = true;
+		}
 	}
 }
 
@@ -79,19 +102,21 @@ void Event::OnFramebufferSizeCallback(int width, int height)
 /** whenever the mouse moves, this function is called */
 void Event::OnCursorPos(double xPos, double yPos)
 {
-	if (m_FirstMouse)
-	{
+	if (!m_Game->isPaused()) {
+		if (m_FirstMouse)
+		{
+			m_LastX = xPos;
+			m_LastY = yPos;
+			m_FirstMouse = false;
+		}
+		float xOffset = xPos - m_LastX;
+		float yOffset = m_LastY - yPos;
+
 		m_LastX = xPos;
 		m_LastY = yPos;
-		m_FirstMouse = false;
+
+		m_Camera->processMouseMovement(xOffset, yOffset);
 	}
-	float xOffset = xPos - m_LastX;
-	float yOffset = m_LastY - yPos;
-
-	m_LastX = xPos;
-	m_LastY = yPos;
-
-	m_Camera->processMouseMovement(xOffset, yOffset);
 }
 
 /** whenever the mouse scroll wheel scrolls, this function is called */

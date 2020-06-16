@@ -39,6 +39,7 @@ public:
 	float getYaw() { return m_Yaw; }
 	float getPitch() { return m_Yaw; }
 	void setPhysx(Physx* physx) { m_physx = physx; }
+	void Reset();
 
 
 private:

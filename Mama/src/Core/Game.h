@@ -20,9 +20,12 @@ public:
 	void GetLife();
 	void CheckStatus(uint32_t status);
 	void Stop();
+	bool isPaused() { return paused; }
+	void pauseGame() { paused = !paused; }
 	GameStatus getStatus() { return m_Status; }
 
 private:
 	GameStatus m_Status = GameStatus::DEFAULT;
 	int32_t m_Life = 100;
+	bool paused = false;
 };
