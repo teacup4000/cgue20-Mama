@@ -224,44 +224,42 @@ void Physx::createTrigger(PxVec3 position, PxVec3 size, TriggerType type) {
 }
 
 void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {
-	for (PxU32 i = 0; i < count; i++) {
+	if (!m_Game->isPaused()) {
+		for (PxU32 i = 0; i < count; i++) {
 
-		bool isMeat = false;
-		
-		std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch();
-		lastTriggerTime = newTriggerTime;
-		newTriggerTime = now.count() / 1000;
+			bool isMeat = false;
 
-		lastTrigger = newTrigger;
-		newTrigger = pairs[i].triggerActor;
-		
-		if (pairs[i].otherActor == controller->getActor()) {
-			if (lastTrigger != newTrigger || newTriggerTime - lastTriggerTime > 1) {
-				if (pairs[i].triggerActor == mommy) {
-					m_Game->Win();
+			std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch();
+			lastTriggerTime = newTriggerTime;
+			newTriggerTime = now.count() / 1000;
 
-					OutputDebugString("HAHAUE-SAMA!\n");
-					lastTriggerType = MOMMY;
-				}
-				else {
-					for (PxActor *a : meat) {
-						if (pairs[i].triggerActor == a) {
-							lastTriggerType = MEAT;
-							isMeat = true;
-							m_Game->GetLife();
+			lastTrigger = newTrigger;
+			newTrigger = pairs[i].triggerActor;
 
-							OutputDebugString("OM NOM NOM NOM!\n");
-							break;
-						}
+			if (pairs[i].otherActor == controller->getActor()) {
+				if (lastTrigger != newTrigger || newTriggerTime - lastTriggerTime > 1) {
+					if (pairs[i].triggerActor == mommy) {
+						OutputDebugString("HAHAUE-SAMA!\n");
+						m_Game->Win();
 					}
-					if (!isMeat) {
-						for (PxActor *a : traps) {
+					else {
+						for (PxActor *a : meat) {
 							if (pairs[i].triggerActor == a) {
-								lastTriggerType = TRAP;
-								m_Game->GetDamage();
+								OutputDebugString("OM NOM NOM NOM!\n");
+								isMeat = true;
+								m_Game->GetLife();
 
-								OutputDebugString("IT'S A TRAP!\n");
 								break;
+							}
+						}
+						if (!isMeat) {
+							for (PxActor *a : traps) {
+								if (pairs[i].triggerActor == a) {
+									OutputDebugString("IT'S A TRAP!\n");
+									m_Game->GetDamage();
+
+									break;
+								}
 							}
 						}
 					}
@@ -277,7 +275,7 @@ float Physx::checkCamera(PxVec3 cameraPos, PxVec3 playerPos) {
 	float length = sqrt(pow(unitDir.x, 2) + pow(unitDir.y, 2) + pow(unitDir.z, 2));
 	unitDir = unitDir.getNormalized();
 	PxRaycastBuffer hit;
-	
+
 	bool status = gScene->raycast(playerPos, unitDir, length, hit);
 	
 
@@ -291,19 +289,23 @@ float Physx::checkCamera(PxVec3 cameraPos, PxVec3 playerPos) {
 		int maskedFlags = flags.operator uint8_t() & mask;
 		int triggerFlag = maskedFlags >> 2;
 		
-		//didn't hit a trigger -> proceed
-		if (triggerFlag == 0) {
-			return hit.block.distance;
-		}
-		//hit a trigger -> ignore
-		else {
+		//hit a trigger or the player character -> ignore
+		if (triggerFlag == 1 || hit.block.actor == controller->getActor()) {
 			return length;
+		}
+		else {
+			return hit.block.distance;
 		}
 	}
 	else {
 		return length;
 	}
 
+}
+
+void Physx::Reset() {
+	std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch();
+	newTriggerTime = now.count() /1000 ;
 }
 
 void Physx::releasePhysx() {

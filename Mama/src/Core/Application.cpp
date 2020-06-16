@@ -2,7 +2,7 @@
 #include "Application.h"
 
 //------globals------
-int count = 0;
+int count = 0; //TODO useful?
 //-----------------------------
 
 
@@ -59,6 +59,7 @@ void Application::Run()
 	bool isOnPos = false;
 	bool isPlayed = false;
 	bool soundOn = true;
+	bool processedEnd = false;
 
 	//Timer variables
 	float counter = 0.0f;
@@ -203,11 +204,14 @@ void Application::Run()
 
 	Model loseScreen("Models/GUI/gameOver.obj");
 	glm::mat4 loseScreenMat = glm::mat4(1.0f);
-	//loseScreenMat = glm::translate(loseScreenMat, glm::vec3(-1.7344, 15.3156, 32.f));
-	loseScreenMat = glm::translate(loseScreenMat, glm::vec3(2.33505, 10.999, -12.4322));
-	loseScreenMat = glm::rotate(loseScreenMat, getRad(180), glm::vec3(0, 1, 0));
+	loseScreenMat = glm::translate(loseScreenMat, glm::vec3(-10, -10, -10));
 	loseScreenMat = glm::scale(loseScreenMat, glm::vec3(3, 3, 3));
-	int count = 0;
+
+	Model winScreen("Models/GUI/Win.obj");
+	glm::mat4 winScreenMat = glm::mat4(1.0f);
+	winScreenMat = glm::translate(winScreenMat, glm::vec3(-10, -10, -5));
+	winScreenMat = glm::scale(winScreenMat, glm::vec3(3, 3, 3));
+
 	//-----------------------------------------------------------SET PHYSX PROPERTIES---------------------------------------------------------
 
 	m_PhysX->setGame(m_Game);
@@ -334,12 +338,24 @@ void Application::Run()
 	while (!glfwWindowShouldClose(m_Window))
 	{
 		if (event.GetRestart()) {
-			event.SetRestart();
+			
+			//reset application variables
+			counter = 0.0f;
+			processedEnd = false;
+			
+			//reset player and CCT positions
 			m_Player->Reset();
+			//reset camera position and direction
 			m_Camera->Reset();
+			//reset collision and triggers
+			m_PhysX->Reset();
+			
+			//create new game (full health, unpaused, DEFAULT mode) and forward it to event and physx
 			m_Game = new Game();
 			event.SetNativeGame(m_Game);
+			m_PhysX->setGame(m_Game);
 
+			//reset cowboy position
 			isOnPos = false;
 			boyStartPos = glm::vec3(-0.85059, 12, -23.9644);
 			boyMat = glm::mat4(1.0f);
@@ -347,8 +363,10 @@ void Application::Run()
 			boyMat = glm::scale(boyMat, glm::vec3(0.2f, 0.2f, 0.2f));
 			boyMat = glm::rotate(boyMat, getRad(90), glm::vec3(-1, 0, 0));
 			boyMat = glm::rotate(boyMat, getRad(90), glm::vec3(0, 0, -1));
-		}
 		
+			//deactivate restart
+			event.SetRestart();
+		}
 
 		SetFrameRateIndependency(); //Frame rate independency
 		if (!m_Game->isPaused()) {
@@ -427,154 +445,144 @@ void Application::Run()
 		bloom->Bind();
 
 		renderer->renderDefault(basic);
-		if (m_Game->getStatus() == GameStatus::LOSE) {
-			count++;
-			renderer->renderDefault(basic);
+		if (m_Game->getStatus() == GameStatus::LOSE) 
 			renderModel(loseScreen, basic, loseScreenMat);
-			if(count == 1)
-				m_Camera->m_Position = -m_Player->getPlayerPosition();
-			
-		}
+
 		if (m_Game->getStatus() == GameStatus::WIN)
+			renderModel(winScreen, basic, winScreenMat);
+
+		//Models with shadows
+		renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
+
+		if (renderer->isFrustum(floor01, path01, event.GetFrustum()))
+			renderModel(floor01, simpleShadow, path01);
+
+		if (renderer->isFrustum(floor02, path02, event.GetFrustum()))
+			renderModel(floor02, simpleShadow, path02);
+
+		if (renderer->isFrustum(floor03, path03, event.GetFrustum()))
+			renderModel(floor03, simpleShadow, path03);
+
+		if (renderer->isFrustum(floor04, path04, event.GetFrustum()))
+			renderModel(floor04, simpleShadow, path04);
+
+		if (renderer->isFrustum(woodenElements, woodMat, event.GetFrustum()))
+			renderModel(woodenElements, simpleShadow, woodMat);
+
+		if (renderer->isFrustum(container, containerMat, event.GetFrustum()))
+			renderModel(container, simpleShadow, containerMat);
+
+		if (renderer->isFrustum(debris, debMat, event.GetFrustum()))
+			renderModel(debris, simpleShadow, debMat);
+
+		if (renderer->isFrustum(cart, cartMat, event.GetFrustum()))
+			renderModel(cart, simpleShadow, cartMat);
+
+		if (renderer->isFrustum(rails, railMat, event.GetFrustum()))
+			renderModel(rails, simpleShadow, railMat);
+
+		if (renderer->isFrustum(fence, fenceMat, event.GetFrustum()))
+			renderModel(fence, simpleShadow, fenceMat);
+
+		if (renderer->isFrustum(boxes, boxMat, event.GetFrustum()))
+			renderModel(boxes, simpleShadow, boxMat);
+
+		//Models with bones and shadows
+		renderer->renderSimpleShadow(bone, lightPos, m_Shadow, m_Farplane, shadowMap);
+		if (!m_Game->isPaused()) {
+			character.InitShader(bone);
+			renderAnimModel(character, bone, m_Player->getModelMatrix());
+
+			mama.InitShader(bone);
+			renderAnimModel(mama, bone, mamaMat);
+
+			cowboy.InitShader(bone);
+			renderAnimModel(cowboy, bone, boyMat);
+		}
+		//Models without shadows
+		renderer->renderDefault(basic);
+		if (m_Player->m_ShowModel)
 		{
-			renderer->renderDefault(basic);
-			renderModel(loseScreen, basic, loseScreenMat);
-
-			//dasselbe mit einem winscreen
-		}
-		else {
-			//Models with shadows
-			renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
-
-			if (renderer->isFrustum(floor01, path01, event.GetFrustum()))
-				renderModel(floor01, simpleShadow, path01);
-
-			if (renderer->isFrustum(floor02, path02, event.GetFrustum()))
-				renderModel(floor02, simpleShadow, path02);
-
-			if (renderer->isFrustum(floor03, path03, event.GetFrustum()))
-				renderModel(floor03, simpleShadow, path03);
-
-			if (renderer->isFrustum(floor04, path04, event.GetFrustum()))
-				renderModel(floor04, simpleShadow, path04);
-
-			if (renderer->isFrustum(woodenElements, woodMat, event.GetFrustum()))
-				renderModel(woodenElements, simpleShadow, woodMat);
-
-			if (renderer->isFrustum(container, containerMat, event.GetFrustum()))
-				renderModel(container, simpleShadow, containerMat);
-
-			if (renderer->isFrustum(debris, debMat, event.GetFrustum()))
-				renderModel(debris, simpleShadow, debMat);
-
-			if (renderer->isFrustum(cart, cartMat, event.GetFrustum()))
-				renderModel(cart, simpleShadow, cartMat);
-
-			if (renderer->isFrustum(rails, railMat, event.GetFrustum()))
-				renderModel(rails, simpleShadow, railMat);
-
-			if (renderer->isFrustum(fence, fenceMat, event.GetFrustum()))
-				renderModel(fence, simpleShadow, fenceMat);
-
-			if (renderer->isFrustum(boxes, boxMat, event.GetFrustum()))
-				renderModel(boxes, simpleShadow, boxMat);
-
-			//Models with bones and shadows
-			renderer->renderSimpleShadow(bone, lightPos, m_Shadow, m_Farplane, shadowMap);
+			for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++)
+			{
+				renderModel(cubes, basic, cubeMat[i]);
+				if (!m_Game->isPaused()) {
+					cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 1));
+				}
+			}
 			if (!m_Game->isPaused()) {
-				character.InitShader(bone);
-				renderAnimModel(character, bone, m_Player->getModelMatrix());
-
-				mama.InitShader(bone);
-				renderAnimModel(mama, bone, mamaMat);
-
-				cowboy.InitShader(bone);
-				renderAnimModel(cowboy, bone, boyMat);
+				counter += m_DeltaTime;
 			}
-			//Models without shadows
-			renderer->renderDefault(basic);
-			if (m_Player->m_ShowModel)
+			if (counter >= 5)
 			{
-				for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++)
-				{
-					renderModel(cubes, basic, cubeMat[i]);
-					if (!m_Game->isPaused()) {
-						cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 1));
-					}
-				}
-				if (!m_Game->isPaused()) {
-					counter += m_DeltaTime;
-				}
-				if (counter >= 5)
-				{
-					m_Player->m_ShowModel = false;
-					counter = 0.0f;
-				}
+				m_Player->m_ShowModel = false;
+				counter = 0.0f;
 			}
-			for (int i = 0; i < sizeof(food->position) / sizeof(food->position[0]); i++)
-			{
-				renderModel(foods, basic, foodMat[i]);
-				if (!m_Game->isPaused()) {
-					foodMat[i] = glm::rotate(foodMat[i], 0.05f, glm::vec3(0, 1, 0));
-				}
-			}
-
-			if (m_NormalMap)
-			{
-				//Models with normal mapping
-				renderer->renderLight(normal);
-				if (renderer->isFrustum(wall01, wallMat01, event.GetFrustum()))
-					renderModel(wall01, normal, wallMat01);
-
-				if (renderer->isFrustum(wall02, wallMat02, event.GetFrustum()))
-					renderModel(wall02, normal, wallMat02);
-
-				if (renderer->isFrustum(wall03, wallMat03, event.GetFrustum()))
-					renderModel(wall03, normal, wallMat03);
-
-				if (renderer->isFrustum(wall04, wallMat04, event.GetFrustum()))
-					renderModel(wall04, normal, wallMat04);
-
-				if (isShown = renderer->isFrustum(wall05, wallMat05, event.GetFrustum()))
-					renderModel(wall05, normal, wallMat05);
-
-				if (renderer->isFrustum(wall06, wallMat06, event.GetFrustum()))
-					renderModel(wall06, normal, wallMat06);
-
-				if (renderer->isFrustum(rocks, rockMat, event.GetFrustum()))
-					renderModel(rocks, normal, rockMat);
-			}
-			else
-			{
-				//models with multiple lights
-				renderer->renderLight(pointLights);
-				if (renderer->isFrustum(wall01, wallMat01, event.GetFrustum()))
-					renderModel(wall01, pointLights, wallMat01);
-
-				if (renderer->isFrustum(wall02, wallMat02, event.GetFrustum()))
-					renderModel(wall02, pointLights, wallMat02);
-
-				if (renderer->isFrustum(wall03, wallMat03, event.GetFrustum()))
-					renderModel(wall03, pointLights, wallMat03);
-
-				if (renderer->isFrustum(wall04, wallMat04, event.GetFrustum()))
-					renderModel(wall04, pointLights, wallMat04);
-
-				if (renderer->isFrustum(wall05, wallMat05, event.GetFrustum()))
-					renderModel(wall05, pointLights, wallMat05);
-
-				if (renderer->isFrustum(wall06, wallMat06, event.GetFrustum()))
-					renderModel(wall06, pointLights, wallMat06);
-
-				if (renderer->isFrustum(rocks, rockMat, event.GetFrustum()))
-					renderModel(rocks, pointLights, rockMat);
-			}
-
-			renderer->renderLight(pointLights);
-			if (renderer->isFrustum(multipleLights, lights, event.GetFrustum()))
-				renderModel(multipleLights, pointLights, lights);
-
 		}
+		for (int i = 0; i < sizeof(food->position) / sizeof(food->position[0]); i++)
+		{
+			renderModel(foods, basic, foodMat[i]);
+			if (!m_Game->isPaused()) {
+				foodMat[i] = glm::rotate(foodMat[i], 0.05f, glm::vec3(0, 1, 0));
+			}
+		}
+
+		if (m_NormalMap)
+		{
+			//Models with normal mapping
+			renderer->renderLight(normal);
+			if (renderer->isFrustum(wall01, wallMat01, event.GetFrustum()))
+				renderModel(wall01, normal, wallMat01);
+
+			if (renderer->isFrustum(wall02, wallMat02, event.GetFrustum()))
+				renderModel(wall02, normal, wallMat02);
+
+			if (renderer->isFrustum(wall03, wallMat03, event.GetFrustum()))
+				renderModel(wall03, normal, wallMat03);
+
+			if (renderer->isFrustum(wall04, wallMat04, event.GetFrustum()))
+				renderModel(wall04, normal, wallMat04);
+
+			if (isShown = renderer->isFrustum(wall05, wallMat05, event.GetFrustum()))
+				renderModel(wall05, normal, wallMat05);
+
+			if (renderer->isFrustum(wall06, wallMat06, event.GetFrustum()))
+				renderModel(wall06, normal, wallMat06);
+
+			if (renderer->isFrustum(rocks, rockMat, event.GetFrustum()))
+				renderModel(rocks, normal, rockMat);
+		}
+		else
+		{
+			//models with multiple lights
+			renderer->renderLight(pointLights);
+			if (renderer->isFrustum(wall01, wallMat01, event.GetFrustum()))
+				renderModel(wall01, pointLights, wallMat01);
+
+			if (renderer->isFrustum(wall02, wallMat02, event.GetFrustum()))
+				renderModel(wall02, pointLights, wallMat02);
+
+			if (renderer->isFrustum(wall03, wallMat03, event.GetFrustum()))
+				renderModel(wall03, pointLights, wallMat03);
+
+			if (renderer->isFrustum(wall04, wallMat04, event.GetFrustum()))
+				renderModel(wall04, pointLights, wallMat04);
+
+			if (renderer->isFrustum(wall05, wallMat05, event.GetFrustum()))
+				renderModel(wall05, pointLights, wallMat05);
+
+			if (renderer->isFrustum(wall06, wallMat06, event.GetFrustum()))
+				renderModel(wall06, pointLights, wallMat06);
+
+			if (renderer->isFrustum(rocks, rockMat, event.GetFrustum()))
+				renderModel(rocks, pointLights, rockMat);
+		}
+
+		renderer->renderLight(pointLights);
+		if (renderer->isFrustum(multipleLights, lights, event.GetFrustum()))
+			renderModel(multipleLights, pointLights, lights);
+
+
 		bloom->Unbind();
 		bloom->Postprocess(blur, bloomFinal);
 		bloom->Unbind();
@@ -589,6 +597,19 @@ void Application::Run()
 
 
 		}
+
+		if (m_Game->getStatus() == GameStatus::LOSE && !processedEnd) {
+
+			m_Game->pauseGame();
+			m_Camera->loseScreen();
+			processedEnd = true;
+		}
+		if (m_Game->getStatus() == GameStatus::WIN && !processedEnd) {
+
+			m_Game->pauseGame();
+			m_Camera->winScreen();
+			processedEnd = true;
+		}
 		//----------------------------------------------------------------END WIN/LOSE----------------------------------------------------------
 		//---------------------------------------------------------SET ADDITIONAL SOUNDS---------------------------------------------------------
 		
@@ -600,21 +621,23 @@ void Application::Run()
 				soundOn = true;
 			}
 
-			if (m_Player->getPlayerPosition().y >= 13)
-			{
-				if (!isPlayed)
+			if (!m_Game->isPaused()) {
+				if (m_Player->getPlayerPosition().y >= 13)
 				{
-					snore->play("Assets/sounds/snore.mp3");
-					snore->setVolume(0.1 * m_Game->getVolume());
+					if (!isPlayed)
+					{
+						snore->play("Assets/sounds/snore.mp3");
+						snore->setVolume(0.1 * m_Game->getVolume());
+					}
+					isPlayed = true;
 				}
-				isPlayed = true;
+				if (m_Player->getPlayerPosition().y > 14)
+				{
+					if (isPlayed)
+						snore->setVolume(0.8 * m_Game->getVolume());
+				}
 			}
-			if (m_Player->getPlayerPosition().y > 14)
-			{
-				if (isPlayed)
-					snore->setVolume(0.8 * m_Game->getVolume());
-			}
-			if (m_Player->getPlayerPosition().y < 13 && snore != 0)
+			if (m_Player->getPlayerPosition().y < 13 && snore != 0 || m_Game->isPaused() && snore != 0)
 			{
 				snore->stop();
 				isPlayed = false;
@@ -660,7 +683,6 @@ void Application::Run()
 
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
-	
 	}
 	//clean
 	basic.deleteShader();

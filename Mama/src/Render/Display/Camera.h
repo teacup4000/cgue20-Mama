@@ -39,6 +39,8 @@ public:
 	float getYaw() { return m_Yaw; }
 	float getPitch() { return m_Yaw; }
 	void setPhysx(Physx* physx) { m_physx = physx; }
+	void loseScreen();
+	void winScreen();
 	void Reset();
 
 
@@ -49,6 +51,7 @@ private:
 	glm::vec3 m_Up;
 	glm::vec3 m_Right;
 	glm::vec3 m_WorldUp;
+	glm::vec3 m_EndPosition;
 	//glm::vec3 cameraMove;
 	//Euler Angles
 	float m_Yaw, m_Pitch;
@@ -57,6 +60,9 @@ private:
 	//Camera options
 	float m_MovementSpeed;
 	float m_MouseSensitivity;
+
+	bool endScreen = false;
+
 	Physx* m_physx;
 
 	Player* m_Player;

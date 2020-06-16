@@ -56,6 +56,7 @@ void Player::Update()
 }
 
 void Player::Reset() {
+	m_ShowModel = false;
 	m_Position = m_StartPosition;
 	m_Controller->setPosition(PxExtendedVec3(m_StartPosition.x, m_StartPosition.y, m_StartPosition.z));
 	positionSet = false;

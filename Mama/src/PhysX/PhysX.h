@@ -45,13 +45,13 @@ public:
 	virtual void onSleep(PxActor**, PxU32) {}
 	virtual void onAdvance(const PxRigidBody*const*, const PxTransform*, const PxU32) {}
 
-	TriggerType getLastTriggerType() { return lastTriggerType; }
 	PxActor* getLastTrigger() { return lastTrigger; }
 	PxActor* getNewTrigger() { return newTrigger; }
 	float getLastTriggerTime() { return lastTriggerTime; }
 	float getNewTriggerTime() { return newTriggerTime; }
 
 	void setGame(Game* game) { m_Game = game; }
+	void Reset();
 
 private:
 	PxDefaultErrorCallback gDefaultErrorCallback;
@@ -64,7 +64,6 @@ private:
 	PxController *controller = nullptr;
 	PxControllerManager *manager = nullptr;
 
-	TriggerType lastTriggerType;
 	PxActor *lastTrigger;
 	PxActor *newTrigger;
 	float lastTriggerTime;

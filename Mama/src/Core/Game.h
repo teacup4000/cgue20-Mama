@@ -22,7 +22,8 @@ public:
 	void Stop();
 	bool isPaused() { return paused; }
 	bool isMuted() { return mute; }
-	void pauseGame() { paused = !paused; }
+	void pauseGame() { paused = true; }
+	void unpauseGame() { paused = false; }
 	void muteUnmute() { mute = !mute; }
 	void volumeIncrease();
 	void volumeDecrease();

@@ -46,7 +46,12 @@ void Event::OnKeyPressed(int key, int code, int action, int modifers)
 	if (glfwGetKey(m_Window, GLFW_KEY_2) == GLFW_PRESS)
 	{
 		if (m_Game->getStatus() == GameStatus::DEFAULT) {
-			m_Game->pauseGame();
+			if (!m_Game->isPaused()) {
+				m_Game->pauseGame();
+			}
+			else {
+				m_Game->unpauseGame();
+			}
 		}
 	}
 
@@ -74,7 +79,7 @@ void Event::OnKeyPressed(int key, int code, int action, int modifers)
 		m_Game->muteUnmute();
 	}
 
-	if (glfwGetKey(m_Window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS || glfwGetKey(m_Window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
+	if (glfwGetKey(m_Window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS || glfwGetKey(m_Window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
 	{
 		m_Game->volumeIncrease();
 	}
@@ -137,6 +142,7 @@ void Event::OnCursorPos(double xPos, double yPos)
 /** whenever the mouse scroll wheel scrolls, this function is called */
 void Event::OnMouseScrolled(double xOffset, double yOffset)
 {
-	std::cout << yOffset << std::endl;
-	m_Camera->processMouseScroll(yOffset);
+	if (!m_Game->isPaused()) {
+		m_Camera->processMouseScroll(yOffset);
+	}
 }

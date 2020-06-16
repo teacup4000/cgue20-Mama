@@ -37,6 +37,7 @@ public:
 	void setFrontY(float y) { m_Front.y = y; }
 	void setFrontZ(float z) { m_Front.z = z; }
 
+	void setPosition(glm::vec3 position) { m_Position = position; }
 	void setRight(glm::vec3 right) { m_Right = right; }
 	void setFront(glm::vec3 front) { m_Front = front; }
 	void setFrontOld(glm::vec3 frontOld) { m_FrontOld = frontOld; }
@@ -157,8 +158,6 @@ private:
 
 		/*char buf[4096], *p = buf;
 		sprintf(buf, "right %f %f %f\n", getPlayerRight()[0], getPlayerRight()[1], getPlayerRight()[2]);
-		OutputDebugString(buf);
-		sprintf(buf, "front %f %f %f\n", getPlayerFront()[0], getPlayerFront()[1], getPlayerFront()[2]);
 		OutputDebugString(buf);*/
 
 	}
