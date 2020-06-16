@@ -219,13 +219,11 @@ void Physx::createTrigger(PxVec3 position, PxVec3 size, TriggerType type) {
 		}
 		break;
 	case BOY:
-		if (!boy) {
-			boy = trigger;
-		}
-		else {
+		if (boy) {
 			gScene->removeActor(*boy);
-			boy = trigger;
 		}
+			boy = trigger;
+	
 		break;
 	default:
 		OutputDebugString("How did you even...?\n");
@@ -254,6 +252,7 @@ void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {
 						m_Game->Win();
 					}
 					else if (pairs[i].triggerActor == boy) {
+						//more time to recover from trample damage
 						if (newTriggerTime - lastTriggerTime > 2) {
 							m_Game->TrampleDamage();
 						}
