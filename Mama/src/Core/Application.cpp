@@ -321,12 +321,12 @@ void Application::Run()
 	m_PhysX->createModels(models);
 
 	for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++) {
-		m_PhysX->createTrigger(PxVec3(cube->position[i].x, cube->position[i].y, cube->position[i].z), PxVec3(0.2f, 0.2f, 0.2f), Physx::TRAP);
+		m_PhysX->createTrigger(PxVec3(cube->position[i].x, cube->position[i].y, cube->position[i].z), PxVec3(0.2f, 0.2f, 0.2f), Physx::TriggerType::TRAP);
 	}
 	for (int i = 0; i < sizeof(food->position) / sizeof(food->position[0]); i++) {
-		m_PhysX->createTrigger(PxVec3(food->position[i].x, food->position[i].y, food->position[i].z), PxVec3(0.3f, 0.3f, 0.3f), Physx::MEAT);
+		m_PhysX->createTrigger(PxVec3(food->position[i].x, food->position[i].y, food->position[i].z), PxVec3(0.3f, 0.3f, 0.3f), Physx::TriggerType::MEAT);
 	}
-	m_PhysX->createTrigger(PxVec3(-1.7344, 15.3156, 32.f), PxVec3(1.0f, 2.0f, 1.0f), Physx::MOMMY);
+	m_PhysX->createTrigger(PxVec3(-1.7344, 15.3156, 32.f), PxVec3(1.0f, 0.5f, 0.5f), Physx::TriggerType::MOMMY);
 
 	//------------------------------------------------------------END PHYSX PROPERTIES---------------------------------------------------------
 	//------------------------------------------------------------SET SOUND PROPERTIES---------------------------------------------------------
@@ -672,9 +672,8 @@ void Application::Run()
 				if (boyStartPos.x > endX)
 				{
 					boyMat = glm::rotate(boyMat, getRad(180), glm::vec3(0, 0, 1));
-					isOnPos = !isOnPos;
+					isOnPos = !isOnPos;	
 				}
-
 			}
 			else if (boyStartPos.x > startX && isOnPos && m_DeltaTime < 1.0f)
 			{
@@ -686,6 +685,18 @@ void Application::Run()
 					isOnPos = !isOnPos;
 				}
 			}
+			if (boyStartPos.x < -0.3f) {
+				m_PhysX->createTrigger(PxVec3(0.3f, boyStartPos.y, boyStartPos.z), PxVec3(0.25f, 1.0f, 0.25f), Physx::TriggerType::BOY);
+			}
+			else if (boyStartPos.x > 4.0f) {
+				m_PhysX->createTrigger(PxVec3(-4.0f, boyStartPos.y, boyStartPos.z), PxVec3(0.25f, 1.0f, 0.25f), Physx::TriggerType::BOY);
+			}
+			else {
+				m_PhysX->createTrigger(PxVec3(-boyStartPos.x, boyStartPos.y, boyStartPos.z), PxVec3(0.25f, 1.0f, 0.25f), Physx::TriggerType::BOY);
+			}
+			char buf[4096], *p = buf;
+			sprintf(buf, "BOYX %f\n", boyStartPos.x);
+			OutputDebugString(buf);
 		}
 		//---------------------------------------------------------------------------------------------------------------------------------------
 	

@@ -15,7 +15,8 @@ public:
 	{
 		TRAP,
 		MEAT,
-		MOMMY
+		MOMMY,
+		BOY
 	};
 	
 	void simulate() {
@@ -58,15 +59,16 @@ private:
 	PxDefaultErrorCallback gDefaultErrorCallback;
 	PxDefaultAllocator gDefaultAllocatorCallback;
 	PxFoundation* gFoundation = nullptr;
-	PxCooking *gCooking = nullptr;
-	PxPvd *gPvd = nullptr;
-	PxPhysics *gPhysics = nullptr;
-	PxScene *gScene = nullptr;
-	PxController *controller = nullptr;
-	PxControllerManager *manager = nullptr;
+	PxCooking* gCooking = nullptr;
+	PxPvd* gPvd = nullptr;
+	PxPhysics* gPhysics = nullptr;
+	PxScene* gScene = nullptr;
+	PxController* controller = nullptr;
+	PxControllerManager* manager = nullptr;
+	
 
-	PxActor *lastTrigger;
-	PxActor *newTrigger;
+	PxActor* lastTrigger;
+	PxActor* newTrigger;
 	float lastTriggerTime;
 	float newTriggerTime;
 
@@ -75,7 +77,8 @@ private:
 	std::vector<PxActor*> meat;
 	std::vector<PxVec3> meatPos;
 	std::vector<PxVec3> eatenPos;
-	PxRigidStatic *mommy = nullptr;
+	PxRigidStatic* mommy = nullptr;
+	PxRigidStatic* boy = nullptr;
 
 	Game* m_Game;
 };

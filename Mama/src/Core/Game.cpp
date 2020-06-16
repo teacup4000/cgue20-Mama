@@ -3,13 +3,11 @@
 
 void Game::Win()
 {
-	OutputDebugString("WON!\n");
 	m_Status = GameStatus::WIN;
 }
 
 void Game::Lose()
 {
-	OutputDebugString("LOST\n");
 	m_Status = GameStatus::LOSE;
 	Stop();
 }
@@ -17,6 +15,17 @@ void Game::Lose()
 void Game::ReceiveDamage()
 {
 	m_Life -= 60;
+	if (m_Life <= 0)
+	{
+		m_Life = 0;
+		Lose();
+	}
+
+}
+
+void Game::TrampleDamage()
+{
+	m_Life -= 90;
 	if (m_Life <= 0)
 	{
 		m_Life = 0;

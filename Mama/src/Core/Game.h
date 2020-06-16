@@ -17,6 +17,7 @@ public:
 	void Win();
 	void Lose();
 	void ReceiveDamage();
+	void TrampleDamage();
 	void GainLife();
 	void CheckStatus(uint32_t status);
 	void Stop();

@@ -218,6 +218,15 @@ void Physx::createTrigger(PxVec3 position, PxVec3 size, TriggerType type) {
 			std::cout << "Error: Multiple Mommies detected." << std::endl;
 		}
 		break;
+	case BOY:
+		if (!boy) {
+			boy = trigger;
+		}
+		else {
+			gScene->removeActor(*boy);
+			boy = trigger;
+		}
+		break;
 	default:
 		OutputDebugString("How did you even...?\n");
 		break;
@@ -244,6 +253,11 @@ void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {
 					if (pairs[i].triggerActor == mommy) {
 						m_Game->Win();
 					}
+					else if (pairs[i].triggerActor == boy) {
+						if (newTriggerTime - lastTriggerTime > 2) {
+							m_Game->TrampleDamage();
+						}
+					}
 					else {
 						for (PxActor *a : meat) {
 							if (pairs[i].triggerActor == a) {
@@ -256,9 +270,12 @@ void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {
 									}
 								}
 								if (!isEaten) {
-									eaten.push_back(a);
 									isMeat = true;
-									m_Game->GainLife();
+									//only eat if we lack health
+									if (m_Game->getLife() < 100) {
+										eaten.push_back(a);
+										m_Game->GainLife();
+									}
 								}
 								break;
 							}
@@ -288,7 +305,6 @@ float Physx::checkCamera(PxVec3 cameraPos, PxVec3 playerPos) {
 	PxRaycastBuffer hit;
 
 	bool status = gScene->raycast(playerPos, unitDir, length, hit);
-	
 
 	if (status) {
 		PxShape *cShapes[1];

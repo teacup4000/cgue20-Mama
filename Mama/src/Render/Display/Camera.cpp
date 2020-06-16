@@ -134,10 +134,6 @@ glm::mat4 Camera::getHealthBarMat(float remainingHealth) {
 
 	healthBarMat = glm::scale(healthBarMat, glm::vec3(0.01f, 0.01f, 0.01f * remainingHealth));
 	
-	char buf[4096], *p = buf;
-	sprintf(buf, "health: %f\n", remainingHealth);
-	OutputDebugString(buf);
-
 	return healthBarMat;
 }
 
