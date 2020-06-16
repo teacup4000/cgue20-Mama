@@ -247,7 +247,7 @@ void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {
 							if (pairs[i].triggerActor == a) {
 								OutputDebugString("OM NOM NOM NOM!\n");
 								isMeat = true;
-								m_Game->GetLife();
+								m_Game->GainLife();
 
 								break;
 							}
@@ -256,7 +256,7 @@ void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {
 							for (PxActor *a : traps) {
 								if (pairs[i].triggerActor == a) {
 									OutputDebugString("IT'S A TRAP!\n");
-									m_Game->GetDamage();
+									m_Game->ReceiveDamage();
 
 									break;
 								}

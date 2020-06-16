@@ -14,7 +14,7 @@ void Game::Lose()
 	Stop();
 }
 
-void Game::GetDamage()
+void Game::ReceiveDamage()
 {
 	m_Life -= 60;
 	if (m_Life <= 0)
@@ -25,7 +25,7 @@ void Game::GetDamage()
 
 }
 
-void Game::GetLife()
+void Game::GainLife()
 {
 	m_Life += 30;
 	if (m_Life > 100) {

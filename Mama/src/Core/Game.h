@@ -16,8 +16,8 @@ public:
 
 	void Win();
 	void Lose();
-	void GetDamage();
-	void GetLife();
+	void ReceiveDamage();
+	void GainLife();
 	void CheckStatus(uint32_t status);
 	void Stop();
 	bool isPaused() { return paused; }
@@ -28,6 +28,7 @@ public:
 	void volumeIncrease();
 	void volumeDecrease();
 	float getVolume() { return volume; }
+	int32_t getLife() { return m_Life; }
 	GameStatus getStatus() { return m_Status; }
 
 private:

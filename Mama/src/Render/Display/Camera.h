@@ -30,6 +30,8 @@ public:
 	/** Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis */
 	void processMouseScroll(float yoffset);
 
+	glm::mat4 getHealthBarMat(float remainingHealth);
+
 	float getSensitivity() {
 		return m_MouseSensitivity;
 	}

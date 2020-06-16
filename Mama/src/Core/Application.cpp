@@ -212,6 +212,9 @@ void Application::Run()
 	winScreenMat = glm::translate(winScreenMat, glm::vec3(-10, -10, -5));
 	winScreenMat = glm::scale(winScreenMat, glm::vec3(3, 3, 3));
 
+	Model healthBar("Models/GUI/lifeBar.obj");
+	glm::mat4 healthBarMat = glm::mat4(1.0f);
+
 	//-----------------------------------------------------------SET PHYSX PROPERTIES---------------------------------------------------------
 
 	m_PhysX->setGame(m_Game);
@@ -450,6 +453,11 @@ void Application::Run()
 
 		if (m_Game->getStatus() == GameStatus::WIN)
 			renderModel(winScreen, basic, winScreenMat);
+
+		if (m_Game->getStatus() == GameStatus::DEFAULT) {
+			healthBarMat = m_Camera->getHealthBarMat(m_Game->getLife() / 100.0f);
+			renderModel(healthBar, basic, healthBarMat);
+		}
 
 		//Models with shadows
 		renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
