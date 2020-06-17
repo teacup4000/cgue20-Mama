@@ -38,7 +38,7 @@ public:
 
 	void SetFullScreen();
 	
-	bool GetFrustum() { return m_Frustum; }
+	bool isFrustum() { return m_Frustum; }
 
 private:
 	GLFWwindow* m_Window;

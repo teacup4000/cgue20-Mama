@@ -72,63 +72,46 @@ void Physx::initPhysx()
 }
 
 void Physx::createModels(std::vector<Model> models) {
+	
 	for (Model md : models) {
-		std::vector<PxVec3> vertices;
-
-		for (Mesh m : md.meshes) {
-			for (Vertex v : m.vertices) {
-				bool contains = false;
-				PxVec3 key;
-				key[0] = v.position[0];
-				key[1] = v.position[1];
-				key[2] = v.position[2];
-				for (PxVec3 check : vertices) {
-					if (check == key) {
-						contains = true;
-					}
-					else {
-					}
-				}
-				if (!contains) {
-					vertices.push_back(key);
-				}
-			}
+		PxVec3 *verts = new PxVec3[md.meshes[0].vertices.size()];
+		int i = 0;
+		for (Vertex v : md.meshes[0].vertices) {
+			verts[i] = PxVec3(v.position.x, v.position.y, v.position.z);
+			i++;
 		}
 
-		int vertCount = vertices.size();
-		PxVec3 *convexVerts = new PxVec3[vertCount];
-		for (int i = 0; i < vertCount; i++) {
-			convexVerts[i] = vertices[i];
+		int vertsCount = i;
+		PxU32 *indices = new PxU32[md.meshes[0].indices.size()];
+		i = 0;
+		for (GLuint in : md.meshes[0].indices) {
+			indices[i] = in;
+			i++;
 		}
+		int indexCount = i;
 
-		PxConvexMeshDesc convexDesc;
-		convexDesc.points.count = vertCount;
-		convexDesc.points.stride = sizeof(PxVec3);
-		convexDesc.points.data = convexVerts;
-		convexDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+		PxTriangleMeshDesc meshDesc;
+		meshDesc.points.count = vertsCount;
+		meshDesc.points.stride = sizeof(PxVec3);
+		meshDesc.points.data = verts;
+		meshDesc.triangles.count = md.getFaceCount();
+		meshDesc.triangles.stride = 3 * sizeof(PxU32);
+		meshDesc.triangles.data = indices;
 
 		PxMaterial *mMaterial = gPhysics->createMaterial(0.5, 0.5, 0.5);
 
 		PxDefaultMemoryOutputStream buf;
-		PxConvexMeshCookingResult::Enum result;
-		if (!gCooking->cookConvexMesh(convexDesc, buf, &result)) {
+		PxTriangleMeshCookingResult::Enum result;
+		if (!gCooking->cookTriangleMesh(meshDesc, buf, &result)) {
 			std::cout << "Cooking Error" << std::endl;
 			return;
 		}
 		PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
-		PxConvexMesh *convexMesh = gPhysics->createConvexMesh(input);
-		PxRigidStatic *convexActor = gPhysics->createRigidStatic(PxTransform(PxVec3(0.0f, 0.0f, 0.0f)));
-		PxShape *convexShape = PxRigidActorExt::createExclusiveShape(*convexActor, PxConvexMeshGeometry(convexMesh), *mMaterial);
-		gScene->addActor(*convexActor);
-		convexMesh->release();
-
-		/*PxTriangleMeshDesc meshDesc;
-		meshDesc.points.count = vertCount;
-		meshDesc.points.stride = sizeof(PxVec3);
-		meshDesc.points.data = convexVerts;
-		meshDesc.triangles.count = md.meshes.size();
-		meshDesc.triangles.stride = 3 * sizeof(PxU32);
-		*/
+		PxTriangleMesh *triangleMesh = gPhysics->createTriangleMesh(input);
+		PxRigidStatic *triangleActor = gPhysics->createRigidStatic(PxTransform(PxVec3(0.0f, 0.0f, 0.0f)));
+		PxShape *triangleShape = PxRigidActorExt::createExclusiveShape(*triangleActor, PxTriangleMeshGeometry(triangleMesh), *mMaterial);
+		gScene->addActor(*triangleActor);
+		triangleMesh->release();
 	}
 }
 

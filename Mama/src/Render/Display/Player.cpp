@@ -158,9 +158,6 @@ void Player::processKeyboard(GLFWwindow *window, float& deltaTime) {
 		m_Position.y = m_Controller->getFootPosition().y + 0.1;
 		m_Position.z = m_Controller->getFootPosition().z;
 	}
-	/*char buf[4096], *p = buf;
-	sprintf(buf, "right %f %f %f\n", getPlayerRight()[0], getPlayerRight()[1], getPlayerRight()[2]);
-	OutputDebugString(buf);*/
 }
 
 glm::vec3 Player::moveCamera(GLFWwindow *window, float& deltaTime) {

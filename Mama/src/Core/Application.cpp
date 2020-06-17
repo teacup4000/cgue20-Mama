@@ -218,7 +218,24 @@ void Application::Run()
 
 	models.push_back(floor01);
 	models.push_back(floor02);
+	models.push_back(floor03);
 	models.push_back(floor04);
+
+	models.push_back(wall01);
+	models.push_back(wall02);
+	models.push_back(wall03);
+	models.push_back(wall04);
+	models.push_back(wall05);
+	models.push_back(wall06);
+
+	models.push_back(rocks);
+	models.push_back(multipleLights);
+	models.push_back(woodenElements);
+	models.push_back(debris);
+	models.push_back(rails);
+	models.push_back(fence);
+	models.push_back(boxes);
+
 	//Collision Walls
 	models.push_back(Model("PhysX/Collision/Walls/Cube.001.obj"));
 	models.push_back(Model("PhysX/Collision/Walls/Cube.002.obj"));
@@ -229,24 +246,6 @@ void Application::Run()
 	models.push_back(Model("PhysX/Collision/Walls/Cube.009.obj"));
 	models.push_back(Model("PhysX/Collision/Walls/Cube.010.obj"));
 	models.push_back(Model("PhysX/Collision/Walls/Cube.011.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.012.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.013.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.014.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.015.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.016.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.017.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.018.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.019.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.020.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.021.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.022.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.023.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.024.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.025.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.026.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.027.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.028.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.029.obj"));
 	models.push_back(Model("PhysX/Collision/Walls/Cube.030.obj"));
 	models.push_back(Model("PhysX/Collision/Walls/Cube.031.obj"));
 	models.push_back(Model("PhysX/Collision/Walls/Cube.032.obj"));
@@ -262,53 +261,12 @@ void Application::Run()
 	models.push_back(Model("PhysX/Collision/Walls/Cube.042.obj"));
 	models.push_back(Model("PhysX/Collision/Walls/Cube.043.obj"));
 	models.push_back(Model("PhysX/Collision/Walls/Cube.044.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.045.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.046.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.047.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.048.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.049.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.050.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.051.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.052.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.053.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.054.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.055.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.056.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.057.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.058.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.059.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.060.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.061.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.062.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.063.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.064.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.065.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.066.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.067.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.068.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.069.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.070.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.071.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.072.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.073.obj"));
 												  
-	//Collision Floors							  
-	models.push_back(Model("PhysX/Collision/Floor/Cube72.obj"));
-	models.push_back(Model("PhysX/Collision/Floor/Cube73.obj"));
-	models.push_back(Model("PhysX/Collision/Floor/Cube74.obj"));
-	models.push_back(Model("PhysX/Collision/Floor/Cube75.obj"));
-	models.push_back(Model("PhysX/Collision/Floor/Cube76.obj"));
-	models.push_back(Model("PhysX/Collision/Floor/Cube77.obj"));
-	models.push_back(Model("PhysX/Collision/Floor/Cube78.obj"));
-	models.push_back(Model("PhysX/Collision/Floor/Cube79.obj"));
 
 	//Collision Other
-	models.push_back(Model("PhysX/Collision/OtherElems/boxCube1.obj"));
-	models.push_back(Model("PhysX/Collision/OtherElems/boxCube2.obj"));
-	models.push_back(Model("PhysX/Collision/OtherElems/cartCube.obj"));
+	
 	models.push_back(Model("PhysX/Collision/OtherElems/containerCube.obj"));
-	models.push_back(Model("PhysX/Collision/OtherElems/blockingElem1.obj"));
-	models.push_back(Model("PhysX/Collision/OtherElems/blockingElem2.obj"));
+
 
 	m_PhysX->createModels(models);
 
@@ -403,34 +361,34 @@ void Application::Run()
 
 		shadowMap->RenderDepthMap(shadow, lightPos);
 
-		if (renderer->isFrustum(floor01, path01, m_Event.GetFrustum()))
+		if (renderer->isFrustum(floor01, path01, m_Event.isFrustum()))
 			renderModel(floor01, shadow, path01);
 
-		if (renderer->isFrustum(floor02, path02, m_Event.GetFrustum()))
+		if (renderer->isFrustum(floor02, path02, m_Event.isFrustum()))
 			renderModel(floor02, shadow, path02);
 
-		if (renderer->isFrustum(floor03, path03, m_Event.GetFrustum()))
+		if (renderer->isFrustum(floor03, path03, m_Event.isFrustum()))
 			renderModel(floor03, shadow, path03);
 
-		if (renderer->isFrustum(floor04, path04, m_Event.GetFrustum()))
+		if (renderer->isFrustum(floor04, path04, m_Event.isFrustum()))
 			renderModel(floor04, shadow, path04);
 
-		if (renderer->isFrustum(container, containerMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(container, containerMat, m_Event.isFrustum()))
 			renderModel(container, shadow, containerMat);
 
-		if (renderer->isFrustum(woodenElements, woodMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(woodenElements, woodMat, m_Event.isFrustum()))
 			renderModel(woodenElements, shadow, woodMat);
 
-		if (renderer->isFrustum(debris, debMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(debris, debMat, m_Event.isFrustum()))
 			renderModel(debris, shadow, debMat);
 
-		if (renderer->isFrustum(cart, cartMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(cart, cartMat, m_Event.isFrustum()))
 			renderModel(cart, shadow, cartMat);
 
-		if (renderer->isFrustum(fence, fenceMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(fence, fenceMat, m_Event.isFrustum()))
 			renderModel(fence, shadow, fenceMat);
 
-		if (renderer->isFrustum(boxes, boxMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(boxes, boxMat, m_Event.isFrustum()))
 			renderModel(boxes, shadow, boxMat);
 
 		if (!m_Game->isPaused()) {
@@ -474,37 +432,37 @@ void Application::Run()
 		//Models with shadows
 		renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
 
-		if (renderer->isFrustum(floor01, path01, m_Event.GetFrustum()))
+		if (renderer->isFrustum(floor01, path01, m_Event.isFrustum()))
 			renderModel(floor01, simpleShadow, path01);
 
-		if (renderer->isFrustum(floor02, path02, m_Event.GetFrustum()))
+		if (renderer->isFrustum(floor02, path02, m_Event.isFrustum()))
 			renderModel(floor02, simpleShadow, path02);
 
-		if (renderer->isFrustum(floor03, path03, m_Event.GetFrustum()))
+		if (renderer->isFrustum(floor03, path03, m_Event.isFrustum()))
 			renderModel(floor03, simpleShadow, path03);
 
-		if (renderer->isFrustum(floor04, path04, m_Event.GetFrustum()))
+		if (renderer->isFrustum(floor04, path04, m_Event.isFrustum()))
 			renderModel(floor04, simpleShadow, path04);
 
-		if (renderer->isFrustum(woodenElements, woodMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(woodenElements, woodMat, m_Event.isFrustum()))
 			renderModel(woodenElements, simpleShadow, woodMat);
 
-		if (renderer->isFrustum(container, containerMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(container, containerMat, m_Event.isFrustum()))
 			renderModel(container, simpleShadow, containerMat);
 
-		if (renderer->isFrustum(debris, debMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(debris, debMat, m_Event.isFrustum()))
 			renderModel(debris, simpleShadow, debMat);
 
-		if (renderer->isFrustum(cart, cartMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(cart, cartMat, m_Event.isFrustum()))
 			renderModel(cart, simpleShadow, cartMat);
 
-		if (renderer->isFrustum(rails, railMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(rails, railMat, m_Event.isFrustum()))
 			renderModel(rails, simpleShadow, railMat);
 
-		if (renderer->isFrustum(fence, fenceMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(fence, fenceMat, m_Event.isFrustum()))
 			renderModel(fence, simpleShadow, fenceMat);
 
-		if (renderer->isFrustum(boxes, boxMat, m_Event.GetFrustum()))
+		if (renderer->isFrustum(boxes, boxMat, m_Event.isFrustum()))
 			renderModel(boxes, simpleShadow, boxMat);
 
 		//Models with bones and shadows
@@ -557,55 +515,55 @@ void Application::Run()
 		{
 			//Models with normal mapping
 			renderer->renderLight(normal);
-			if (renderer->isFrustum(wall01, wallMat01, m_Event.GetFrustum()))
+			if (renderer->isFrustum(wall01, wallMat01, m_Event.isFrustum()))
 				renderModel(wall01, normal, wallMat01);
 
-			if (renderer->isFrustum(wall02, wallMat02, m_Event.GetFrustum()))
+			if (renderer->isFrustum(wall02, wallMat02, m_Event.isFrustum()))
 				renderModel(wall02, normal, wallMat02);
 
-			if (renderer->isFrustum(wall03, wallMat03, m_Event.GetFrustum()))
+			if (renderer->isFrustum(wall03, wallMat03, m_Event.isFrustum()))
 				renderModel(wall03, normal, wallMat03);
 
-			if (renderer->isFrustum(wall04, wallMat04, m_Event.GetFrustum()))
+			if (renderer->isFrustum(wall04, wallMat04, m_Event.isFrustum()))
 				renderModel(wall04, normal, wallMat04);
 
-			if (isShown = renderer->isFrustum(wall05, wallMat05, m_Event.GetFrustum()))
+			if (isShown = renderer->isFrustum(wall05, wallMat05, m_Event.isFrustum()))
 				renderModel(wall05, normal, wallMat05);
 
-			if (renderer->isFrustum(wall06, wallMat06, m_Event.GetFrustum()))
+			if (renderer->isFrustum(wall06, wallMat06, m_Event.isFrustum()))
 				renderModel(wall06, normal, wallMat06);
 
-			if (renderer->isFrustum(rocks, rockMat, m_Event.GetFrustum()))
+			if (renderer->isFrustum(rocks, rockMat, m_Event.isFrustum()))
 				renderModel(rocks, normal, rockMat);
 		}
 		else
 		{
 			//models with multiple lights
 			renderer->renderLight(pointLights);
-			if (renderer->isFrustum(wall01, wallMat01, m_Event.GetFrustum()))
+			if (renderer->isFrustum(wall01, wallMat01, m_Event.isFrustum()))
 				renderModel(wall01, pointLights, wallMat01);
 
-			if (renderer->isFrustum(wall02, wallMat02, m_Event.GetFrustum()))
+			if (renderer->isFrustum(wall02, wallMat02, m_Event.isFrustum()))
 				renderModel(wall02, pointLights, wallMat02);
 
-			if (renderer->isFrustum(wall03, wallMat03, m_Event.GetFrustum()))
+			if (renderer->isFrustum(wall03, wallMat03, m_Event.isFrustum()))
 				renderModel(wall03, pointLights, wallMat03);
 
-			if (renderer->isFrustum(wall04, wallMat04, m_Event.GetFrustum()))
+			if (renderer->isFrustum(wall04, wallMat04, m_Event.isFrustum()))
 				renderModel(wall04, pointLights, wallMat04);
 
-			if (renderer->isFrustum(wall05, wallMat05, m_Event.GetFrustum()))
+			if (renderer->isFrustum(wall05, wallMat05, m_Event.isFrustum()))
 				renderModel(wall05, pointLights, wallMat05);
 
-			if (renderer->isFrustum(wall06, wallMat06, m_Event.GetFrustum()))
+			if (renderer->isFrustum(wall06, wallMat06, m_Event.isFrustum()))
 				renderModel(wall06, pointLights, wallMat06);
 
-			if (renderer->isFrustum(rocks, rockMat, m_Event.GetFrustum()))
+			if (renderer->isFrustum(rocks, rockMat, m_Event.isFrustum()))
 				renderModel(rocks, pointLights, rockMat);
 		}
 
 		renderer->renderLight(pointLights);
-		if (renderer->isFrustum(multipleLights, lights, m_Event.GetFrustum()))
+		if (renderer->isFrustum(multipleLights, lights, m_Event.isFrustum()))
 			renderModel(multipleLights, pointLights, lights);
 		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

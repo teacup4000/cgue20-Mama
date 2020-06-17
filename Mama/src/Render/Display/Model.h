@@ -12,6 +12,8 @@ unsigned int TextureFromFile(const char* path, std::string& directory, bool gamm
 class Model
 {
 public:
+	int getFaceCount() { return faceCount; }
+
 	std::vector<Texture> textures_loaded;
 	std::vector<Mesh> meshes;
 	std::string directory;
@@ -37,6 +39,8 @@ private:
 	glm::vec3 m_MaxPos;
 
 	glm::vec3 GetMax() { return m_MaxPos; }
+
+	int faceCount;
 
 	/** load the Model with assimp from obj-file */
 	void loadModel(std::string path);
