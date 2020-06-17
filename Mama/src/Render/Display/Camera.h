@@ -44,6 +44,8 @@ public:
 	void loseScreen();
 	void winScreen();
 	void Reset();
+	void move(GLFWwindow *window, float& deltaTime);
+	void move(float xOffset, float yOffset);
 
 
 private:
@@ -64,6 +66,7 @@ private:
 	float m_MouseSensitivity;
 
 	bool endScreen = false;
+	bool cameraControl = false;
 
 	Physx* m_physx;
 

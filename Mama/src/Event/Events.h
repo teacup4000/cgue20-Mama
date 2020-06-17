@@ -31,7 +31,10 @@ public:
 	void SetNativePlayer(Player* player) { m_Player = player; }
 	void SetNativeGame(Game* game) { m_Game = game; }
 	void SetRestart();
-	bool GetRestart() { return m_Restart; }
+	bool isRestart() { return m_Restart; }
+	bool isWireFrame() { return m_Wireframe; }
+	bool isCameraControl() { return m_CameraControl; }
+	bool isRenderAll() { return m_RenderAll; }
 
 	void SetFullScreen();
 	
@@ -44,6 +47,10 @@ private:
 	Game* m_Game;
 
 	bool m_Fullscreen, m_FirstMouse, m_Cursor, m_Frustum;
+	bool m_Wireframe = false;
+ 	bool m_CameraControl = false;
+	bool m_RenderAll = false;
+
 	float m_LastX, m_LastY;
 	int m_Width, m_Height;
 };

@@ -31,6 +31,26 @@ void Event::OnKeyPressed(int key, int code, int action, int modifers)
 		m_Restart = true;
 	}
 
+	if (glfwGetKey(m_Window, GLFW_KEY_F8) == GLFW_PRESS)
+	{
+		m_Frustum = !m_Frustum;
+	}
+
+	if (glfwGetKey(m_Window, GLFW_KEY_F9) == GLFW_PRESS)
+	{
+		m_RenderAll = !m_RenderAll;
+	}
+
+	if (glfwGetKey(m_Window, GLFW_KEY_F10) == GLFW_PRESS)
+	{
+		m_Wireframe = !m_Wireframe;
+	}
+
+	if (glfwGetKey(m_Window, GLFW_KEY_F11) == GLFW_PRESS)
+	{
+		m_CameraControl = !m_CameraControl;
+	}
+
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(m_Window, true);
@@ -55,10 +75,6 @@ void Event::OnKeyPressed(int key, int code, int action, int modifers)
 		}
 	}
 
-	if (glfwGetKey(m_Window, GLFW_KEY_F8) == GLFW_PRESS)
-	{
-		m_Frustum = !m_Frustum;
-	}
 
 	if (glfwGetKey(m_Window, GLFW_KEY_X) == GLFW_PRESS)
 	{
@@ -135,7 +151,12 @@ void Event::OnCursorPos(double xPos, double yPos)
 		m_LastX = xPos;
 		m_LastY = yPos;
 
-		m_Camera->processMouseMovement(xOffset, yOffset);
+		if (m_CameraControl) {
+			m_Camera->move(xOffset, yOffset);
+		}
+		else {
+			m_Camera->processMouseMovement(xOffset, yOffset);
+		}
 	}
 }
 

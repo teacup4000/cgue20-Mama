@@ -40,8 +40,8 @@ void Camera::processMouseMovement(float xoffset, float yoffset, GLboolean constr
 			m_Pitch = -89.0f;
 	}
 
-	if (!endScreen) {
-		m_Position = m_Player->getPlayerPosition();
+	if (!endScreen && !cameraControl) {
+		m_Position = m_Player->getPosition();
 	}
 
 	/* Update Front, Right and Up Vectors using the updated Euler angles */
@@ -50,14 +50,18 @@ void Camera::processMouseMovement(float xoffset, float yoffset, GLboolean constr
 
 glm::mat4 Camera::getViewMatrix()
 {
-	if (!endScreen) {
-		m_Position = m_Player->getPlayerPosition();
+	if (cameraControl) {
+		cameraControl = false;
+		return glm::lookAt(m_Position, m_Position + m_Front, m_WorldUp);
+	}
+	else if (!endScreen) {
+		m_Position = m_Player->getPosition();
 
 		glm::vec3 position = m_Position - m_Front * m_Distance;
 
 		//---------------------------------------COLLISION CHECK---------------------------------------------------
 		PxVec3 camPos(position.x, position.y, position.z);
-		PxVec3 playerPos(m_Player->getPlayerPosition().x, m_Player->getPlayerPosition().y, m_Player->getPlayerPosition().z);
+		PxVec3 playerPos(m_Player->getPosition().x, m_Player->getPosition().y, m_Player->getPosition().z);
 		float distance = m_physx->checkCamera(camPos, playerPos);
 
 		if (distance <= 0.0f) {
@@ -103,10 +107,22 @@ void Camera::updateCameraVectors()
 	// Also re-calculate the Right and Up vector
 	m_Right = glm::normalize(glm::cross(m_Front, m_WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
 	m_Up = glm::normalize(glm::cross(m_Right, m_Front));
+
 	m_Player->setRight(m_Right);
 	m_Player->setFront(-m_Front);
 	m_Player->setFrontY(0);
-	m_Player->setFront(glm::normalize(m_Player->getPlayerFront()));
+	m_Player->setFront(glm::normalize(m_Player->getFront()));
+
+}
+
+void Camera::move(GLFWwindow *window, float& deltaTime) {
+	cameraControl = true;
+	m_Position += m_Player->moveCamera(window, deltaTime);
+}
+
+void Camera::move(float xOffset, float yOffset) {
+	cameraControl = true;
+	processMouseMovement(xOffset, yOffset);
 }
 
 glm::mat4 Camera::getHealthBarMat(float remainingHealth) {
@@ -141,16 +157,16 @@ void Camera::loseScreen() {
 	endScreen = true;
 	m_EndPosition = glm::vec3(-9.0f, -10.0f, -10.0f);
 	m_Front = glm::vec3(-1, 0, 0);
-	m_Yaw = -181.5f;
+	m_Yaw = -180.0f;
 	m_Pitch = 0;
 	m_Zoom = 45.0f;
 }
 
 void Camera::winScreen() {
 	endScreen = true;
-	m_EndPosition = glm::vec3(-9.0f, -10.0f, -5.0f);
+	m_EndPosition = glm::vec3(-9.0f, -10.0f, 0.0f);
 	m_Front = glm::vec3(-1, 0, 0);
-	m_Yaw = -181.5f;
+	m_Yaw = -180.0f;
 	m_Pitch = 0;
 	m_Zoom = 45.0f;
 }

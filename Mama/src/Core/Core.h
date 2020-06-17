@@ -8,4 +8,4 @@
 
 #define ZERO_MEM(a) memset(a, 0, sizeof(a))
 
-#define GRAVITY 0.05f
+#define GRAVITY 0.02f

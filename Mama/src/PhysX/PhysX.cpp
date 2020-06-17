@@ -51,52 +51,6 @@ void Physx::initPhysx()
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
 
-	//----------------------------------------------------------------------------------------
-	//----------------------------------------------------------------------------------------
-	//-----------------------------TEST SCENE-------------------------------------------------
-	//----------------------------------------------------------------------------------------
-	//----------------------------------------------------------------------------------------
-
-	/*PxMaterial *mMaterial = gPhysics->createMaterial(0.5, 0.5, 0.5);
-	//PxTransform planePos = PxTransform(PxVec3(0.0f, 0, 0.0f), PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f)));
-	//PxRigidStatic *plane = gPhysics->createRigidStatic(planePos);
-	//PxShape *shape = gPhysics->createShape(PxPlaneGeometry(), *mMaterial);
-	//plane->attachShape(*shape);
-	//gScene->addActor(*plane);
-	PxRigidDynamic *gBox;
-	PxTransform boxPos(PxVec3(0.0f, 10.0f, 0.0f));
-	PxBoxGeometry boxGeometry(PxVec3(0.5f, 0.5f, 0.5f));
-	gBox = PxCreateDynamic(*gPhysics, boxPos, boxGeometry, *mMaterial, 1.0f);
-	gScene->addActor(*gBox);
-	PxRigidStatic *floorBox;
-	PxTransform floorBoxPos(PxVec3(0.055158f, 0.0f, 0.154836f));
-	PxBoxGeometry floorBoxGeometry(PxVec3(3.0221f, 0.369366f, 2.80128f));
-	PxShape *floorShape = gPhysics->createShape(floorBoxGeometry, *mMaterial);
-	floorBox = gPhysics->createRigidStatic(floorBoxPos);
-	floorBox->attachShape(*floorShape);
-	gScene->addActor(*floorBox);
-	PxRigidStatic *floorUpBox;
-	PxTransform floorUpBoxPos(PxVec3(-4.08367f, 0.974742f, 0.154836f), PxQuat(-0.7176811337, PxVec3(0.0f, 0.0f, 1.0f)));
-	PxBoxGeometry floorUpBoxGeometry(PxVec3(3.0221f, 0.369366f, 2.80128f));
-	PxShape *floorUpShape = gPhysics->createShape(floorUpBoxGeometry, *mMaterial);
-	floorUpBox = gPhysics->createRigidStatic(floorUpBoxPos);
-	floorUpBox->attachShape(*floorUpShape);
-	gScene->addActor(*floorUpBox);
-	PxRigidStatic *floorDownBox;
-	PxTransform floorDownBoxPos(PxVec3(5.00811f, -2.01568f, 0.154836f), PxQuat(-0.7176811337, PxVec3(0.0f, 0.0f, 1.0f)));
-	PxBoxGeometry floorDownBoxGeometry(PxVec3(3.0221f, 0.369366f, 2.80128f));
-	PxShape *floorDownShape = gPhysics->createShape(floorDownBoxGeometry, *mMaterial);
-	floorDownBox = gPhysics->createRigidStatic(floorDownBoxPos);
-	floorDownBox->attachShape(*floorDownShape);
-	gScene->addActor(*floorDownBox);
-	PxRigidStatic *wallBox;
-	PxTransform wallBoxPos(PxVec3(-0.083447f, 1.98391f, -2.85165f));
-	PxBoxGeometry wallBoxGeometry(PxVec3(6.13943f, 5.04434f, 0.447101f));
-	PxShape *wallShape = gPhysics->createShape(wallBoxGeometry, *mMaterial);
-	wallBox = gPhysics->createRigidStatic(wallBoxPos);
-	wallBox->attachShape(*wallShape);
-	gScene->addActor(*wallBox);*/
-
 
 	//----------------------------------------------------------------------------------------
 	//-----------------------------CHARACTER CONTROLLER---------------------------------------
@@ -115,11 +69,6 @@ void Physx::initPhysx()
 	desc.material = gPhysics->createMaterial(0.5f, 0.5f, 0.1f); // material defines physical properties like friction, bounciness etc. - see PhysX materials
 	controller = manager->createController(desc);
 
-	/*PxRigidDynamic *cActor = controller->getActor();
-	PxShape *cShapes[1];
-	cActor->getShapes(cShapes, 1, 0);
-	PxShape *cShape = cShapes[0];
-	cShape->setLocalPose(PxTransform(PxQuat(1.5708, PxVec3(0, 0, 1))));*/
 }
 
 void Physx::createModels(std::vector<Model> models) {
@@ -145,11 +94,6 @@ void Physx::createModels(std::vector<Model> models) {
 				}
 			}
 		}
-		/*for (PxVec3 v : vertices) {
-			char buf[4096], *p = buf;
-			sprintf(buf, "result: %f, %f, %f\n", v[0], v[1], v[2]);
-			OutputDebugString(buf);
-		}*/
 
 		int vertCount = vertices.size();
 		PxVec3 *convexVerts = new PxVec3[vertCount];
@@ -342,6 +286,7 @@ void Physx::Reset() {
 	std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch();
 	newTriggerTime = now.count() /1000;
 	eaten.clear();
+	eatenPos.clear();
 }
 
 void Physx::releasePhysx() {

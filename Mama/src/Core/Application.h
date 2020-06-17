@@ -37,7 +37,7 @@ public:
 		m_LastFrame = 0.0f;
 		m_Nearplane = 0.0f;
 		m_Farplane = 100.0f;
-		event = Event(m_Camera, m_Width, m_Height, m_Fullscreen);
+		m_Event = Event(m_Camera, m_Width, m_Height, m_Fullscreen);
 
 		Run();
 	}
@@ -63,7 +63,7 @@ private: //MEMBERS
 	glm::vec3	m_Brightness;
 
 private: //FUNCTIONS
-	Event event;
+	Event m_Event;
 
 	void ReadINIFile() {
 		INIReader iniReader("Assets/settings.ini");
@@ -123,7 +123,7 @@ private: //FUNCTIONS
 
 	void SetInitialGLFWEvents()
 	{
-		glfwSetWindowUserPointer(m_Window, &event);
+		glfwSetWindowUserPointer(m_Window, &m_Event);
 
 		glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -148,8 +148,8 @@ private: //FUNCTIONS
 
 	void SetGLFWEvents()
 	{
-		event.SetNativeWindow(m_Window);
-		event.SetNativePlayer(m_Player);
+		m_Event.SetNativeWindow(m_Window);
+		m_Event.SetNativePlayer(m_Player);
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int code, int action, int mods)
 		{
 		Event* event = static_cast<Event*>(glfwGetWindowUserPointer(window));
