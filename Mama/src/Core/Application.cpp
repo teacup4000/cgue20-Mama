@@ -327,6 +327,7 @@ void Application::Run()
 			boyMat = glm::rotate(boyMat, getRad(90), glm::vec3(0, 0, -1));
 
 			//reset Music
+			sound->stop();
 			sound->play("Assets/sounds/hazy-cosmos.mp3", true);
 
 			//deactivate restart
