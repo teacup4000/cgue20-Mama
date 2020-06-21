@@ -231,7 +231,6 @@ void Application::Run()
 	models.push_back(rocks);
 	models.push_back(multipleLights);
 	models.push_back(woodenElements);
-	models.push_back(debris);
 	models.push_back(rails);
 	models.push_back(fence);
 	models.push_back(boxes);
