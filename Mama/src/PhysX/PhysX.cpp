@@ -10,7 +10,8 @@ void Physx::initPhysx()
 		gDefaultErrorCallback);
 	if (!gFoundation)
 		std::cout << "PxCreateFoundation failed!" << std::endl;
-
+	
+	std::cout << "Physx Foundation created!" << std::endl;
 	//--------------------------------CREATE VISUAL DEBUGGER CONNECTION-----------------------
 	gPvd = PxCreatePvd(*gFoundation);
 	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
@@ -27,6 +28,7 @@ void Physx::initPhysx()
 	if (!gPhysics)
 		std::cout << "PxCreatePhysics failed!" << std::endl;
 
+	std::cout << "Physx Main Object created!" << std::endl;
 	//--------------------------------CREATE Cooking---------------------------------------
 
 
@@ -34,6 +36,7 @@ void Physx::initPhysx()
 	if (!gCooking)
 		std::cout << "PxCreateCooking failed!" << std::endl;
 
+	std::cout << "Physx Cooking created!" << std::endl;
 	//--------------------------------CREATE SCENE---------------------------------------
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
@@ -68,6 +71,7 @@ void Physx::initPhysx()
 	desc.upDirection = PxVec3(0, 1, 0); // Specifies the 'up' direction
 	desc.material = gPhysics->createMaterial(0.5f, 0.5f, 0.1f); // material defines physical properties like friction, bounciness etc. - see PhysX materials
 	controller = manager->createController(desc);
+	std::cout << "Player Character Controller created!" << std::endl;
 
 }
 
@@ -112,6 +116,7 @@ void Physx::createModels(std::vector<Model> models) {
 		PxShape *triangleShape = PxRigidActorExt::createExclusiveShape(*triangleActor, PxTriangleMeshGeometry(triangleMesh), *mMaterial);
 		gScene->addActor(*triangleActor);
 		triangleMesh->release();
+		std::cout << "Physx Model created!" << std::endl;
 	}
 }
 
@@ -153,9 +158,10 @@ void Physx::createTrigger(PxVec3 position, PxVec3 size, TriggerType type) {
 	
 		break;
 	default:
-		OutputDebugString("How did you even...?\n");
+		std::cout << "Error: Unknown Triggertype!" << std::endl;
 		break;
 	}
+	std::cout << "Trigger created!" << std::endl;
 }
 
 void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {
