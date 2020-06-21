@@ -214,6 +214,24 @@ void Application::Run()
 	m_Player->m_Controller = m_PhysX->getController();
 	m_Camera->setPhysx(m_PhysX);
 
+	//invert the surfaces of wall01 and wall03 to work around wrong modelling
+	for (int i = 0; i < wall01.meshes[0].indices.size(); i++) {
+		if (i % 3 == 2) {
+			int buffer = wall01.meshes[0].indices[i - 2];
+			wall01.meshes[0].indices[i - 2] = wall01.meshes[0].indices[i];
+			wall01.meshes[0].indices[i] = buffer;
+		}
+	}
+
+	for (int i = 0; i < wall03.meshes[0].indices.size(); i++) {
+		if (i % 3 == 2) {
+			int buffer = wall03.meshes[0].indices[i - 2];
+			wall03.meshes[0].indices[i - 2] = wall03.meshes[0].indices[i];
+			wall03.meshes[0].indices[i] = buffer;
+		}
+	}
+	//end inversion
+
 	std::vector<Model> models;
 
 	models.push_back(floor01);
@@ -235,37 +253,10 @@ void Application::Run()
 	models.push_back(fence);
 	models.push_back(boxes);
 
-	//Collision Walls
-	models.push_back(Model("PhysX/Collision/Walls/Cube.001.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.002.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.003.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.005.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.006.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.007.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.009.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.010.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.011.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.030.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.031.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.032.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.033.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.034.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.035.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.036.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.037.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.038.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.039.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.040.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.041.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.042.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.043.obj"));
-	models.push_back(Model("PhysX/Collision/Walls/Cube.044.obj"));
-												  
-
-	//Collision Other
-	
+	//Collision Cubes for downloaded objects
+	models.push_back(Model("Physx/Collision/OtherElems/cartCube.obj"));
 	models.push_back(Model("PhysX/Collision/OtherElems/containerCube.obj"));
-
+	models.push_back(Model("PhysX/Collision/OtherElems/debris.obj"));
 
 	m_PhysX->createModels(models);
 
@@ -576,21 +567,21 @@ void Application::Run()
 		//---------------------------------------------------------------BLOOM END--------------------------------------------------------------
 		//----------------------------------------------------------------WIN/LOSE--------------------------------------------------------------
 		if (m_Game->getStatus() == GameStatus::LOSE && !processedEnd) {
-			if (!m_Game->isMuted()) {
+			if (!m_Event.isMuted()) {
 			sound->stop();
 			lose->play("Assets/sounds/lose.mp3", false);
-			lose->setVolume(m_Game->getVolume());
+			lose->setVolume(m_Event.getVolume());
 		}
 			m_Game->pauseGame();
 			m_Camera->loseScreen();
 			processedEnd = true;
 		}
 		if (m_Game->getStatus() == GameStatus::WIN && !processedEnd) {
-			if (!m_Game->isMuted()) {
+			if (!m_Event.isMuted()) {
 				sound->stop();
 				snore->stop();
 				win->play("Assets/sounds/win.mp3", false);
-				win->setVolume(m_Game->getVolume());
+				win->setVolume(m_Event.getVolume());
 			}
 			m_Game->pauseGame();
 			m_Camera->winScreen();
@@ -598,8 +589,8 @@ void Application::Run()
 		}
 		//----------------------------------------------------------------END WIN/LOSE----------------------------------------------------------
 		//---------------------------------------------------------SET ADDITIONAL SOUNDS---------------------------------------------------------
-		if (!m_Game->isMuted()) {
-			sound->setVolume(m_Game->getVolume());
+		if (!m_Event.isMuted()) {
+			sound->setVolume(m_Event.getVolume());
 			if (!soundOn) {
 				sound->play("Assets/sounds/hazy-cosmos.mp3", true);
 				soundOn = true;
@@ -611,14 +602,14 @@ void Application::Run()
 					if (!isPlayed)
 					{
 						snore->play("Assets/sounds/snore.mp3", true);
-						snore->setVolume(0.1 * m_Game->getVolume());
+						snore->setVolume(0.1 * m_Event.getVolume());
 					}
 					isPlayed = true;
 				}
 				if (m_Player->getPosition().y > 14)
 				{
 					if (isPlayed)
-						snore->setVolume(0.8 * m_Game->getVolume());
+						snore->setVolume(0.8 * m_Event.getVolume());
 				}
 			}
 			if (m_Player->getPosition().y < 13 && snore != 0 || m_Game->isPaused() && snore != 0)
@@ -638,6 +629,15 @@ void Application::Run()
 		//---------------------------------------------------------------END SOUNDS--------------------------------------------------------------
 		//-----------------------------------------------------COWBOY RUNNING FUNCTION-----------------------------------------------------------
 		if (!m_Game->isPaused()) {
+			if (boyStartPos.x < -0.3f) {
+				m_PhysX->createTrigger(PxVec3(0.3f, boyStartPos.y, boyStartPos.z), PxVec3(0.1f, 0.9f, 0.3f), Physx::TriggerType::BOY);
+			}
+			else if (boyStartPos.x > 4.0f) {
+				m_PhysX->createTrigger(PxVec3(-4.0f, boyStartPos.y, boyStartPos.z), PxVec3(0.1f, 0.9f, 0.1f), Physx::TriggerType::BOY);
+			}
+			else {
+				m_PhysX->createTrigger(PxVec3(-boyStartPos.x, boyStartPos.y, boyStartPos.z), PxVec3(0.1f, 0.9f, 0.3f), Physx::TriggerType::BOY);
+			}
 			if (boyStartPos.x < endX && !isOnPos && m_DeltaTime < 1.0f)
 			{
 				boyMat = glm::translate(boyMat, glm::vec3(0, -20 * m_DeltaTime, 0)); //-0.4
@@ -657,15 +657,6 @@ void Application::Run()
 					boyMat = glm::rotate(boyMat, getRad(180), glm::vec3(0, 0, -1));
 					isOnPos = !isOnPos;
 				}
-			}
-			if (boyStartPos.x < -0.3f) {
-				m_PhysX->createTrigger(PxVec3(0.3f, boyStartPos.y, boyStartPos.z), PxVec3(0.25f, 1.0f, 0.25f), Physx::TriggerType::BOY);
-			}
-			else if (boyStartPos.x > 4.0f) {
-				m_PhysX->createTrigger(PxVec3(-4.0f, boyStartPos.y, boyStartPos.z), PxVec3(0.25f, 1.0f, 0.25f), Physx::TriggerType::BOY);
-			}
-			else {
-				m_PhysX->createTrigger(PxVec3(-boyStartPos.x, boyStartPos.y, boyStartPos.z), PxVec3(0.25f, 1.0f, 0.25f), Physx::TriggerType::BOY);
 			}
 		}
 		//---------------------------------------------------------------------------------------------------------------------------------------

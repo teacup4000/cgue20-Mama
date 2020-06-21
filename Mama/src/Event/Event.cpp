@@ -92,17 +92,21 @@ void Event::OnKeyPressed(int key, int code, int action, int modifers)
 
 	if (glfwGetKey(m_Window, GLFW_KEY_M) == GLFW_PRESS)
 	{
-		m_Game->muteUnmute();
+		m_Muted = !m_Muted;
 	}
 
 	if (glfwGetKey(m_Window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS || glfwGetKey(m_Window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
 	{
-		m_Game->volumeIncrease();
+		if (m_Volume < 1) {
+			m_Volume += 0.05f;
+		}
 	}
 
 	if (glfwGetKey(m_Window, GLFW_KEY_SLASH) == GLFW_PRESS || glfwGetKey(m_Window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS)
 	{
-		m_Game->volumeDecrease();
+		if (m_Volume > 0) {
+			m_Volume -= 0.05f;
+		}
 	}
 }
 

@@ -31,6 +31,8 @@ public:
 	void SetNativePlayer(Player* player) { m_Player = player; }
 	void SetNativeGame(Game* game) { m_Game = game; }
 	void SetRestart();
+	float getVolume() { return m_Volume; }
+	bool isMuted() { return m_Muted; }
 	bool isRestart() { return m_Restart; }
 	bool isWireFrame() { return m_Wireframe; }
 	bool isCameraControl() { return m_CameraControl; }
@@ -50,6 +52,9 @@ private:
 	bool m_Wireframe = false;
  	bool m_CameraControl = false;
 	bool m_RenderAll = false;
+	bool m_Muted = false;
+
+	float m_Volume = 0.5;
 
 	float m_LastX, m_LastY;
 	int m_Width, m_Height;

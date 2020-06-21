@@ -63,11 +63,11 @@ void Physx::initPhysx()
 	PxCapsuleControllerDesc desc;
 	manager->setOverlapRecoveryModule(true);
 	desc.position = PxExtendedVec3(-9.26916f, 14.4f, -15.9479f); //initial position
-	desc.contactOffset = 0.1f; //controller skin within which contacts generated
+	desc.contactOffset = 0.001f; //controller skin within which contacts generated
 	desc.stepOffset = 0.01; //max obstacle height the character can climb
 	desc.slopeLimit = cosf(glm::radians(45.0f)); // max slope the character can walk
-	desc.radius = 0.3f; //radius of the capsule
-	desc.height = 0.5f; //height of the controller
+	desc.radius = 0.1f; //radius of the capsule
+	desc.height = 0.3f; //height of the controller
 	desc.upDirection = PxVec3(0, 1, 0); // Specifies the 'up' direction
 	desc.material = gPhysics->createMaterial(0.5f, 0.5f, 0.1f); // material defines physical properties like friction, bounciness etc. - see PhysX materials
 	controller = manager->createController(desc);
