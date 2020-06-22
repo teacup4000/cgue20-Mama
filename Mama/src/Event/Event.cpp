@@ -19,7 +19,6 @@ void Event::SetRestart()
 
 void Event::OnKeyPressed(int key, int code, int action, int modifers)
 {
-	/* Layers are dependend to the "doTheLayer" function in UI.cpp. If changing something in this file, make sure you change it there too! */
 	if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
 	{
 		m_Fullscreen = !m_Fullscreen;

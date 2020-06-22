@@ -157,6 +157,15 @@ void Application::Run()
 	Model boxes("Models/Single Elements/Box/boxes.obj");
 	glm::mat4 boxMat = glm::mat4(1.0f);
 
+	Model rock01("Models/Single Elements/MoveableRocks/smallRock01.obj");
+	glm::mat4 rockMat01 = glm::mat3(1.0f);
+
+	Model rock02("Models/Single Elements/MoveableRocks/smallRock02.obj");
+	glm::mat4 rockMat02 = glm::mat3(1.0f);
+
+	Model rock03("Models/Single Elements/MoveableRocks/smallRock03.obj");
+	glm::mat4 rockMat03 = glm::mat3(1.0f);
+
 	AnimModel cowboy("Animation/Cowboy/model.dae");
 	glm::mat4 boyMat = glm::mat4(1.0f);
 	glm::vec3 boyStartPos = glm::vec3(-0.85059, 12, -23.9644);
@@ -533,6 +542,15 @@ void Application::Run()
 
 			if (renderer->isFrustum(rocks, rockMat, m_Event.isFrustum()))
 				renderModel(rocks, normal, rockMat);
+
+			if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum()))
+				renderModel(rock01, normal, rockMat01);
+
+			if (renderer->isFrustum(rock02, rockMat02, m_Event.isFrustum()))
+				renderModel(rock02, normal, rockMat02);
+
+			if (renderer->isFrustum(rock03, rockMat03, m_Event.isFrustum()))
+				renderModel(rock03, normal, rockMat03);
 		}
 		else
 		{
@@ -558,6 +576,15 @@ void Application::Run()
 
 			if (renderer->isFrustum(rocks, rockMat, m_Event.isFrustum()))
 				renderModel(rocks, pointLights, rockMat);
+
+			if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum()))
+				renderModel(rock01, pointLights, rockMat01);
+		
+			if (renderer->isFrustum(rock02, rockMat02, m_Event.isFrustum()))
+				renderModel(rock02, pointLights, rockMat02);
+		
+			if (renderer->isFrustum(rock03, rockMat03, m_Event.isFrustum()))
+				renderModel(rock03, pointLights, rockMat03);
 		}
 
 		renderer->renderLight(pointLights);

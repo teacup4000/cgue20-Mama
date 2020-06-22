@@ -234,27 +234,30 @@ float Physx::checkCamera(PxVec3 cameraPos, PxVec3 playerPos) {
 	PxVec3 unitDir(cameraPos - playerPos);
 	float length = sqrt(pow(unitDir.x, 2) + pow(unitDir.y, 2) + pow(unitDir.z, 2));
 	unitDir = unitDir.getNormalized();
-	PxRaycastBuffer hit;
+	const PxU32 bufferSize = 256;
+	PxRaycastHit hitBuffer[256];
+	PxRaycastBuffer hits(hitBuffer, bufferSize);
 
-	bool status = gScene->raycast(playerPos, unitDir, length, hit);
+	bool status = gScene->raycast(playerPos, unitDir, length, hits);
 
 	if (status) {
-		PxShape *cShapes[1];
-		hit.block.actor->getShapes(cShapes, 1, 0);
-		PxShape *cShape = cShapes[0];
-		PxShapeFlags flags = cShape->getFlags();
+		for (int i = 0; i < hits.getNbTouches(); i++) {
 
-		int mask = 1 << 2;
-		int maskedFlags = flags.operator uint8_t() & mask;
-		int triggerFlag = maskedFlags >> 2;
-		
-		//hit a trigger or the player character -> ignore
-		if (triggerFlag == 1 || hit.block.actor == controller->getActor()) {
-			return length;
+			PxShape *cShapes[1];
+			hits.getTouches()[i].actor->getShapes(cShapes, 1, 0);
+			PxShape *cShape = cShapes[0];
+			PxShapeFlags flags = cShape->getFlags();
+
+			int mask = 1 << 2;
+			int maskedFlags = flags.operator uint8_t() & mask;
+			int triggerFlag = maskedFlags >> 2;
+
+			//check if hit is not trigger and player character
+			if (triggerFlag == 0 && hits.getTouches()[i].actor != controller->getActor()) {
+				return hits.getTouches()[i].distance;
+			}
 		}
-		else {
-			return hit.block.distance;
-		}
+		return length;
 	}
 	else {
 		return length;
