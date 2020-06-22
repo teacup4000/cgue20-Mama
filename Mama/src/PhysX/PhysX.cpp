@@ -84,8 +84,8 @@ void Physx::createModels(std::vector<Model> models) {
 			verts[i] = PxVec3(v.position.x, v.position.y, v.position.z);
 			i++;
 		}
-
 		int vertsCount = i;
+
 		PxU32 *indices = new PxU32[md.meshes[0].indices.size()];
 		i = 0;
 		for (GLuint in : md.meshes[0].indices) {
@@ -93,7 +93,7 @@ void Physx::createModels(std::vector<Model> models) {
 			i++;
 		}
 		int indexCount = i;
-
+		
 		PxTriangleMeshDesc meshDesc;
 		meshDesc.points.count = vertsCount;
 		meshDesc.points.stride = sizeof(PxVec3);
@@ -103,7 +103,7 @@ void Physx::createModels(std::vector<Model> models) {
 		meshDesc.triangles.data = indices;
 
 		PxMaterial *mMaterial = gPhysics->createMaterial(0.5, 0.5, 0.5);
-
+		
 		PxDefaultMemoryOutputStream buf;
 		PxTriangleMeshCookingResult::Enum result;
 		if (!gCooking->cookTriangleMesh(meshDesc, buf, &result)) {
@@ -111,18 +111,50 @@ void Physx::createModels(std::vector<Model> models) {
 			return;
 		}
 		PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
-		PxTriangleMesh *triangleMesh = gPhysics->createTriangleMesh(input);
-		PxRigidStatic *triangleActor = gPhysics->createRigidStatic(PxTransform(PxVec3(0.0f, 0.0f, 0.0f)));
-		PxShape *triangleShape = PxRigidActorExt::createExclusiveShape(*triangleActor, PxTriangleMeshGeometry(triangleMesh), *mMaterial);
+		PxTriangleMesh* triangleMesh = gPhysics->createTriangleMesh(input);
+		PxRigidStatic *triangleActor = gPhysics->createRigidStatic(PxTransform(PxVec3(0.0f)));
+		PxShape* triangleShape = PxRigidActorExt::createExclusiveShape(*triangleActor, PxTriangleMeshGeometry(triangleMesh), *mMaterial);
 		gScene->addActor(*triangleActor);
+		std::cout << "Physx Static Model created!" << std::endl;
+			
 		triangleMesh->release();
-		std::cout << "Physx Model created!" << std::endl;
+		
+	}
+}
+
+void Physx::createDynamic(PxVec3 position, DynamicType type, PxVec3 dimensions, int mass) {
+	PxMaterial* mMaterial;
+	PxRigidDynamic* actor;
+	PxShape* shape;
+
+	switch (type)
+	{
+	case Physx::SPHERE:
+		mMaterial = gPhysics->createMaterial(1.0f, 0.5f, 0.1f);
+		actor = gPhysics->createRigidDynamic(PxTransform(position));
+		shape = PxRigidActorExt::createExclusiveShape(*actor, PxSphereGeometry(dimensions.x), *mMaterial);
+		PxRigidBodyExt::setMassAndUpdateInertia(*actor, mass);
+		gScene->addActor(*actor);
+		dynamicObjects.push_back(actor);
+		break;
+	case Physx::BOX:
+		break;
+	case Physx::CAPSULE:
+		mMaterial = gPhysics->createMaterial(1.0f, 0.5f, 0.1f);
+		actor = gPhysics->createRigidDynamic(PxTransform(position));
+		shape = PxRigidActorExt::createExclusiveShape(*actor, PxCapsuleGeometry(dimensions.x, dimensions.y), *mMaterial);
+		PxRigidBodyExt::setMassAndUpdateInertia(*actor, mass);
+		gScene->addActor(*actor);
+		dynamicObjects.push_back(actor);
+		break;
+	default:
+		break;
 	}
 }
 
 void Physx::createTrigger(PxVec3 position, PxVec3 size, TriggerType type) {
 	
-	PxMaterial *mMaterial = gPhysics->createMaterial(0.5, 0.5, 0.5);
+	PxMaterial *mMaterial = gPhysics->createMaterial(0.5, 0.5, 0.1);
 	PxRigidStatic *trigger;
 	PxTransform triggerPos(position);
 	PxBoxGeometry triggerGeometry(size);
@@ -161,7 +193,6 @@ void Physx::createTrigger(PxVec3 position, PxVec3 size, TriggerType type) {
 		std::cout << "Error: Unknown Triggertype!" << std::endl;
 		break;
 	}
-	std::cout << "Trigger created!" << std::endl;
 }
 
 void Physx::onTrigger(PxTriggerPair* pairs, PxU32 count) {

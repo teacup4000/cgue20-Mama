@@ -159,12 +159,11 @@ void Application::Run()
 
 	Model rock01("Models/Single Elements/MoveableRocks/smallRock01.obj");
 	glm::mat4 rockMat01 = glm::mat3(1.0f);
+	glm::vec3 startRock01 = glm::vec3(-7.28026, 12.1433, -28.9629);
 
 	Model rock02("Models/Single Elements/MoveableRocks/smallRock02.obj");
 	glm::mat4 rockMat02 = glm::mat3(1.0f);
-
-	Model rock03("Models/Single Elements/MoveableRocks/smallRock03.obj");
-	glm::mat4 rockMat03 = glm::mat3(1.0f);
+	glm::vec3 startRock02 = glm::vec3(-2.25287, 12.3593, -25.8399);
 
 	AnimModel cowboy("Animation/Cowboy/model.dae");
 	glm::mat4 boyMat = glm::mat4(1.0f);
@@ -259,15 +258,19 @@ void Application::Run()
 	models.push_back(multipleLights);
 	models.push_back(woodenElements);
 	models.push_back(rails);
+	models.push_back(cart);
 	models.push_back(fence);
 	models.push_back(boxes);
 
 	//Collision Cubes for downloaded objects
-	models.push_back(Model("Physx/Collision/OtherElems/cartCube.obj"));
+	//models.push_back(Model("Physx/Collision/OtherElems/cartCube.obj"));
 	models.push_back(Model("PhysX/Collision/OtherElems/containerCube.obj"));
 	models.push_back(Model("PhysX/Collision/OtherElems/debris.obj"));
 
 	m_PhysX->createModels(models);
+	
+	m_PhysX->createDynamic(PxVec3(startRock01.x, startRock01.y, startRock01.z), Physx::DynamicType::SPHERE, PxVec3(0.1f, 0.0f, 0.0f), 2);
+	m_PhysX->createDynamic(PxVec3(startRock02.x, startRock02.y, startRock02.z), Physx::DynamicType::CAPSULE, PxVec3(0.15f, 0.2f, 0.0f), 2);
 
 	for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++) {
 		m_PhysX->createTrigger(PxVec3(cube->position[i].x, cube->position[i].y, cube->position[i].z), PxVec3(0.2f, 0.4f, 0.2f), Physx::TriggerType::TRAP);
@@ -543,14 +546,35 @@ void Application::Run()
 			if (renderer->isFrustum(rocks, rockMat, m_Event.isFrustum()))
 				renderModel(rocks, normal, rockMat);
 
-			if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum()))
+			if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum())) {
+				rockMat01 = glm::mat4(1.0f);
+				PxTransform pos = m_PhysX->getDynamicObjects()[0]->getGlobalPose();
+				rockMat01 = glm::translate(rockMat01, glm::vec3(pos.p.x, pos.p.y, pos.p.z));
+				if (pos.q.x != 0 && pos.q.y != 0 && pos.q.z != 0) {
+					float a = PxAcos(pos.q.w);
+					float s = PxSin(a);
+					rockMat01 = glm::rotate(rockMat01, a / 0.5f, glm::vec3(pos.q.x / s, pos.q.y / s, pos.q.z / s));
+				}
+
+				rockMat01 = glm::translate(rockMat01, glm::vec3(-startRock01.x, -startRock01.y, -startRock01.z));
 				renderModel(rock01, normal, rockMat01);
 
-			if (renderer->isFrustum(rock02, rockMat02, m_Event.isFrustum()))
-				renderModel(rock02, normal, rockMat02);
+			}
 
-			if (renderer->isFrustum(rock03, rockMat03, m_Event.isFrustum()))
-				renderModel(rock03, normal, rockMat03);
+			if (renderer->isFrustum(rock02, rockMat02, m_Event.isFrustum())) {
+				rockMat02 = glm::mat4(1.0f);
+				PxTransform pos = m_PhysX->getDynamicObjects()[1]->getGlobalPose();
+				rockMat02 = glm::translate(rockMat02, glm::vec3(pos.p.x, pos.p.y, pos.p.z));
+				if (pos.q.x != 0 && pos.q.y != 0 && pos.q.z != 0) {
+					float a = PxAcos(pos.q.w);
+					float s = PxSin(a);
+					rockMat02 = glm::rotate(rockMat02, a / 0.5f, glm::vec3(pos.q.x / s, pos.q.y / s, pos.q.z / s));
+				}
+
+				rockMat02 = glm::translate(rockMat02, glm::vec3(-startRock02.x, -startRock02.y + 0.1f, -startRock02.z - 0.1f));
+
+				renderModel(rock02, normal, rockMat02);
+			}
 		}
 		else
 		{
@@ -577,14 +601,34 @@ void Application::Run()
 			if (renderer->isFrustum(rocks, rockMat, m_Event.isFrustum()))
 				renderModel(rocks, pointLights, rockMat);
 
-			if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum()))
+			if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum())) {
+				rockMat01 = glm::mat4(1.0f);
+				PxTransform pos = m_PhysX->getDynamicObjects()[0]->getGlobalPose();
+				rockMat01 = glm::translate(rockMat01, glm::vec3(pos.p.x, pos.p.y, pos.p.z));
+				if (pos.q.x != 0 && pos.q.y != 0 && pos.q.z != 0) {
+					float a = PxAcos(pos.q.w);
+					float s = PxSin(a);
+					rockMat01 = glm::rotate(rockMat01, a / 0.5f, glm::vec3(pos.q.x / s, pos.q.y / s, pos.q.z / s));
+				}
+
+				rockMat01 = glm::translate(rockMat01, glm::vec3(-startRock01.x, -startRock01.y, -startRock01.z));
+
 				renderModel(rock01, pointLights, rockMat01);
-		
-			if (renderer->isFrustum(rock02, rockMat02, m_Event.isFrustum()))
+			}
+			if (renderer->isFrustum(rock02, rockMat02, m_Event.isFrustum())) {
+				rockMat02 = glm::mat4(1.0f);
+				PxTransform pos = m_PhysX->getDynamicObjects()[1]->getGlobalPose();
+				rockMat02 = glm::translate(rockMat02, glm::vec3(pos.p.x, pos.p.y, pos.p.z));
+				if (pos.q.x != 0 && pos.q.y != 0 && pos.q.z != 0) {
+					float a = PxAcos(pos.q.w);
+					float s = PxSin(a);
+					rockMat02 = glm::rotate(rockMat02, a / 0.5f, glm::vec3(pos.q.x / s, pos.q.y / s, pos.q.z / s));
+				}
+
+				rockMat02 = glm::translate(rockMat02, glm::vec3(-startRock02.x, -startRock02.y, -startRock02.z));
+
 				renderModel(rock02, pointLights, rockMat02);
-		
-			if (renderer->isFrustum(rock03, rockMat03, m_Event.isFrustum()))
-				renderModel(rock03, pointLights, rockMat03);
+			}
 		}
 
 		renderer->renderLight(pointLights);
@@ -631,7 +675,7 @@ void Application::Run()
 			}
 
 			if (!m_Game->isPaused()) {
-				if (m_Player->getPosition().y >= 13)
+				if (m_Player->getPosition().y >= 13 && m_Player->getPosition().z >= 22)
 				{
 					if (!isPlayed)
 					{
@@ -708,6 +752,7 @@ void Application::Run()
 	m_PhysX->releasePhysx();
 	glfwTerminate();
 }
+
 
 void Application::CreateGLFWWindow()
 {

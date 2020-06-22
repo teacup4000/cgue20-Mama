@@ -56,7 +56,7 @@ private:
 	bool m_Muted = false;
 	bool m_Vsync = false;
 
-	float m_Volume = 0.5;
+	float m_Volume = 0.1;
 
 	float m_LastX, m_LastY;
 	int m_Width, m_Height;
