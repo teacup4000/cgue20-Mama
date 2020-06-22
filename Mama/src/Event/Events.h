@@ -37,6 +37,7 @@ public:
 	bool isWireFrame() { return m_Wireframe; }
 	bool isCameraControl() { return m_CameraControl; }
 	bool isRenderAll() { return m_RenderAll; }
+	bool isVsync() { return m_Vsync; }
 
 	void SetFullScreen();
 	
@@ -53,6 +54,7 @@ private:
  	bool m_CameraControl = false;
 	bool m_RenderAll = false;
 	bool m_Muted = false;
+	bool m_Vsync = false;
 
 	float m_Volume = 0.5;
 

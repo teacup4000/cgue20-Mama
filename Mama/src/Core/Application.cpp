@@ -289,6 +289,13 @@ void Application::Run()
 
 	while (!glfwWindowShouldClose(m_Window))
 	{
+		if (m_Event.isVsync()) {
+			glfwSwapInterval(1);
+		}
+		else {
+			glfwSwapInterval(0);
+		}
+
 		if (m_Event.isRestart()) {
 			
 			//reset application variables
@@ -479,7 +486,7 @@ void Application::Run()
 			{
 				renderModel(cubes, basic, cubeMat[i]);
 				if (!m_Game->isPaused()) {
-					cubeMat[i] = glm::rotate(cubeMat[i], 0.05f, glm::vec3(0, 1, 1));
+					cubeMat[i] = glm::rotate(cubeMat[i], 3.0f * m_DeltaTime, glm::vec3(0, 1, 1));
 				}
 			}
 			if (!m_Game->isPaused()) {
@@ -497,7 +504,7 @@ void Application::Run()
 			if (!m_PhysX->checkMeat(PxVec3(pos.x, pos.y, pos.z)) || m_Event.isRenderAll()) {
 				renderModel(foods, basic, foodMat[i]);
 				if (!m_Game->isPaused()) {
-					foodMat[i] = glm::rotate(foodMat[i], 0.05f, glm::vec3(0, 1, 0));
+					foodMat[i] = glm::rotate(foodMat[i], 3.0f * m_DeltaTime, glm::vec3(0, 1, 0));
 				}
 			}
 		}

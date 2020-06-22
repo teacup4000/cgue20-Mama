@@ -52,6 +52,7 @@ private: //MEMBERS
 	Player*	m_Player;
 	Camera* m_Camera;
 	Physx* m_PhysX = new Physx();
+	Event m_Event;
 
 	float	m_Nearplane, m_Farplane;
 	float	m_DeltaTime, m_LastFrame;
@@ -63,7 +64,6 @@ private: //MEMBERS
 	glm::vec3	m_Brightness;
 
 private: //FUNCTIONS
-	Event m_Event;
 
 	void ReadINIFile() {
 		INIReader iniReader("Assets/settings.ini");
