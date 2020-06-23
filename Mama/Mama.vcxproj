@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{4E8ABB74-C2D6-4248-AC31-9E5E644EC3A5}</ProjectGuid>
-    <RootNamespace>cgue19mama</RootNamespace>
+    <RootNamespace>cgue20Mama</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -208,14 +208,17 @@
     <None Include="Shader\basic.shader" />
     <None Include="Shader\bloom.shader" />
     <None Include="Shader\blur.shader" />
+    <None Include="Shader\depth.shader" />
     <None Include="Shader\multipleLightShadowBones.shader" />
     <None Include="Shader\emission.shader" />
     <None Include="Shader\multipleLightShadow.shader" />
     <None Include="Shader\normal.shader" />
     <None Include="Shader\multipleLight.shader" />
     <None Include="Shader\multipleLightsNormalMap.shader" />
+    <None Include="Shader\Test.shader" />
     <None Include="Shader\postprocess.shader" />
     <None Include="Shader\bone.shader" />
+    <None Include="Shader\transparent.shader" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Shader\bloom_final.shader" />

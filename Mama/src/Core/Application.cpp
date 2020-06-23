@@ -70,6 +70,7 @@ void Application::Run()
 	Shader blur("Shader/blur.shader");
 	Shader bloomFinal("Shader/bloom_final.shader");
 	Shader bone("Shader/multipleLightShadowBones.shader");
+	Shader test("Shader/Test.shader");
 	//--------------------------------------------------SET SHADER PROPERTIERS-------------------------------------------------------------
 	shadowMap->GenerateDepthMap(m_Nearplane, m_Farplane);
 	bloom->GenerateBloomParams(m_Width, m_Height);
@@ -80,6 +81,10 @@ void Application::Run()
 
 	simpleShadow.use();
 	simpleShadow.setInt("depthMap", 1);
+
+	test.use();
+	test.setInt("depthMap", 1);
+	test.setInt("normalMap", 1);
 
 	bone.use();
 	bone.setInt("depthMap", 1);
@@ -165,6 +170,9 @@ void Application::Run()
 
 	Model box04("Models/Single Elements/Box/box04.obj");
 	glm::mat4 box04Mat = glm::mat4(1.0f);
+
+	Model box05("Models/Single Elements/Box/normalCube.obj");
+	glm::mat4 box05Mat = glm::mat4(1.0f);
 
 	Model rock01("Models/Single Elements/MoveableRocks/smallRock01.obj");
 	glm::mat4 rockMat01 = glm::mat3(1.0f);
@@ -272,7 +280,8 @@ void Application::Run()
 	models.push_back(box01);
 	models.push_back(box02);
 	models.push_back(box03);
-	models.push_back(box04);
+	models.push_back(box04);	
+	models.push_back(box05);
 
 
 	//Collision Cubes for downloaded objects
@@ -416,6 +425,18 @@ void Application::Run()
 		if (renderer->isFrustum(fence, fenceMat, m_Event.isFrustum()))
 			renderModel(fence, shadow, fenceMat);
 
+		if (renderer->isFrustum(box01, box01Mat, m_Event.isFrustum()))
+			renderModel(box01, shadow, box01Mat);
+
+		if (renderer->isFrustum(box02, box02Mat, m_Event.isFrustum()))
+			renderModel(box02, shadow, box02Mat);
+
+		if (renderer->isFrustum(box03, box03Mat, m_Event.isFrustum()))
+			renderModel(box03, shadow, box03Mat);
+
+		if (renderer->isFrustum(box04, box04Mat, m_Event.isFrustum()))
+			renderModel(box04, shadow, box04Mat);
+
 		if (!m_Game->isPaused()) {
 			mama.InitShader(shadow);
 			renderAnimModel(mama, shadow, mamaMat);
@@ -486,6 +507,19 @@ void Application::Run()
 
 		if (renderer->isFrustum(fence, fenceMat, m_Event.isFrustum()))
 			renderModel(fence, simpleShadow, fenceMat);
+
+		renderer->renderSimpleShadow(test, lightPos, m_Shadow, m_Farplane, shadowMap);
+		if (renderer->isFrustum(box01, box01Mat, m_Event.isFrustum()))
+			renderModel(box01, test, box01Mat);
+
+		if (renderer->isFrustum(box02, box02Mat, m_Event.isFrustum()))
+			renderModel(box02, test, box02Mat);
+
+		if (renderer->isFrustum(box03, box03Mat, m_Event.isFrustum()))
+			renderModel(box03, test, box03Mat);
+
+		if (renderer->isFrustum(box04, box04Mat, m_Event.isFrustum()))
+			renderModel(box04, test, box04Mat);
 
 		//Models with bones and shadows
 		renderer->renderSimpleShadow(bone, lightPos, m_Shadow, m_Farplane, shadowMap);
@@ -558,6 +592,9 @@ void Application::Run()
 			if (renderer->isFrustum(rocks, rockMat, m_Event.isFrustum()))
 				renderModel(rocks, normal, rockMat);
 
+			if (renderer->isFrustum(box05, box05Mat, m_Event.isFrustum()))
+				renderModel(box05, normal, box05Mat);
+
 			if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum())) {
 				rockMat01 = glm::mat4(1.0f);
 				PxTransform pos = m_PhysX->getDynamicObjects()[0]->getGlobalPose();
@@ -590,18 +627,6 @@ void Application::Run()
 
 				renderModel(rock02, normal, rockMat02);
 			}
-
-			if (renderer->isFrustum(box01, box01Mat, m_Event.isFrustum()))
-				renderModel(box01, normal, box01Mat);
-
-			if (renderer->isFrustum(box02, box02Mat, m_Event.isFrustum()))
-				renderModel(box02, normal, box02Mat);
-
-			if (renderer->isFrustum(box03, box03Mat, m_Event.isFrustum()))
-				renderModel(box03, normal, box03Mat);
-
-			if (renderer->isFrustum(box04, box04Mat, m_Event.isFrustum()))
-				renderModel(box04, normal, box04Mat);
 
 		}
 		else

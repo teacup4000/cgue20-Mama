@@ -13,7 +13,7 @@ public:
 
 	uint32_t GetMap() { return m_DepthMapCube; }
 private:
-	const uint32_t m_Width = 1024, m_Height = 1024;
+	const uint32_t m_Width = 1024*2, m_Height = 1024*2;
 
 	uint32_t m_DepthMapFBO;
 	uint32_t m_DepthMapCube;
