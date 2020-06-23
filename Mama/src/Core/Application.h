@@ -44,6 +44,7 @@ public:
 
 	~Application() = default;
 	void Run();
+	glm::mat4 getOrientationFromPos(PxRigidDynamic* actor, glm::vec3 startPos, glm::vec3 offset);
 	void CreateGLFWWindow();
 
 
@@ -62,6 +63,8 @@ private: //MEMBERS
 	bool	m_Shadow;
 	uint32_t m_Refresh;
 	glm::vec3	m_Brightness;
+
+	std::vector<PxRigidDynamic*> m_DynamicObjects;
 
 private: //FUNCTIONS
 

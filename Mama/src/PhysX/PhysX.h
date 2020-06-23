@@ -26,9 +26,18 @@ public:
 		CAPSULE
 	};
 	
-	void simulate() {
-		gScene->simulate(1.0f / 60.0f);
-		gScene->fetchResults(true);
+	void simulate(float deltaTime) {
+		m_Accumulator += deltaTime;
+		if (m_Accumulator < m_StepSize)
+			return;
+
+		do {
+			m_Accumulator -= m_StepSize;
+
+			gScene->simulate(m_StepSize);
+			gScene->fetchResults(true);
+
+		} while (m_Accumulator >= m_StepSize);
 	}
 
 
@@ -37,10 +46,11 @@ public:
 	void initPhysx();
 	//Releases all Physx Components
 	void releasePhysx();
-	//Cooks the Collision Models for Physx; dynamic specifies if Object is dynamic, false per default
-	void createModels(std::vector<Model> models, bool dynamic = false);
+	//Cooks the Collision Models for Physx
+	void createModels(std::vector<Model> models);
 	//creates a dynamic object of Type type at Position position with the Dimensions dimensions(radius/x, height/y, z) and the Mass mass
-	void createDynamic(PxVec3 position, DynamicType type, PxVec3 dimensions, int mass);
+	PxRigidDynamic* createDynamicOld(PxVec3 position, DynamicType type, PxVec3 dimensions, int mass);
+	PxRigidDynamic* createDynamic(Model model, float mass);
 	//create a Trigger Box of Size size at Position position
 	void createTrigger(PxVec3 position, PxVec3 size, TriggerType type);
 	//checks if the camera colides with something and gives out collision distance
@@ -59,7 +69,6 @@ public:
 	PxActor* getNewTrigger() { return newTrigger; }
 	float getLastTriggerTime() { return lastTriggerTime; }
 	float getNewTriggerTime() { return newTriggerTime; }
-	std::vector<PxRigidDynamic*> getDynamicObjects() { return dynamicObjects; }
 	//checks meat has already been eaten; returns true if so
 	bool checkMeat(PxVec3 position);
 	void setGame(Game* game) { m_Game = game; }
@@ -75,6 +84,8 @@ private:
 	PxScene* gScene = nullptr;
 	PxController* controller = nullptr;
 	PxControllerManager* manager = nullptr;
+	float m_Accumulator = 0.0f;
+	float m_StepSize = 1.0f / 60.0f;
 	
 
 	PxActor* lastTrigger;
@@ -87,7 +98,6 @@ private:
 	std::vector<PxActor*> meat;
 	std::vector<PxVec3> meatPos;
 	std::vector<PxVec3> eatenPos;
-	std::vector<PxRigidDynamic*> dynamicObjects;
 	PxRigidStatic* mommy = nullptr;
 	PxRigidStatic* boy = nullptr;
 
