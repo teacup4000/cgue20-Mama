@@ -38,7 +38,7 @@ public:
 	//Releases all Physx Components
 	void releasePhysx();
 	//Cooks the Collision Models for Physx; dynamic specifies if Object is dynamic, false per default
-	void createModels(std::vector<Model> models);
+	void createModels(std::vector<Model> models, bool dynamic = false);
 	//creates a dynamic object of Type type at Position position with the Dimensions dimensions(radius/x, height/y, z) and the Mass mass
 	void createDynamic(PxVec3 position, DynamicType type, PxVec3 dimensions, int mass);
 	//create a Trigger Box of Size size at Position position
