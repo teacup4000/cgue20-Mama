@@ -7,8 +7,8 @@ bool FrustumCulling::isFrustum(Model &model, glm::mat4 matrix, glm::mat4 proj, b
 		return true;
 
 	CalculateFrustum(matrix, proj);
-	float size = model.GetDistance();
-	return FrustumBox(model.GetMinPos(), size) || FrustumBox(model.GetMaxPos(), size);
+	float radius = model.GetDistance()/2;
+	return FrustumBox(model.GetMinPos(), radius) || FrustumBox(model.GetMaxPos(), radius);
 }
 
 void FrustumCulling::CalculateFrustum(glm::mat4 modelMat, glm::mat4 proj)
