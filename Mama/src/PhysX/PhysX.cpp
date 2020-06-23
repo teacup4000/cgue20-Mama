@@ -20,11 +20,11 @@ void Physx::initPhysx()
 	//--------------------------------CREATE SDK---------------------------------------
 	bool recordMemoryAllocations = true;
 	PxTolerancesScale scale;
-	scale.length = 50; //example target 1m, actual units 1cm
-	scale.speed = 0.02; //gravity*1s
+	scale.length = 1; //example target 1m, actual units 1cm
+	scale.speed = 9.81f; //gravity*1s
 
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation,
-		scale, recordMemoryAllocations, gPvd);
+		PxTolerancesScale(scale), recordMemoryAllocations, gPvd);
 	if (!gPhysics)
 		std::cout << "PxCreatePhysics failed!" << std::endl;
 
@@ -32,14 +32,14 @@ void Physx::initPhysx()
 	//--------------------------------CREATE Cooking---------------------------------------
 
 
-	gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, PxCookingParams(scale));
+	gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, PxCookingParams(gPhysics->getTolerancesScale()));
 	if (!gCooking)
 		std::cout << "PxCreateCooking failed!" << std::endl;
 
 	std::cout << "Physx Cooking created!" << std::endl;
 	//--------------------------------CREATE SCENE---------------------------------------
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -0.02f, 0.0f);
+	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(1);
 	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
 	gScene = gPhysics->createScene(sceneDesc);
@@ -53,7 +53,7 @@ void Physx::initPhysx()
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-
+	
 
 	//----------------------------------------------------------------------------------------
 	//-----------------------------CHARACTER CONTROLLER---------------------------------------
@@ -75,7 +75,7 @@ void Physx::initPhysx()
 
 }
 
-void Physx::createModels(std::vector<Model> models, bool dynamic) {
+void Physx::createModels(std::vector<Model> models) {
 	
 	for (Model md : models) {
 		PxVec3 *verts = new PxVec3[md.meshes[0].vertices.size()];
@@ -93,30 +93,6 @@ void Physx::createModels(std::vector<Model> models, bool dynamic) {
 			i++;
 		}
 		int indexCount = i;
-		
-		if (dynamic) {
-			PxConvexMeshDesc convexDesc;
-			convexDesc.points.count = vertsCount;
-			convexDesc.points.stride = sizeof(PxVec3);
-			convexDesc.points.data = verts;
-			convexDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
-			convexDesc.vertexLimit = 10;
-			
-			PxMaterial *mMaterial = gPhysics->createMaterial(0.5, 0.5, 0.1);
-			PxDefaultMemoryOutputStream buf;
-			PxConvexMeshCookingResult::Enum result;
-			if (!gCooking->cookConvexMesh(convexDesc, buf, &result)) {
-				std::cout << "Cooking Error" << std::endl;
-				return;
-			}
-			PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
-			PxConvexMesh* convexMesh = gPhysics->createConvexMesh(input);
-			PxRigidDynamic *convexActor = gPhysics->createRigidDynamic(PxTransform(PxVec3(0.0f)));
-			PxShape* convexShape = PxRigidActorExt::createExclusiveShape(*convexActor, PxConvexMeshGeometry(convexMesh), *mMaterial);
-			gScene->addActor(*convexActor);
-			dynamicObjects.push_back(convexActor);
-			continue;
-		}
 
 		PxTriangleMeshDesc meshDesc;
 		meshDesc.points.count = vertsCount;
@@ -146,7 +122,7 @@ void Physx::createModels(std::vector<Model> models, bool dynamic) {
 	}
 }
 
-void Physx::createDynamic(PxVec3 position, DynamicType type, PxVec3 dimensions, int mass) {
+PxRigidDynamic* Physx::createDynamicOld(PxVec3 position, DynamicType type, PxVec3 dimensions, int mass) {
 	PxMaterial* mMaterial;
 	PxRigidDynamic* actor;
 	PxShape* shape;
@@ -159,7 +135,7 @@ void Physx::createDynamic(PxVec3 position, DynamicType type, PxVec3 dimensions, 
 		shape = PxRigidActorExt::createExclusiveShape(*actor, PxSphereGeometry(dimensions.x), *mMaterial);
 		PxRigidBodyExt::setMassAndUpdateInertia(*actor, mass);
 		gScene->addActor(*actor);
-		dynamicObjects.push_back(actor);
+		return actor;
 		break;
 	case Physx::BOX:
 		break;
@@ -169,11 +145,43 @@ void Physx::createDynamic(PxVec3 position, DynamicType type, PxVec3 dimensions, 
 		shape = PxRigidActorExt::createExclusiveShape(*actor, PxCapsuleGeometry(dimensions.x, dimensions.y), *mMaterial);
 		PxRigidBodyExt::setMassAndUpdateInertia(*actor, mass);
 		gScene->addActor(*actor);
-		dynamicObjects.push_back(actor);
+		return actor;
 		break;
 	default:
 		break;
 	}
+}
+
+PxRigidDynamic* Physx::createDynamic(Model model, float mass) {
+	PxVec3 *verts = new PxVec3[model.meshes[0].vertices.size()];
+	int i = 0;
+	for (Vertex v : model.meshes[0].vertices) {
+		verts[i] = PxVec3(v.position.x, v.position.y, v.position.z);
+		i++;
+	}
+	int vertsCount = i;
+
+	PxConvexMeshDesc convexDesc;
+	convexDesc.points.count = vertsCount;
+	convexDesc.points.stride = sizeof(PxVec3);
+	convexDesc.points.data = verts;
+	convexDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+
+	PxMaterial *mMaterial = gPhysics->createMaterial(1.0f, 0.5f, 0.1f);
+	PxDefaultMemoryOutputStream buf;
+	PxConvexMeshCookingResult::Enum result;
+	if (!gCooking->cookConvexMesh(convexDesc, buf, &result)) {
+		std::cout << "Cooking Error" << std::endl;
+		return nullptr;
+	}
+	PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
+	PxConvexMesh* convexMesh = gPhysics->createConvexMesh(input);
+	PxRigidDynamic *convexActor = gPhysics->createRigidDynamic(PxTransform(PxVec3(0.0f)));
+	PxShape* convexShape = PxRigidActorExt::createExclusiveShape(*convexActor, PxConvexMeshGeometry(convexMesh), *mMaterial);
+	PxRigidBodyExt::setMassAndUpdateInertia(*convexActor, mass);
+	PxTransform pos = convexActor->getGlobalPose();
+	gScene->addActor(*convexActor);
+	return convexActor;
 }
 
 void Physx::createTrigger(PxVec3 position, PxVec3 size, TriggerType type) {
@@ -334,9 +342,6 @@ void Physx::Reset() {
 	newTriggerTime = now.count() /1000;
 	eaten.clear();
 	eatenPos.clear();
-	for (PxRigidDynamic* a : dynamicObjects) {
-		a->setGlobalPose(PxTransform(PxVec3(0.0f)));
-	}
 }
 
 void Physx::releasePhysx() {
