@@ -21,6 +21,8 @@ public:
 
 	float GetDistance() { return (float)sqrt(pow(m_MaxPos.x - m_MinPos.x, 2) + pow(m_MaxPos.y - m_MinPos.y, 2) + pow(m_MaxPos.z - m_MinPos.z, 2)); }
 	glm::vec3 GetPosition() { return m_Position; }
+	glm::vec3 GetMinPos() { return m_MinPos; }
+	glm::vec3 GetMaxPos() { return m_MaxPos; }
 
 	/** Draw the model */
 	void Draw(Shader shader);

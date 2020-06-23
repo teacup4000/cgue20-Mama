@@ -52,6 +52,7 @@ void Application::Run()
 	bool isPlayed = false;
 	bool soundOn = true;
 	bool processedEnd = false;
+	bool frustum = false;
 
 	//Timer variables
 	float counter = 0.0f;
@@ -438,7 +439,14 @@ void Application::Run()
 			renderModel(debris, shadow, debMat);
 
 		if (renderer->isFrustum(cart, cartMat, m_Event.isFrustum()))
+		{
+			frustum = true;
 			renderModel(cart, shadow, cartMat);
+		}
+		std::cout << "mineCart = " << frustum << std::endl;
+		std::cout << "Distance = " << cart.GetDistance() << std::endl;
+		std::cout << "MinPos = " << cart.GetMinPos().x << ", " << cart.GetMinPos().y << ", " << cart.GetMinPos().z << std::endl;
+		std::cout << "MaxPos = " << cart.GetMaxPos().x << ", " << cart.GetMaxPos().y << ", " << cart.GetMaxPos().z << std::endl;
 
 		if (renderer->isFrustum(fence, fenceMat, m_Event.isFrustum()))
 			renderModel(fence, shadow, fenceMat);
