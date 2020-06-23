@@ -70,6 +70,7 @@ void Application::Run()
 	Shader blur("Shader/blur.shader");
 	Shader bloomFinal("Shader/bloom_final.shader");
 	Shader bone("Shader/multipleLightShadowBones.shader");
+	Shader test("Shader/Test.shader");
 	//--------------------------------------------------SET SHADER PROPERTIERS-------------------------------------------------------------
 	shadowMap->GenerateDepthMap(m_Nearplane, m_Farplane);
 	bloom->GenerateBloomParams(m_Width, m_Height);
@@ -83,6 +84,10 @@ void Application::Run()
 
 	bone.use();
 	bone.setInt("depthMap", 1);
+
+	test.use();
+	test.setInt("depthMap", 1);
+	test.setInt("normalMap", 1);
 
 	normal.use();
 	normal.setInt("normalMap", 1);
@@ -173,6 +178,9 @@ void Application::Run()
 	glm::mat4 boxMat04 = glm::mat4(1.0f);
 	glm::vec3 startBox04 = box04.GetPosition();
 	glm::vec3 offsetBox04 = glm::vec3(1.103, 12.429, -26.617) - startBox04;
+
+	Model box05("Models/Single Elements/Box/normalCube.obj");
+	glm::mat4 boxMat05 = glm::mat4(1.0f);
 
 	Model rock01("Models/Single Elements/MoveableRocks/smallRock01.obj");
 	glm::mat4 rockMat01 = glm::mat4(1.0f);
@@ -435,6 +443,24 @@ void Application::Run()
 		if (renderer->isFrustum(fence, fenceMat, m_Event.isFrustum()))
 			renderModel(fence, shadow, fenceMat);
 
+		if (renderer->isFrustum(cart, cartMat, m_Event.isFrustum()))
+			renderModel(cart, shadow, cartMat);
+
+		if (renderer->isFrustum(fence, fenceMat, m_Event.isFrustum()))
+			renderModel(fence, shadow, fenceMat);
+
+		if (renderer->isFrustum(box01, boxMat01, m_Event.isFrustum()))
+			renderModel(box01, shadow, boxMat01);
+
+		if (renderer->isFrustum(box02, boxMat02, m_Event.isFrustum()))
+			renderModel(box02, shadow, boxMat02);
+
+		if (renderer->isFrustum(box03, boxMat03, m_Event.isFrustum()))
+			renderModel(box03, shadow, boxMat03);
+
+		if (renderer->isFrustum(box04, boxMat04, m_Event.isFrustum()))
+			renderModel(box04, shadow, boxMat04);
+
 		if (!m_Game->isPaused()) {
 			mama.InitShader(shadow);
 			renderAnimModel(mama, shadow, mamaMat);
@@ -505,6 +531,28 @@ void Application::Run()
 
 		if (renderer->isFrustum(fence, fenceMat, m_Event.isFrustum()))
 			renderModel(fence, simpleShadow, fenceMat);
+
+		renderer->renderSimpleShadow(test, lightPos, m_Shadow, m_Farplane, shadowMap);
+		if (renderer->isFrustum(box01, boxMat01, m_Event.isFrustum())) {
+			//boxMat01 = getOrientationFromPos(m_DynamicObjects[3], startBox01);
+			renderModel(box01, test, boxMat01);
+		}
+
+		if (renderer->isFrustum(box02, boxMat02, m_Event.isFrustum())) {
+			//boxMat02 = getOrientationFromPos(m_DynamicObjects[4], startBox02);
+			renderModel(box02, test, boxMat02);
+		}
+
+		if (renderer->isFrustum(box03, boxMat03, m_Event.isFrustum())) {
+			//boxMat03 = getOrientationFromPos(m_DynamicObjects[5], startBox03);
+			renderModel(box03, test, boxMat03);
+		}
+
+		if (renderer->isFrustum(box04, boxMat04, m_Event.isFrustum())) {
+			boxMat04 = getOrientationFromPos(m_DynamicObjects[6], startBox04, offsetBox04);
+			renderModel(box04, test, boxMat04);
+		}
+	
 
 		//Models with bones and shadows
 		renderer->renderSimpleShadow(bone, lightPos, m_Shadow, m_Farplane, shadowMap);
@@ -577,40 +625,11 @@ void Application::Run()
 			if (renderer->isFrustum(rocks, rockMat, m_Event.isFrustum()))
 				renderModel(rocks, normal, rockMat);
 
-			if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum())) {
-				//rockMat01 = getOrientationFromPos(m_DynamicObjects[0], startRock01);
-				renderModel(rock01, normal, rockMat01);
+			if (renderer->isFrustum(box05, boxMat05, m_Event.isFrustum())) {
+				//boxMat04 = getOrientationFromPos(m_DynamicObjects[6], startBox04, offsetBox04);
+				renderModel(box05, test, boxMat05);
 			}
-
-			if (renderer->isFrustum(rock02, rockMat02, m_Event.isFrustum())) {
-				//rockMat02 = getOrientationFromPos(m_DynamicObjects[1], startRock02);
-				renderModel(rock02, normal, rockMat02);
-			}
-
-			if (renderer->isFrustum(rock03, rockMat03, m_Event.isFrustum())) {
-				//rockMat03 = getOrientationFromPos(m_DynamicObjects[2], startRock03);
-				renderModel(rock03, normal, rockMat03);
-			}
-
-			if (renderer->isFrustum(box01, boxMat01, m_Event.isFrustum())) {
-				//boxMat01 = getOrientationFromPos(m_DynamicObjects[3], startBox01);
-				renderModel(box01, normal, boxMat01);
-			}
-
-			if (renderer->isFrustum(box02, boxMat02, m_Event.isFrustum())) {
-				//boxMat02 = getOrientationFromPos(m_DynamicObjects[4], startBox02);
-				renderModel(box02, normal, boxMat02);
-			}
-
-			if (renderer->isFrustum(box03, boxMat03, m_Event.isFrustum())) {
-				//boxMat03 = getOrientationFromPos(m_DynamicObjects[5], startBox03);
-				renderModel(box03, normal, boxMat03);
-			}
-
-			if (renderer->isFrustum(box04, boxMat04, m_Event.isFrustum())) {
-				boxMat04 = getOrientationFromPos(m_DynamicObjects[6], startBox04, offsetBox04);
-				renderModel(box04, normal, boxMat04);
-			}
+			
 		}
 		else
 		{
@@ -676,6 +695,20 @@ void Application::Run()
 		renderer->renderLight(pointLights);
 		if (renderer->isFrustum(multipleLights, lights, m_Event.isFrustum()))
 			renderModel(multipleLights, pointLights, lights);
+		if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum())) {
+			//rockMat01 = getOrientationFromPos(m_DynamicObjects[0], startRock01);
+			renderModel(rock01, pointLights, rockMat01);
+		}
+
+		if (renderer->isFrustum(rock02, rockMat02, m_Event.isFrustum())) {
+			//rockMat02 = getOrientationFromPos(m_DynamicObjects[1], startRock02);
+			renderModel(rock02, pointLights, rockMat02);
+		}
+
+		if (renderer->isFrustum(rock03, rockMat03, m_Event.isFrustum())) {
+			//rockMat03 = getOrientationFromPos(m_DynamicObjects[2], startRock03);
+			renderModel(rock03, pointLights, rockMat03);
+		}
 		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

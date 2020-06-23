@@ -96,7 +96,7 @@ void Renderer::renderSimpleShadow(Shader& shader, glm::vec3& lightPos,bool shado
 
 	shader.setVec3("pointLights[7].position", m_Lights.position[7]);
 	shader.setVec3("pointLights[7].ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("pointLights[7].diffuse", 0.1f, 0.1f, 0.1f);
+	shader.setVec3("pointLights[7].diffuse", 0.2f, 0.2f, 0.2f);
 	shader.setVec3("pointLights[7].specular", 0, 0, 0);
 	shader.setFloat("pointLights[7].constant", 0.0f);
 	shader.setFloat("pointLights[7].linear", 0.09);
