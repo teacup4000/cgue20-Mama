@@ -2,7 +2,6 @@
 #include <glm.hpp>
 #include <numeric> 
 
-
 #include "Render/Display/Model.h"
 #include "Render/Display/Camera.h"
 
@@ -40,6 +39,7 @@ public:
 	void Normalize(int side);
 
 	bool FrustumBox(glm::vec3 center, float radius);
+	bool FrustumRect(glm::vec3 center, glm::vec3 radius);
 
 private:
 	float m_Frustum[6][4];

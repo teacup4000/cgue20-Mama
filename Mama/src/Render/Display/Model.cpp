@@ -117,6 +117,8 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		vertices.push_back(vertex);
 	}
 
+	m_Center = vertices;
+
 	faceCount = mesh->mNumFaces;
 	for (GLuint i = 0; i < mesh->mNumFaces; i++)
 	{

@@ -8,7 +8,7 @@ bool FrustumCulling::isFrustum(Model &model, glm::mat4 matrix, glm::mat4 proj, b
 
 	CalculateFrustum(matrix, proj);
 	float radius = model.GetDistance()/2;
-	return FrustumBox(model.GetMinPos(), radius) || FrustumBox(model.GetMaxPos(), radius);
+	return FrustumBox(model.GetCenter(), radius);
 }
 
 void FrustumCulling::CalculateFrustum(glm::mat4 modelMat, glm::mat4 proj)
@@ -77,28 +77,64 @@ void FrustumCulling::CalculateFrustum(glm::mat4 modelMat, glm::mat4 proj)
 
 void FrustumCulling::Normalize(int side)
 {
-	float distance = (float)sqrt(pow(m_Frustum[side][A], 2) + pow(m_Frustum[side][B], 2) + pow(m_Frustum[side][C], 2));
+	float lengthOfVec = (float)sqrt(pow(m_Frustum[side][A], 2) + pow(m_Frustum[side][B], 2) + pow(m_Frustum[side][C], 2));
 	for (int i = 0; i < 4; i++)
 	{
-		m_Frustum[side][i] /= distance;
+		m_Frustum[side][i] /= lengthOfVec;
 	}
 }
 
-bool FrustumCulling::FrustumBox(glm::vec3 center, float radius)
+bool FrustumCulling::FrustumBox(glm::vec3 vector, float radius)
 {
 	for (int i = 0; i < 6; i++)
 	{
-		float box1 = m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D];
-		float box2 = m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D];
-		float box3 = m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D];
-		float box4 = m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z - radius) + m_Frustum[i][D];
-		float box5 = m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D];
-		float box6 = m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y - radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D];
-		float box7 = m_Frustum[i][A] * (center.x - radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D];
-		float box8 = m_Frustum[i][A] * (center.x + radius) + m_Frustum[i][B] * (center.y + radius) + m_Frustum[i][C] * (center.z + radius) + m_Frustum[i][D];
+		if (m_Frustum[i][A] * (vector.x - radius) + m_Frustum[i][B] * (vector.y - radius) + m_Frustum[i][C] * (vector.z - radius) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x + radius) + m_Frustum[i][B] * (vector.y - radius) + m_Frustum[i][C] * (vector.z - radius) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x - radius) + m_Frustum[i][B] * (vector.y + radius) + m_Frustum[i][C] * (vector.z - radius) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x + radius) + m_Frustum[i][B] * (vector.y + radius) + m_Frustum[i][C] * (vector.z - radius) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x - radius) + m_Frustum[i][B] * (vector.y - radius) + m_Frustum[i][C] * (vector.z + radius) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x + radius) + m_Frustum[i][B] * (vector.y - radius) + m_Frustum[i][C] * (vector.z + radius) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x - radius) + m_Frustum[i][B] * (vector.y + radius) + m_Frustum[i][C] * (vector.z + radius) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x + radius) + m_Frustum[i][B] * (vector.y + radius) + m_Frustum[i][C] * (vector.z + radius) + m_Frustum[i][D] >= 0)
+			continue;
 
-		if (box1 < 0 && box2 < 0 && box3 < 0 && box4 < 0 && box5 < 0 && box6 < 0 && box7 < 0 && box8 < 0)
-			return false;
+		// If we get here, it isn't in the frustum
+		return false;
+	}
+
+	return true;
+}
+
+bool FrustumCulling::FrustumRect(glm::vec3 vector, glm::vec3 radius)
+{
+	for (int i = 0; i < 6; i++)
+	{
+		if (m_Frustum[i][A] * (vector.x - radius.x) + m_Frustum[i][B] * (vector.y - radius.y) + m_Frustum[i][C] * (vector.z - radius.z) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x + radius.x) + m_Frustum[i][B] * (vector.y - radius.y) + m_Frustum[i][C] * (vector.z - radius.z) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x - radius.x) + m_Frustum[i][B] * (vector.y + radius.y) + m_Frustum[i][C] * (vector.z - radius.z) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x + radius.x) + m_Frustum[i][B] * (vector.y + radius.y) + m_Frustum[i][C] * (vector.z - radius.z) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x - radius.x) + m_Frustum[i][B] * (vector.y - radius.y) + m_Frustum[i][C] * (vector.z + radius.z) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x + radius.x) + m_Frustum[i][B] * (vector.y - radius.y) + m_Frustum[i][C] * (vector.z + radius.z) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x - radius.x) + m_Frustum[i][B] * (vector.y + radius.y) + m_Frustum[i][C] * (vector.z + radius.z) + m_Frustum[i][D] >= 0)
+			continue;
+		if (m_Frustum[i][A] * (vector.x + radius.x) + m_Frustum[i][B] * (vector.y + radius.y) + m_Frustum[i][C] * (vector.z + radius.z) + m_Frustum[i][D] >= 0)
+			continue;
+
+		// If we get here, it isn't in the frustum
+		return false;
 	}
 
 	return true;
