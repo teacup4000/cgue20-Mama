@@ -330,6 +330,7 @@ void Application::Run()
 	//------------------------------------------------------------SET SOUND PROPERTIES---------------------------------------------------------
 	IrrKlang* sound = new IrrKlang();
 	sound->createSound();
+	sound->setVolume(m_Event.getVolume());
 	sound->play("Assets/sounds/hazy-cosmos.mp3", true);
 
 	IrrKlang* snore = new IrrKlang();
@@ -440,6 +441,9 @@ void Application::Run()
 			frustum = true;
 			renderModel(cart, shadow, cartMat);
 		}
+		else
+			frustum = false;
+
 		std::cout << "mineCart = " << frustum << std::endl;
 		std::cout << "Distance = " << cart.GetDistance() << std::endl;
 		std::cout << "MinPos = " << cart.GetMinPos().x << ", " << cart.GetMinPos().y << ", " << cart.GetMinPos().z << std::endl;

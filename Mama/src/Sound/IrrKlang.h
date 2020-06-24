@@ -19,6 +19,7 @@ public:
 	void createSound()
 	{
 		m_Engine = irrklang::createIrrKlangDevice();
+		
 		if (!m_Engine)
 		{
 			printf("Could not start engine \n");
