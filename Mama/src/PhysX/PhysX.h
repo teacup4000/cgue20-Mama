@@ -46,10 +46,9 @@ public:
 	void initPhysx();
 	//Releases all Physx Components
 	void releasePhysx();
-	//Cooks the Collision Models for Physx
+	//Cooks the static Collision Actors of Physx
 	void createModels(std::vector<Model> models);
-	//creates a dynamic object of Type type at Position position with the Dimensions dimensions(radius/x, height/y, z) and the Mass mass
-	PxRigidDynamic* createDynamicOld(PxVec3 position, DynamicType type, PxVec3 dimensions, int mass);
+	//Creates a Dynamic Actor out of Model model with the Mass mass
 	PxRigidDynamic* createDynamic(Model model, float mass);
 	//create a Trigger Box of Size size at Position position
 	void createTrigger(PxVec3 position, PxVec3 size, TriggerType type);

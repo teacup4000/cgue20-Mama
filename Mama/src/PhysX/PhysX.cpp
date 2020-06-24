@@ -122,36 +122,6 @@ void Physx::createModels(std::vector<Model> models) {
 	}
 }
 
-PxRigidDynamic* Physx::createDynamicOld(PxVec3 position, DynamicType type, PxVec3 dimensions, int mass) {
-	PxMaterial* mMaterial;
-	PxRigidDynamic* actor;
-	PxShape* shape;
-
-	switch (type)
-	{
-	case Physx::SPHERE:
-		mMaterial = gPhysics->createMaterial(1.0f, 0.5f, 0.1f);
-		actor = gPhysics->createRigidDynamic(PxTransform(position));
-		shape = PxRigidActorExt::createExclusiveShape(*actor, PxSphereGeometry(dimensions.x), *mMaterial);
-		PxRigidBodyExt::setMassAndUpdateInertia(*actor, mass);
-		gScene->addActor(*actor);
-		return actor;
-		break;
-	case Physx::BOX:
-		break;
-	case Physx::CAPSULE:
-		mMaterial = gPhysics->createMaterial(1.0f, 0.5f, 0.1f);
-		actor = gPhysics->createRigidDynamic(PxTransform(position));
-		shape = PxRigidActorExt::createExclusiveShape(*actor, PxCapsuleGeometry(dimensions.x, dimensions.y), *mMaterial);
-		PxRigidBodyExt::setMassAndUpdateInertia(*actor, mass);
-		gScene->addActor(*actor);
-		return actor;
-		break;
-	default:
-		break;
-	}
-}
-
 PxRigidDynamic* Physx::createDynamic(Model model, float mass) {
 	PxVec3 *verts = new PxVec3[model.meshes[0].vertices.size()];
 	int i = 0;

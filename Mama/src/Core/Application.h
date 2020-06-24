@@ -44,7 +44,7 @@ public:
 
 	~Application() = default;
 	void Run();
-	glm::mat4 getOrientationFromPos(PxRigidDynamic* actor, glm::vec3 startPos, glm::vec3 offset);
+	glm::mat4 getOrientationFromPos(PxTransform pos);
 	void CreateGLFWWindow();
 
 
