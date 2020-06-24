@@ -8,7 +8,9 @@ bool FrustumCulling::isFrustum(Model &model, glm::mat4 matrix, glm::mat4 proj, b
 
 	CalculateFrustum(matrix, proj);
 	float radius = model.GetDistance()/2;
-	return FrustumBox(model.GetCenter(), radius);
+	glm::vec3 r = model.GetDistanceVec();
+	float x = r.x/2, y = r.y/2, z = r.z/2;
+	return FrustumRect(model.GetCenter(), x,y,z);
 }
 
 void FrustumCulling::CalculateFrustum(glm::mat4 modelMat, glm::mat4 proj)
@@ -88,6 +90,7 @@ bool FrustumCulling::FrustumBox(glm::vec3 vector, float radius)
 {
 	for (int i = 0; i < 6; i++)
 	{
+
 		if (m_Frustum[i][A] * (vector.x - radius) + m_Frustum[i][B] * (vector.y - radius) + m_Frustum[i][C] * (vector.z - radius) + m_Frustum[i][D] >= 0)
 			continue;
 		if (m_Frustum[i][A] * (vector.x + radius) + m_Frustum[i][B] * (vector.y - radius) + m_Frustum[i][C] * (vector.z - radius) + m_Frustum[i][D] >= 0)
@@ -112,26 +115,32 @@ bool FrustumCulling::FrustumBox(glm::vec3 vector, float radius)
 	return true;
 }
 
-bool FrustumCulling::FrustumRect(glm::vec3 vector, glm::vec3 radius)
+bool FrustumCulling::FrustumRect(glm::vec3 vector, float x, float y, float z)
 {
+	std::map<std::string, std::vector<int>> map;
+	std::vector<int>vecArr[8];
+
+
 	for (int i = 0; i < 6; i++)
 	{
-		if (m_Frustum[i][A] * (vector.x - radius.x) + m_Frustum[i][B] * (vector.y - radius.y) + m_Frustum[i][C] * (vector.z - radius.z) + m_Frustum[i][D] >= 0)
+		if (glm::dot(glm::vec4(m_Frustum[i][A], m_Frustum[i][B], m_Frustum[i][C], m_Frustum[i][D]), glm::vec4(vector.x - x, vector.y - y, vector.z - z, 1.0f)) >= 0)
 			continue;
-		if (m_Frustum[i][A] * (vector.x + radius.x) + m_Frustum[i][B] * (vector.y - radius.y) + m_Frustum[i][C] * (vector.z - radius.z) + m_Frustum[i][D] >= 0)
+		if (glm::dot(glm::vec4(m_Frustum[i][A], m_Frustum[i][B], m_Frustum[i][C], m_Frustum[i][D]), glm::vec4(vector.x + x, vector.y - y, vector.z - z, 1.0f)) >= 0)
 			continue;
-		if (m_Frustum[i][A] * (vector.x - radius.x) + m_Frustum[i][B] * (vector.y + radius.y) + m_Frustum[i][C] * (vector.z - radius.z) + m_Frustum[i][D] >= 0)
+		if (glm::dot(glm::vec4(m_Frustum[i][A], m_Frustum[i][B], m_Frustum[i][C], m_Frustum[i][D]), glm::vec4(vector.x - x, vector.y + y, vector.z - z, 1.0f)) >= 0)
 			continue;
-		if (m_Frustum[i][A] * (vector.x + radius.x) + m_Frustum[i][B] * (vector.y + radius.y) + m_Frustum[i][C] * (vector.z - radius.z) + m_Frustum[i][D] >= 0)
+		if (glm::dot(glm::vec4(m_Frustum[i][A], m_Frustum[i][B], m_Frustum[i][C], m_Frustum[i][D]), glm::vec4(vector.x + x, vector.y + y, vector.z - z, 1.0f)) >= 0)
 			continue;
-		if (m_Frustum[i][A] * (vector.x - radius.x) + m_Frustum[i][B] * (vector.y - radius.y) + m_Frustum[i][C] * (vector.z + radius.z) + m_Frustum[i][D] >= 0)
+		if (glm::dot(glm::vec4(m_Frustum[i][A], m_Frustum[i][B], m_Frustum[i][C], m_Frustum[i][D]), glm::vec4(vector.x - x, vector.y - y, vector.z + z, 1.0f)) >= 0)
 			continue;
-		if (m_Frustum[i][A] * (vector.x + radius.x) + m_Frustum[i][B] * (vector.y - radius.y) + m_Frustum[i][C] * (vector.z + radius.z) + m_Frustum[i][D] >= 0)
+		if (glm::dot(glm::vec4(m_Frustum[i][A], m_Frustum[i][B], m_Frustum[i][C], m_Frustum[i][D]), glm::vec4(vector.x + x, vector.y - y, vector.z + z, 1.0f)) >= 0)
 			continue;
-		if (m_Frustum[i][A] * (vector.x - radius.x) + m_Frustum[i][B] * (vector.y + radius.y) + m_Frustum[i][C] * (vector.z + radius.z) + m_Frustum[i][D] >= 0)
+		if (glm::dot(glm::vec4(m_Frustum[i][A], m_Frustum[i][B], m_Frustum[i][C], m_Frustum[i][D]), glm::vec4(vector.x - x, vector.y + y, vector.z + z, 1.0f)) >= 0)
 			continue;
-		if (m_Frustum[i][A] * (vector.x + radius.x) + m_Frustum[i][B] * (vector.y + radius.y) + m_Frustum[i][C] * (vector.z + radius.z) + m_Frustum[i][D] >= 0)
+		if (glm::dot(glm::vec4(m_Frustum[i][A], m_Frustum[i][B], m_Frustum[i][C], m_Frustum[i][D]), glm::vec4(vector.x + x, vector.y + y, vector.z + z, 1.0f)) >= 0)
 			continue;
+
+		
 
 		// If we get here, it isn't in the frustum
 		return false;

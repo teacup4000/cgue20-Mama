@@ -342,8 +342,6 @@ void Application::Run()
 	lose->createSound();
 	//-------------------------------------------------------------------END SOUND-------------------------------------------------------------
 
-	cart.GetSortedVertices();
-
 	while (!glfwWindowShouldClose(m_Window))
 	{
 		if (m_Event.isVsync()) {
@@ -503,6 +501,11 @@ void Application::Run()
 		if (m_Game->getStatus() == GameStatus::WIN || m_Event.isRenderAll())
 			renderModel(winScreen, basic, winScreenMat);
 
+		if (m_Game->getStatus() == GameStatus::DEFAULT || m_Event.isRenderAll()) {
+			healthBarMat = m_Camera->getHealthBarMat(m_Game->getLife() / 100.0f);
+			//healthBarMat = glm::scale(healthBarMat, glm::vec3(0.1, 0.1, 0.1));
+			renderModel(healthBar, basic, healthBarMat);
+		}
 
 		//Models with shadows
 		renderer->renderSimpleShadow(simpleShadow, lightPos, m_Shadow, m_Farplane, shadowMap);
@@ -721,27 +724,9 @@ void Application::Run()
 		bloom->Postprocess(blur, bloomFinal);
 		bloom->Unbind();
 
-		//glFlush();
-		//---------------------------------------------------------------BLOOM END--------------------------------------------------------------
-		glViewport(0, 0, m_Width, m_Height);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		glDisable(GL_DEPTH_TEST);
-		glEnable(GL_BLEND);
-		glDepthMask(GL_FALSE);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		if (m_Game->getStatus() == GameStatus::DEFAULT || m_Event.isRenderAll()) {
-			healthBarMat = m_Camera->getHealthBarMat(m_Game->getLife() / 100.0f);
-			//healthBarMat = glm::scale(healthBarMat, glm::vec3(0.1, 0.1, 0.1));
-			renderModel(healthBar, basic, healthBarMat);
-		}
-
-		glDisable(GL_BLEND);
-		glDepthMask(GL_TRUE);
-		glEnable(GL_DEPTH_TEST);
-
 		glFlush();
+		//---------------------------------------------------------------BLOOM END--------------------------------------------------------------
+		
 		
 		//----------------------------------------------------------------WIN/LOSE--------------------------------------------------------------
 		if (m_Game->getStatus() == GameStatus::LOSE && !processedEnd) {

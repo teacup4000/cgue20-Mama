@@ -52,15 +52,6 @@ public:
 		return GetMinPos() + d/2.0f;
 	}
 
-	void GetSortedVertices()
-	{
-		std::sort(m_Center.begin(), m_Center.end(), compareVertex());
-		for (int i = 0; i < m_Center.size(); i++)
-		{
-			std::cout << m_Center[i].position.x << ", " << m_Center[i].position.y << ", " << m_Center[i].position.z << std::endl;
-		}
-	}
-
 	/** Draw the model */
 	void draw(Shader shader);
 

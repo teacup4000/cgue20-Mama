@@ -39,7 +39,7 @@ public:
 	void Normalize(int side);
 
 	bool FrustumBox(glm::vec3 center, float radius);
-	bool FrustumRect(glm::vec3 center, glm::vec3 radius);
+	bool FrustumRect(glm::vec3 center, float x, float y, float z);
 
 private:
 	float m_Frustum[6][4];
