@@ -30,6 +30,11 @@ void Event::OnKeyPressed(int key, int code, int action, int modifers)
 		m_Restart = true;
 	}
 
+	if (glfwGetKey(m_Window, GLFW_KEY_F6) == GLFW_PRESS)
+	{
+		m_Cube = !m_Cube;
+	}
+
 	if (glfwGetKey(m_Window, GLFW_KEY_F7) == GLFW_PRESS)
 	{
 		m_Vsync = !m_Vsync;

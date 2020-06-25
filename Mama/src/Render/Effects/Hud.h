@@ -6,8 +6,6 @@
 #include <vector>
 #include <string>
 
-#include <GLFW/glfw3.h>
-
 #include "Render/Display/stb_image.h"
 #include "Render/Display/Shader.h"
 #include "Render/Renderer.h"
@@ -100,6 +98,7 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_TextureData);
 		glGenerateMipmap(GL_TEXTURE_2D);
+
 	}
 
 private:
@@ -168,7 +167,7 @@ public:
 		glEnable(GL_DEPTH_TEST);
 		glDisableVertexAttribArray(0);
 		glBindVertexArray(0);
-		renderModel(model, shader, matrix);
+		//renderModel(model, shader, matrix);
 	}
 
 	glm::mat4 createTransformMat(glm::vec2 translation, glm::vec2 scale)

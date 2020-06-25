@@ -38,6 +38,7 @@ public:
 	bool isCameraControl() { return m_CameraControl; }
 	bool isRenderAll() { return m_RenderAll; }
 	bool isVsync() { return m_Vsync; }
+	bool isCube() { return m_Cube; }
 
 	void SetFullScreen();
 	
@@ -55,6 +56,7 @@ private:
 	bool m_RenderAll = false;
 	bool m_Muted = false;
 	bool m_Vsync = false;
+	bool m_Cube = false;
 
 	float m_Volume = 0.1;
 

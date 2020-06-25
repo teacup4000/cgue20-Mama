@@ -289,7 +289,7 @@ void Application::Run()
 	models.push_back(rails);
 	models.push_back(cart);
 	models.push_back(fence);
-	models.push_back(box05);
+	//models.push_back(box05);
 
 
 	//Collision Cubes for downloaded objects
@@ -349,7 +349,7 @@ void Application::Run()
 	std::string path = "Assets/img/health.bmp";
 	std::string directory = path.substr(0, path.find_last_of('/'));
 	glm::vec2 pos = glm::vec2(0.5f, 0.5f);
-	GUITex gui = GUITex(load.loadTexture("health.bmp", directory), pos, glm::vec2(0.15f, 0.15f));
+	GUITex gui = GUITex(load.loadTexture("health.bmp", directory), pos, glm::vec2(0.5f, 0.5f));
 	guis.push_back(gui);
 	GuiRenderer guiRenderer = GuiRenderer(load);
 
@@ -468,29 +468,29 @@ void Application::Run()
 		if (renderer->isFrustum(fence, fenceMat, m_Event.isFrustum()))
 			renderModel(fence, shadow, fenceMat);
 
-		if (renderer->isFrustum(box01, boxMat01, m_Event.isFrustum())) {
+		//if (renderer->isFrustum(box01, boxMat01, m_Event.isFrustum())) {
 			boxMat01 = getOrientationFromPos(m_DynamicObjects[3]->getGlobalPose());
 			box01.setTransform(boxMat01);
 			renderModel(box01, shadow, boxMat01);
-		}
+		//}
 
-		if (renderer->isFrustum(box02, boxMat02, m_Event.isFrustum())) {
+		//if (renderer->isFrustum(box02, boxMat02, m_Event.isFrustum())) {
 			boxMat02 = getOrientationFromPos(m_DynamicObjects[4]->getGlobalPose());
 			box02.setTransform(boxMat02);
 			renderModel(box02, shadow, boxMat02);
-		}
+		//}
 
-		if (renderer->isFrustum(box03, boxMat03, m_Event.isFrustum())) {
+		//if (renderer->isFrustum(box03, boxMat03, m_Event.isFrustum())) {
 			boxMat03 = getOrientationFromPos(m_DynamicObjects[4]->getGlobalPose());
 			box03.setTransform(boxMat03);
 			renderModel(box03, shadow, boxMat03);
-		}
+		//}
 
-		if (renderer->isFrustum(box04, boxMat04, m_Event.isFrustum())) {
+		//if (renderer->isFrustum(box04, boxMat04, m_Event.isFrustum())) {
 			boxMat04 = getOrientationFromPos(m_DynamicObjects[6]->getGlobalPose());
 			box04.setTransform(boxMat04);
 			renderModel(box04, shadow, boxMat04);
-		}
+		//}
 
 		if (!m_Game->isPaused()) {
 			mama.InitShader(shadow);
@@ -660,9 +660,9 @@ void Application::Run()
 			if (renderer->isFrustum(rocks, rockMat, m_Event.isFrustum()))
 				renderModel(rocks, normal, rockMat);
 
-			if (renderer->isFrustum(box05, boxMat05, m_Event.isFrustum())) {
+			if (m_Event.isCube() && renderer->isFrustum(box05, boxMat05, m_Event.isFrustum()))
 				renderModel(box05, test, boxMat05);
-			}
+		
 			
 		}
 		else
@@ -689,6 +689,9 @@ void Application::Run()
 
 			if (renderer->isFrustum(rocks, rockMat, m_Event.isFrustum()))
 				renderModel(rocks, pointLights, rockMat);
+
+			if (m_Event.isCube() && renderer->isFrustum(box05, boxMat05, m_Event.isFrustum()))
+				renderModel(box05, pointLights, boxMat05);
 
 			//if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum())) {
 				rockMat01 = getOrientationFromPos(m_DynamicObjects[0]->getGlobalPose());
@@ -757,7 +760,7 @@ void Application::Run()
 		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		guiRenderer.render(guis, hud, loader, loadMat, pos);
+		//guiRenderer.render(guis, hud, loader, loadMat, pos);
 
 		bloom->Unbind();
 		bloom->Postprocess(blur, bloomFinal);
