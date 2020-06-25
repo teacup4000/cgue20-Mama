@@ -6,6 +6,15 @@
 #include "../Core/Game.h"
 using namespace physx;
 
+struct FilterGroup
+{
+	enum Enum
+	{
+		ePlayer = (1 << 0),
+		eDynamic = (1 << 1),
+	};
+};
+
 class Physx : public PxSimulationEventCallback
 {
 
@@ -17,13 +26,6 @@ public:
 		MEAT,
 		MOMMY,
 		BOY
-	};
-
-	enum DynamicType
-	{
-		SPHERE,
-		BOX,
-		CAPSULE
 	};
 	
 	void simulate(float deltaTime) {
@@ -57,7 +59,7 @@ public:
 
 
 	//PxSimulationEventCallback functions
-	virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {}
+	virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs);
 	virtual void onTrigger(PxTriggerPair* pairs, PxU32 count);
 	virtual void onConstraintBreak(PxConstraintInfo*, PxU32) {}
 	virtual void onWake(PxActor**, PxU32) {}
@@ -68,6 +70,9 @@ public:
 	PxActor* getNewTrigger() { return newTrigger; }
 	float getLastTriggerTime() { return lastTriggerTime; }
 	float getNewTriggerTime() { return newTriggerTime; }
+	float getRunSpeed() { return m_RunSpeed; }
+	float getLastTouch() { return m_LastTouch; }
+	void setRunSpeed(float runSpeed) { m_RunSpeed = runSpeed; }
 	//checks meat has already been eaten; returns true if so
 	bool checkMeat(PxVec3 position);
 	void setGame(Game* game) { m_Game = game; }
@@ -85,6 +90,8 @@ private:
 	PxControllerManager* manager = nullptr;
 	float m_Accumulator = 0.0f;
 	float m_StepSize = 1.0f / 60.0f;
+	float m_RunSpeed = 5.0f;
+	float m_LastTouch;
 	
 
 	PxActor* lastTrigger;
@@ -101,4 +108,19 @@ private:
 	PxRigidStatic* boy = nullptr;
 
 	Game* m_Game;
+
+	
+	void setupFiltering(PxRigidActor* actor, PxU32 filterGroup, PxU32 filterMask)
+	{
+		PxFilterData filterData;
+		filterData.word0 = filterGroup;
+		filterData.word1 = filterMask;
+
+		PxShape *cShapes[1];
+		actor->getShapes(cShapes, 1, 0);
+		PxShape *cShape = cShapes[0];
+		cShape->setSimulationFilterData(filterData);
+
+
+	}
 };

@@ -3,6 +3,25 @@
 #include <chrono>
 #include <math.h>
 
+PxFilterFlags DynamicObjectFilterShader(
+	PxFilterObjectAttributes attributes0, PxFilterData filterData0,
+	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+{
+	if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
+	{
+		pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+		return PxFilterFlag::eDEFAULT;
+	}
+
+	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+
+	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+
+	return PxFilterFlag::eDEFAULT;
+}
+
 void Physx::initPhysx()
 {
 	//-----------------------------CREATE FOUNDATION--------------------------------
@@ -41,7 +60,7 @@ void Physx::initPhysx()
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(1);
-	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	sceneDesc.filterShader = DynamicObjectFilterShader;
 	gScene = gPhysics->createScene(sceneDesc);
 	gScene->setSimulationEventCallback(this);
 
@@ -71,6 +90,7 @@ void Physx::initPhysx()
 	desc.upDirection = PxVec3(0, 1, 0); // Specifies the 'up' direction
 	desc.material = gPhysics->createMaterial(0.5f, 0.5f, 0.1f); // material defines physical properties like friction, bounciness etc. - see PhysX materials
 	controller = manager->createController(desc);
+	setupFiltering(controller->getActor(), FilterGroup::ePlayer, FilterGroup::eDynamic);
 	std::cout << "Player Character Controller created!" << std::endl;
 
 }
@@ -150,6 +170,7 @@ PxRigidDynamic* Physx::createDynamic(Model model, float mass) {
 	PxShape* convexShape = PxRigidActorExt::createExclusiveShape(*convexActor, PxConvexMeshGeometry(convexMesh), *mMaterial);
 	PxRigidBodyExt::setMassAndUpdateInertia(*convexActor, mass);
 	PxTransform pos = convexActor->getGlobalPose();
+	setupFiltering(convexActor, FilterGroup::eDynamic, FilterGroup::ePlayer);
 	gScene->addActor(*convexActor);
 	return convexActor;
 }
@@ -194,6 +215,34 @@ void Physx::createTrigger(PxVec3 position, PxVec3 size, TriggerType type) {
 	default:
 		std::cout << "Error: Unknown Triggertype!" << std::endl;
 		break;
+	}
+}
+
+void Physx::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {
+	if (!m_Game->isPaused())
+	{
+		for (PxU32 i = 0; i < nbPairs; i++) {
+			const PxContactPair& cp = pairs[i];
+
+			if (cp.events & PxPairFlag::eNOTIFY_TOUCH_FOUND)
+			{
+				
+				if (pairHeader.actors[0] == controller->getActor() || pairHeader.actors[1] == controller->getActor()) {
+					PxActor* other = (controller->getActor() == pairHeader.actors[0]) ? pairHeader.actors[1] : pairHeader.actors[0];
+					PxRigidDynamic* dynamic = reinterpret_cast<PxRigidDynamic*>(other);
+
+					float mass = dynamic->getMass();
+					m_RunSpeed = 5.0f / (mass * 2);
+					
+					dynamic->setAngularVelocity(PxVec3(0.0f));
+					dynamic->setLinearVelocity(PxVec3(0.0f));
+
+					std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch();
+					m_LastTouch = now.count() / 1000;
+				}
+				
+			}
+		}
 	}
 }
 

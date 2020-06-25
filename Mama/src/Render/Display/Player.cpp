@@ -24,12 +24,14 @@ void Player::Update()
 	
 	float angle = atan2(m_Front.x, m_Front.z);
 	m_ModelMatrix = glm::rotate(m_ModelMatrix, angle, glm::vec3(0, 1, 0));
-	if (m_Controller) {
+	
+
+	if (m_PhysX) {
 		if (!positionSet) {
 			float zNorm = m_Front.z / sqrt(pow(m_Front.z, 2) + pow(m_Front.x, 2));
 			float xNorm = m_Front.x / sqrt(pow(m_Front.z, 2) + pow(m_Front.x, 2));
 			PxVec3 normal = PxVec3(-zNorm, 0.0f, xNorm);
-			PxRigidDynamic *cActor = m_Controller->getActor();
+			PxRigidDynamic *cActor = m_PhysX->getController()->getActor();
 			PxShape *cShapes[1];
 			cActor->getShapes(cShapes, 1, 0);
 			PxShape *cShape = cShapes[0];
@@ -40,7 +42,7 @@ void Player::Update()
 			float dot = m_Front.x * m_FrontOld.x + m_Front.z * m_FrontOld.z;
 			float det = m_Front.x* m_FrontOld.z - m_Front.z * m_FrontOld.x;
 			angle = atan2(det, dot);
-			PxRigidDynamic *cActor = m_Controller->getActor();
+			PxRigidDynamic *cActor = m_PhysX->getController()->getActor();
 			PxShape *cShapes[1];
 			cActor->getShapes(cShapes, 1, 0);
 			PxShape *cShape = cShapes[0];
@@ -53,7 +55,7 @@ void Player::Update()
 void Player::Reset() {
 	m_ShowModel = false;
 	m_Position = m_StartPosition;
-	m_Controller->setPosition(PxExtendedVec3(m_StartPosition.x, m_StartPosition.y, m_StartPosition.z));
+	m_PhysX->getController()->setPosition(PxExtendedVec3(m_StartPosition.x, m_StartPosition.y, m_StartPosition.z));
 	positionSet = false;
 	m_Right = glm::vec3(1, 0, 0);
 	m_Front = glm::vec3(0, 0, 1);
@@ -74,8 +76,11 @@ void Player::move(GLFWwindow *window, float& deltaTime)
 }
 
 void Player::processKeyboard(GLFWwindow *window, float& deltaTime) {
+	m_PlayerRunSpeed = m_PhysX->getRunSpeed();
 	m_PlayerVelocity = m_PlayerRunSpeed * deltaTime;
 	m_MoveVector = glm::vec3(0);
+	
+
 	if (!cameraControl) {
 		m_MoveVector.y = m_MoveVector.y - GRAVITY * deltaTime * 250;
 	}
@@ -100,8 +105,8 @@ void Player::processKeyboard(GLFWwindow *window, float& deltaTime) {
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
 		if (!cameraControl) {
-			std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch() / 1000;
-			if (!jumped && groundContact && (lastJump == 0 || now.count() - lastJump > 1))
+			std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch();
+			if (!jumped && groundContact && (lastJump == 0 || now.count() / 1000 - lastJump > 1))
 			{
 				m_MoveVector.y = 0.025f * deltaTime * 250;
 				jumped = true;
@@ -136,12 +141,17 @@ void Player::processKeyboard(GLFWwindow *window, float& deltaTime) {
 	if (!cameraControl) {
 		//-----Physx chatacter controller movement------
 		std::chrono::duration<float, std::milli> now = std::chrono::high_resolution_clock::now().time_since_epoch();
-		float duration = lastMoveTime < 0 ? 0 : now.count() - lastMoveTime; // if first move then lastMove=-1 and no time passed, else calculate time passed
-		lastMoveTime = now.count();
+		float duration = now.count() / 1000 - lastMoveTime;
+		lastMoveTime = now.count() / 1000;
 
+		
+		PxVec3 disp = physx::PxVec3(m_MoveVector.x, m_MoveVector.y, m_MoveVector.z);
+		PxControllerCollisionFlags flags = m_PhysX->getController()->move(disp, 0.01f, duration / 1000, NULL);
 
-		physx::PxVec3 disp = physx::PxVec3(m_MoveVector.x, m_MoveVector.y, m_MoveVector.z);
-		PxControllerCollisionFlags flags = m_Controller->move(disp, 0.01f, duration / 1000, NULL);
+	
+		if (now.count() / 1000 - m_PhysX->getLastTouch() > 2.0f || m_MoveVector.x == 0 && m_MoveVector.z == 0)
+			m_PhysX->setRunSpeed(5.0f);
+		
 
 		int mask = 1 << 2;
 		int maskedFlags = flags.operator uint8_t() & mask;
@@ -154,9 +164,9 @@ void Player::processKeyboard(GLFWwindow *window, float& deltaTime) {
 			groundContact = false;
 		}
 
-		m_Position.x = m_Controller->getFootPosition().x;
-		m_Position.y = m_Controller->getFootPosition().y + 0.1;
-		m_Position.z = m_Controller->getFootPosition().z;
+		m_Position.x = m_PhysX->getController()->getFootPosition().x;
+		m_Position.y = m_PhysX->getController()->getFootPosition().y + 0.1;
+		m_Position.z = m_PhysX->getController()->getFootPosition().z;
 	}
 }
 

@@ -82,7 +82,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 			if (vector.z > m_MaxPos.z)
 				m_MaxPos.z = vector.z;
 		}
-
+		
 		vertex.position = vector;
 		m_Position = vector;
 
@@ -116,9 +116,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		vertex.bitangent = vector;
 		vertices.push_back(vertex);
 	}
-
-	m_Center = vertices;
-
+	   
 	faceCount = mesh->mNumFaces;
 	for (GLuint i = 0; i < mesh->mNumFaces; i++)
 	{

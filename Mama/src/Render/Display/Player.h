@@ -20,7 +20,6 @@ class Player
 public:
 	std::vector<AnimModel> m_PlayerModel;
 	bool m_ShowModel;
-	physx::PxController* m_Controller;
 
 	Player() {}
 
@@ -32,7 +31,7 @@ public:
 	glm::vec3 getPosition() { return m_Position; }
 	glm::vec3 getFront() { return m_Front; }
 	glm::vec3 getRight() { return m_Right; }
-
+		
 	void setFrontX(float x) { m_Front.x = x; }
 	void setFrontY(float y) { m_Front.y = y; }
 	void setFrontZ(float z) { m_Front.z = z; }
@@ -42,6 +41,7 @@ public:
 	void setFront(glm::vec3 front) { m_Front = front; }
 	void setFrontOld(glm::vec3 frontOld) { m_FrontOld = frontOld; }
 	void setModel(bool setting) { m_ShowModel = setting; }
+	void setPhysX(Physx* physX) { m_PhysX = physX; }
 	void move(GLFWwindow *window, float& deltaTime);
 	glm::vec3 moveCamera(GLFWwindow *window, float& deltaTime);
 	void Reset();
@@ -56,11 +56,13 @@ private:
 	glm::vec3 m_Front = glm::vec3(0, 0, 1);
 	glm::vec3 m_FrontOld = glm::vec3(0, 0, 0);
 
+	Physx* m_PhysX;
+
 	float m_PlayerVelocity;
-	float m_PlayerRunSpeed = 5.0f;
+	float m_PlayerRunSpeed;
 	float jumpHeight = m_Position.y;
-	float lastJump = 0;
-	float lastMoveTime = -1.0f;
+	float lastJump;
+	float lastMoveTime;;
 
 	bool groundContact = true;
 	bool jumped = false;

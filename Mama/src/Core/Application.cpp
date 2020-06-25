@@ -47,7 +47,6 @@ void Application::Run()
 	m_Event.SetNativeGame(m_Game);
 	m_Event.SetRestart();
 
-	bool isShown = true;
 	bool isOnPos = false;
 	bool isPlayed = false;
 	bool soundOn = true;
@@ -162,27 +161,34 @@ void Application::Run()
 
 	Model box01("Models/Single Elements/Box/box01.obj");
 	glm::mat4 boxMat01 = glm::mat4(1.0f);
+	box01.makeDynamic();
 
 	Model box02("Models/Single Elements/Box/box02.obj");
 	glm::mat4 boxMat02 = glm::mat4(1.0f);
+	box02.makeDynamic();
 
 	Model box03("Models/Single Elements/Box/box03.obj");
 	glm::mat4 boxMat03 = glm::mat4(1.0f);
+	box03.makeDynamic();
 
 	Model box04("Models/Single Elements/Box/box04.obj");
 	glm::mat4 boxMat04 = glm::mat4(1.0f);
+	box04.makeDynamic();
 
 	Model box05("Models/Single Elements/Box/normalCube.obj");
 	glm::mat4 boxMat05 = glm::mat4(1.0f);
 
 	Model rock01("Models/Single Elements/MoveableRocks/smallRock01.obj");
 	glm::mat4 rockMat01 = glm::mat4(1.0f);
+	rock01.makeDynamic();
 
 	Model rock02("Models/Single Elements/MoveableRocks/smallRock02.obj");
 	glm::mat4 rockMat02 = glm::mat4(1.0f);
+	rock02.makeDynamic();
 
 	Model rock03("Models/Single Elements/MoveableRocks/smallRock03.obj");
 	glm::mat4 rockMat03 = glm::mat4(1.0f);
+	rock03.makeDynamic();
 
 	AnimModel cowboy("Animation/Cowboy/model.dae");
 	glm::mat4 boyMat = glm::mat4(1.0f);
@@ -238,10 +244,9 @@ void Application::Run()
 
 	m_PhysX->setGame(m_Game);
 	m_PhysX->initPhysx();
-	m_Player->m_Controller = m_PhysX->getController();
+	m_Player->setPhysX(m_PhysX);
 	m_Camera->setPhysx(m_PhysX);
-
-	//invert the surfaces of wall01 and wall03 to work around wrong modelling
+	  //invert the surfaces of wall01 and wall03 to work around wrong modelling
 	for (int i = 0; i < wall01.meshes[0].indices.size(); i++) {
 		if (i % 3 == 2) {
 			int buffer = wall01.meshes[0].indices[i - 2];
@@ -279,6 +284,7 @@ void Application::Run()
 	models.push_back(rails);
 	models.push_back(cart);
 	models.push_back(fence);
+	models.push_back(box05);
 
 
 	//Collision Cubes for downloaded objects
@@ -289,12 +295,24 @@ void Application::Run()
 	
 	m_DynamicObjects.push_back(m_PhysX->createDynamic(rock01, 2));
 	m_DynamicObjects.push_back(m_PhysX->createDynamic(rock02, 3));
-	m_DynamicObjects.push_back(m_PhysX->createDynamic(rock03, 10));
-	m_DynamicObjects.push_back(m_PhysX->createDynamic(box01, 1));
-	m_DynamicObjects.push_back(m_PhysX->createDynamic(box02, 1));
-	m_DynamicObjects.push_back(m_PhysX->createDynamic(box03, 1));
-	m_DynamicObjects.push_back(m_PhysX->createDynamic(box04, 1));
-
+	m_DynamicObjects.push_back(m_PhysX->createDynamic(rock03, 5));
+	m_DynamicObjects.push_back(m_PhysX->createDynamic(box01, 2));
+	m_DynamicObjects.push_back(m_PhysX->createDynamic(box02, 2));
+	m_DynamicObjects.push_back(m_PhysX->createDynamic(box03, 2));
+	m_DynamicObjects.push_back(m_PhysX->createDynamic(box04, 2));
+	for (PxRigidDynamic* a : m_DynamicObjects) {
+		if (a->getMass() == 2) {
+			a->setMaxAngularVelocity(5);
+			a->setMaxLinearVelocity(2);
+		}else if (a->getMass() == 3) {
+			a->setMaxAngularVelocity(3);
+			a->setMaxLinearVelocity(1.5);
+		}
+		else if (a->getMass() == 5) {
+			a->setMaxAngularVelocity(2);
+			a->setMaxLinearVelocity(1);
+		}
+	}
 
 	for (int i = 0; i < sizeof(cube->position) / sizeof(cube->position[0]); i++) {
 		m_PhysX->createTrigger(PxVec3(cube->position[i].x, cube->position[i].y, cube->position[i].z), PxVec3(0.2f, 0.4f, 0.2f), Physx::TriggerType::TRAP);
@@ -385,7 +403,7 @@ void Application::Run()
 		if (m_Player->getPosition().y < 4.0f) {
 			m_Game->Lose();
 		}
-	
+
 		//--------------------------------------------------------------RENDER SHADOWS------------------------------------------------------#	
 		renderer->SetProps(m_Brightness);
 		shadowMap->GenerateCubeMap(lightPos);
@@ -427,13 +445,6 @@ void Application::Run()
 		else
 			frustum = false;
 
-		std::cout << "mineCart = " << frustum << std::endl;
-		std::cout << "Distance = " << cart.GetDistance() << std::endl;
-		std::cout << "MinPos = " << cart.GetMinPos().x << ", " << cart.GetMinPos().y << ", " << cart.GetMinPos().z << std::endl;
-		std::cout << "MaxPos = " << cart.GetMaxPos().x << ", " << cart.GetMaxPos().y << ", " << cart.GetMaxPos().z << std::endl;
-		std::cout << "Center = " << cart.GetCenter().x << ", " << cart.GetCenter().y << ", " << cart.GetCenter().z << std::endl;
-
-
 		if (renderer->isFrustum(fence, fenceMat, m_Event.isFrustum()))
 			renderModel(fence, shadow, fenceMat);
 
@@ -443,21 +454,29 @@ void Application::Run()
 		if (renderer->isFrustum(fence, fenceMat, m_Event.isFrustum()))
 			renderModel(fence, shadow, fenceMat);
 
-		if (renderer->isFrustum(box01, boxMat01, m_Event.isFrustum()))
+		if (renderer->isFrustum(box01, boxMat01, m_Event.isFrustum())) {
 			boxMat01 = getOrientationFromPos(m_DynamicObjects[3]->getGlobalPose());
+			box01.setTransform(boxMat01);
 			renderModel(box01, shadow, boxMat01);
+		}
 
-		if (renderer->isFrustum(box02, boxMat02, m_Event.isFrustum()))
+		if (renderer->isFrustum(box02, boxMat02, m_Event.isFrustum())) {
 			boxMat02 = getOrientationFromPos(m_DynamicObjects[4]->getGlobalPose());
+			box02.setTransform(boxMat02);
 			renderModel(box02, shadow, boxMat02);
+		}
 
-		if (renderer->isFrustum(box03, boxMat03, m_Event.isFrustum()))
+		if (renderer->isFrustum(box03, boxMat03, m_Event.isFrustum())) {
 			boxMat03 = getOrientationFromPos(m_DynamicObjects[4]->getGlobalPose());
+			box03.setTransform(boxMat03);
 			renderModel(box03, shadow, boxMat03);
+		}
 
-		if (renderer->isFrustum(box04, boxMat04, m_Event.isFrustum()))
+		if (renderer->isFrustum(box04, boxMat04, m_Event.isFrustum())) {
 			boxMat04 = getOrientationFromPos(m_DynamicObjects[6]->getGlobalPose());
+			box04.setTransform(boxMat04);
 			renderModel(box04, shadow, boxMat04);
+		}
 
 		if (!m_Game->isPaused()) {
 			mama.InitShader(shadow);
@@ -494,7 +513,6 @@ void Application::Run()
 
 		if (m_Game->getStatus() == GameStatus::DEFAULT || m_Event.isRenderAll()) {
 			healthBarMat = m_Camera->getHealthBarMat(m_Game->getLife() / 100.0f);
-			//healthBarMat = glm::scale(healthBarMat, glm::vec3(0.1, 0.1, 0.1));
 			renderModel(healthBar, basic, healthBarMat);
 		}
 
@@ -532,25 +550,29 @@ void Application::Run()
 			renderModel(fence, simpleShadow, fenceMat);
 
 		renderer->renderSimpleShadow(test, lightPos, m_Shadow, m_Farplane, shadowMap);
-		if (renderer->isFrustum(box01, boxMat01, m_Event.isFrustum())) {
+		//if (renderer->isFrustum(box01, boxMat01, m_Event.isFrustum())) {
 			boxMat01 = getOrientationFromPos(m_DynamicObjects[3]->getGlobalPose());
+			box01.setTransform(boxMat01);
 			renderModel(box01, test, boxMat01);
-		}
+		//}
 
-		if (renderer->isFrustum(box02, boxMat02, m_Event.isFrustum())) {
+		//if (renderer->isFrustum(box02, boxMat02, m_Event.isFrustum())) {
 			boxMat02 = getOrientationFromPos(m_DynamicObjects[4]->getGlobalPose());
+			box02.setTransform(boxMat02);
 			renderModel(box02, test, boxMat02);
-		}
+		//}
 
-		if (renderer->isFrustum(box03, boxMat03, m_Event.isFrustum())) {
+		//if (renderer->isFrustum(box03, boxMat03, m_Event.isFrustum())) {
 			boxMat03 = getOrientationFromPos(m_DynamicObjects[5]->getGlobalPose());
+			box03.setTransform(boxMat03);
 			renderModel(box03, test, boxMat03);
-		}
+		//}
 
-		if (renderer->isFrustum(box04, boxMat04, m_Event.isFrustum())) {
+		//if (renderer->isFrustum(box04, boxMat04, m_Event.isFrustum())) {
 			boxMat04 = getOrientationFromPos(m_DynamicObjects[6]->getGlobalPose());
+			box04.setTransform(boxMat04);
 			renderModel(box04, test, boxMat04);
-		}
+		//}
 	
 
 		//Models with bones and shadows
@@ -615,7 +637,7 @@ void Application::Run()
 			if (renderer->isFrustum(wall04, wallMat04, m_Event.isFrustum()))
 				renderModel(wall04, normal, wallMat04);
 
-			if (isShown = renderer->isFrustum(wall05, wallMat05, m_Event.isFrustum()))
+			if (renderer->isFrustum(wall05, wallMat05, m_Event.isFrustum()))
 				renderModel(wall05, normal, wallMat05);
 
 			if (renderer->isFrustum(wall06, wallMat06, m_Event.isFrustum()))
@@ -654,59 +676,70 @@ void Application::Run()
 			if (renderer->isFrustum(rocks, rockMat, m_Event.isFrustum()))
 				renderModel(rocks, pointLights, rockMat);
 
-			if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum())) {
+			//if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum())) {
 				rockMat01 = getOrientationFromPos(m_DynamicObjects[0]->getGlobalPose());
+				rock01.setTransform(rockMat01);
 				renderModel(rock01, pointLights, rockMat01);
-			}
+			//}
 
-			if (renderer->isFrustum(rock02, rockMat02, m_Event.isFrustum())) {
+			//if (renderer->isFrustum(rock02, rockMat02, m_Event.isFrustum())) {
 				rockMat02 = getOrientationFromPos(m_DynamicObjects[1]->getGlobalPose());
+				rock02.setTransform(rockMat02);
 				renderModel(rock02, pointLights, rockMat02);
-			}
+			//}
 
-			if (renderer->isFrustum(rock03, rockMat03, m_Event.isFrustum())) {
+			//if (renderer->isFrustum(rock03, rockMat03, m_Event.isFrustum())) {
 				rockMat03 = getOrientationFromPos(m_DynamicObjects[2]->getGlobalPose());
+				rock03.setTransform(rockMat03);
 				renderModel(rock03, pointLights, rockMat03);
-			}
+			//}
 
-			if (renderer->isFrustum(box01, boxMat01, m_Event.isFrustum())) {
+			//if (renderer->isFrustum(box01, boxMat01, m_Event.isFrustum())) {
 				boxMat01 = getOrientationFromPos(m_DynamicObjects[3]->getGlobalPose());
+				box01.setTransform(boxMat01);
 				renderModel(box01, pointLights, boxMat01);
-			}
+			//}
 
-			if (renderer->isFrustum(box02, boxMat02, m_Event.isFrustum())){
+			//if (renderer->isFrustum(box02, boxMat02, m_Event.isFrustum())){
 				boxMat02 = getOrientationFromPos(m_DynamicObjects[4]->getGlobalPose());
+				box02.setTransform(boxMat02);
 				renderModel(box02, pointLights, boxMat02);
-			}
+			//}
 
-			if (renderer->isFrustum(box03, boxMat03, m_Event.isFrustum())) {
+			//if (renderer->isFrustum(box03, boxMat03, m_Event.isFrustum())) {
 				boxMat03 = getOrientationFromPos(m_DynamicObjects[5]->getGlobalPose());
+				box03.setTransform(boxMat03);
 				renderModel(box03, pointLights, boxMat03);
-			}
+			//}
 
-			if (renderer->isFrustum(box04, boxMat04, m_Event.isFrustum())) {
+			//if (renderer->isFrustum(box04, boxMat04, m_Event.isFrustum())) {
 				boxMat04 = getOrientationFromPos(m_DynamicObjects[6]->getGlobalPose());
+				box04.setTransform(boxMat04);
 				renderModel(box04, pointLights, boxMat04);
-			}
+			//}
 		}
 
 		renderer->renderLight(pointLights);
 		if (renderer->isFrustum(multipleLights, lights, m_Event.isFrustum()))
 			renderModel(multipleLights, pointLights, lights);
-		if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum())) {
+
+		//if (renderer->isFrustum(rock01, rockMat01, m_Event.isFrustum())) {
 			rockMat01 = getOrientationFromPos(m_DynamicObjects[0]->getGlobalPose());
+			rock01.setTransform(rockMat01);
 			renderModel(rock01, pointLights, rockMat01);
-		}
+		//}
 
-		if (renderer->isFrustum(rock02, rockMat02, m_Event.isFrustum())) {
+		//if (renderer->isFrustum(rock02, rockMat02, m_Event.isFrustum())) {
 			rockMat02 = getOrientationFromPos(m_DynamicObjects[1]->getGlobalPose());
+			rock02.setTransform(rockMat02);
 			renderModel(rock02, pointLights, rockMat02);
-		}
+		//}
 
-		if (renderer->isFrustum(rock03, rockMat03, m_Event.isFrustum())) {
+		//if (renderer->isFrustum(rock03, rockMat03, m_Event.isFrustum())) {
 			rockMat03 = getOrientationFromPos(m_DynamicObjects[2]->getGlobalPose());
+			rock03.setTransform(rockMat03);
 			renderModel(rock03, pointLights, rockMat03);
-		}
+		//}
 		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

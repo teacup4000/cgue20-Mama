@@ -44,10 +44,14 @@ public:
 	glm::vec3 GetPosition() { return m_Position; }
 	glm::vec3 GetMinPos() { return m_MinPos; }
 	glm::vec3 GetMaxPos() { return m_MaxPos; }
-
+	void setTransform(glm::mat4 transform) { m_Transform = transform; }
+	void makeDynamic() { m_Dynamic = true; }
 
 	glm::vec3 GetCenter()
 	{
+		//if (m_Dynamic)
+			//calculateMinMax();
+
 		glm::vec3 d = GetDistanceVec();
 		return GetMinPos() + d/2.0f;
 	}
@@ -59,9 +63,10 @@ private:
 	glm::vec3 m_Position;
 	glm::vec3 m_MinPos;
 	glm::vec3 m_MaxPos;
-	std::vector<Vertex> m_Center;
 
-	glm::vec3 GetMax() { return m_MaxPos; }
+	glm::mat4 m_Transform = glm::mat4(1.0f);
+
+	bool m_Dynamic = false;
 
 	int faceCount;
 
@@ -74,6 +79,34 @@ private:
 
 	/** Checks all material textures of a given type and loads the textures */
 	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
+
+	void calculateMinMax() {
+		std::vector<glm::vec3> newVerts;
+		for (Vertex v : meshes[0].vertices) {
+			newVerts.push_back(m_Transform * glm::vec4(v.position, 1));
+		}
+
+		m_MinPos = glm::vec3(FLT_MAX);
+		m_MaxPos = glm::vec3(-FLT_MAX);
+		
+		for (glm::vec3 vector : newVerts) {
+			//MIN
+			if (vector.x < m_MinPos.x)
+				m_MinPos.x = vector.x;
+			if (vector.y < m_MinPos.y)
+				m_MinPos.y = vector.y;
+			if (vector.z < m_MinPos.z)
+				m_MinPos.z = vector.z;
+
+			//MAX
+			if (vector.x > m_MaxPos.x)
+				m_MaxPos.x = vector.x;
+			if (vector.y > m_MaxPos.y)
+				m_MaxPos.y = vector.y;
+			if (vector.z > m_MaxPos.z)
+				m_MaxPos.z = vector.z;
+		}
+	}
 };
 
 
