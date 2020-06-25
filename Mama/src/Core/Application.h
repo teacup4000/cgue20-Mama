@@ -17,7 +17,6 @@
 #include "Render/Effects/ShadowMap.h"
 #include "Render/Renderer.h"
 #include "Render/Display/Player.h"
-#include "Render/Effects/Hud.h"
 
 #include "Sound/IrrKlang.h"
 

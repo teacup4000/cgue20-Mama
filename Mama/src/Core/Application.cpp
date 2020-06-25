@@ -344,14 +344,6 @@ void Application::Run()
 	lose->createSound();
 	//-------------------------------------------------------------------END SOUND-------------------------------------------------------------
 
-	std::vector<GUITex> guis;
-	Loader load;
-	std::string path = "Assets/img/health.bmp";
-	std::string directory = path.substr(0, path.find_last_of('/'));
-	glm::vec2 pos = glm::vec2(0.5f, 0.5f);
-	GUITex gui = GUITex(load.loadTexture("health.bmp", directory), pos, glm::vec2(0.5f, 0.5f));
-	guis.push_back(gui);
-	GuiRenderer guiRenderer = GuiRenderer(load);
 
 	while (!glfwWindowShouldClose(m_Window))
 	{
@@ -759,8 +751,6 @@ void Application::Run()
 		//}
 		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		//guiRenderer.render(guis, hud, loader, loadMat, pos);
 
 		bloom->Unbind();
 		bloom->Postprocess(blur, bloomFinal);
