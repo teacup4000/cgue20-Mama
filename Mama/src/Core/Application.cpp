@@ -71,6 +71,8 @@ void Application::Run()
 	Shader bloomFinal("Shader/bloom_final.shader");
 	Shader bone("Shader/multipleLightShadowBones.shader");
 	Shader test("Shader/Test.shader");
+	Shader hud("Shader/hud.shader");
+
 	//--------------------------------------------------SET SHADER PROPERTIERS-------------------------------------------------------------
 	shadowMap->GenerateDepthMap(m_Nearplane, m_Farplane);
 	bloom->GenerateBloomParams(m_Width, m_Height);
@@ -98,6 +100,9 @@ void Application::Run()
 	bloomFinal.use();
 	bloomFinal.setInt("scene", 0);
 	bloomFinal.setInt("bloomBlur", 1);
+
+	hud.use();
+	hud.setInt("guiTexture", 1);
 	//----------------------------------------------------------END SHADER PROPERTIES---------------------------------------------------------
 	//----------------------------------------------------------SET MODEL PROPERTIES----------------------------------------------------------
 
@@ -338,6 +343,15 @@ void Application::Run()
 	IrrKlang* lose = new IrrKlang();
 	lose->createSound();
 	//-------------------------------------------------------------------END SOUND-------------------------------------------------------------
+
+	std::vector<GUITex> guis;
+	Loader load;
+	std::string path = "Assets/img/health.bmp";
+	std::string directory = path.substr(0, path.find_last_of('/'));
+	glm::vec2 pos = glm::vec2(0.5f, 0.5f);
+	GUITex gui = GUITex(load.loadTexture("health.bmp", directory), pos, glm::vec2(0.15f, 0.15f));
+	guis.push_back(gui);
+	GuiRenderer guiRenderer = GuiRenderer(load);
 
 	while (!glfwWindowShouldClose(m_Window))
 	{
@@ -742,6 +756,8 @@ void Application::Run()
 		//}
 		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		guiRenderer.render(guis, hud, loader, loadMat, pos);
 
 		bloom->Unbind();
 		bloom->Postprocess(blur, bloomFinal);
